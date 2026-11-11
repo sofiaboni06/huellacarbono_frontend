@@ -1,0 +1,114 @@
+/* Accesos rápidos del panel de inicio */
+
+.ini-accesos {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(12px, 1.4vw, 18px);
+  padding: clamp(17px, 1.6vw, 24px) clamp(17px, 1.7vw, 26px) clamp(18px, 1.7vw, 26px);
+}
+
+.ini-titulo-seccion {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--hv-ink);
+}
+
+.ini-accesos-rejilla {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(10px, 1.2vw, 16px);
+  flex: 1;
+}
+
+.ini-accesos-rejilla > li {
+  display: flex;
+  min-width: 0;
+}
+
+.ini-acceso {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 0.9vw, 12px);
+  min-height: clamp(104px, 11vw, 132px);
+  padding: 14px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 16px;
+  background: #eaeee5;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ini-acceso:hover {
+  background: #e0e6d9;
+  transform: translateY(-3px);
+  box-shadow: 0 12px 26px rgba(10, 44, 24, 0.16);
+}
+
+.ini-acceso:active {
+  transform: translateY(-1px);
+}
+
+.ini-acceso:focus-visible {
+  outline: 2px solid var(--hv-green-600);
+  outline-offset: 2px;
+}
+
+.ini-acceso-icono {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  transition: transform 0.18s ease;
+}
+
+.ini-acceso:hover .ini-acceso-icono {
+  transform: scale(1.06);
+}
+
+.ini-acceso-icono.tono-azul {
+  background: rgba(59, 130, 246, 0.16);
+  color: var(--hv-blue);
+}
+
+.ini-acceso-icono.tono-verde {
+  background: rgba(47, 143, 70, 0.16);
+  color: var(--hv-green-600);
+}
+
+.ini-acceso-texto {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.32;
+  color: var(--hv-text);
+  overflow-wrap: break-word;
+}
+
+/* ----------------------------- Responsive ------------------------------- */
+@media (max-width: 1180px) {
+  .ini-accesos-rejilla {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .ini-accesos-rejilla {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .ini-acceso {
+    min-height: 108px;
+    padding: 14px 8px;
+  }
+
+  .ini-acceso-texto {
+    font-size: 12.5px;
+  }
+}

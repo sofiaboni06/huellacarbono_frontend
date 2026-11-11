@@ -1,0 +1,78 @@
+/* Botón compartido de HuellaVerde.
+   Antes los estilos base vivían en styles/global.css, que no está importado en
+   la aplicación; ahora el componente es autosuficiente. */
+
+.hv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 20px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-family: var(--hv-font);
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.18s ease,
+    color 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease,
+    border-color 0.18s ease;
+}
+
+.hv-btn:focus-visible {
+  outline: 2px solid var(--hv-lime-500);
+  outline-offset: 2px;
+}
+
+.hv-btn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.hv-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hv-btn-primario {
+  background: linear-gradient(180deg, var(--hv-green-600) 0%, var(--hv-green-700) 100%);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(20, 96, 47, 0.3);
+}
+
+.hv-btn-primario:hover:not(:disabled) {
+  background: linear-gradient(180deg, var(--hv-green-500) 0%, var(--hv-green-600) 100%);
+  box-shadow: 0 10px 24px rgba(20, 96, 47, 0.38);
+}
+
+.hv-btn-contorno {
+  background: rgba(255, 255, 255, 0.82);
+  border-color: rgba(17, 56, 32, 0.18);
+  color: var(--hv-ink);
+}
+
+.hv-btn-contorno:hover:not(:disabled) {
+  background: #fff;
+  border-color: var(--hv-green-500);
+  color: var(--hv-green-700);
+}
+
+.hv-btn-fantasma {
+  background: transparent;
+  color: var(--hv-muted);
+}
+
+.hv-btn-fantasma:hover:not(:disabled) {
+  background: rgba(17, 56, 32, 0.07);
+  color: var(--hv-ink);
+}
+
+.hv-btn-success {
+  background: linear-gradient(135deg, var(--hv-green-500), var(--hv-green-700));
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(47, 143, 70, 0.3);
+}

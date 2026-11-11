@@ -1,0 +1,20 @@
+/* Gestión de Perfiles — reglas propias de esta vista.
+   Tabla, estados y acciones usan los estilos comunes de `../gestion.css`. */
+
+@import '../gestion.css';
+
+.gst-perfiles .gst-tabla-tarjeta {
+  overflow: hidden;
+  padding-bottom: 4px;
+}
+
+/* Barra resumida superior (recuento de perfiles y activos). */
+.gst-barra--resumen {
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 14px;
+}
+
+.gst-barra--resumen .gst-contador {
+  margin-left: 0;
+}

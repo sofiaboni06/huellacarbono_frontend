@@ -1,0 +1,237 @@
+/* ==========================================================================
+   Inicio (Dashboard) — estilos propios de la vista.
+   Todas las clases llevan el prefijo `ini-` para no colisionar con el Login.
+   ========================================================================== */
+
+/* Verificación de recarga del módulo de estilos. */
+
+/* Neutraliza las restricciones de la plantilla Vite sobre #root */
+#root:has(.hv-inicio) {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  text-align: left;
+  border-inline: none;
+  min-height: 100svh;
+  display: block;
+  box-sizing: border-box;
+}
+
+/* Caja de contenido coherente en toda la vista */
+.hv-inicio,
+.hv-inicio *,
+.hv-inicio *::before,
+.hv-inicio *::after {
+  box-sizing: border-box;
+}
+
+.hv-inicio {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  /* Sin overflow propio: un contenedor de scroll interno restaría 15px de ancho.
+     Las hojas decorativas se recortan en su propio contenedor absoluto. */
+  font-family: var(--hv-font);
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--hv-ink);
+  background:
+    radial-gradient(1200px 720px at 84% 2%, rgba(103, 182, 92, 0.45) 0%, rgba(103, 182, 92, 0) 62%),
+    linear-gradient(157deg, #093a20 0%, #115d38 46%, #1a7d42 100%);
+}
+
+/* Reinicia los estilos heredados de la plantilla index.css.
+   `:where()` mantiene especificidad 0, de modo que cualquier clase de componente
+   puede sobrescribir estas reglas sin depender del orden de carga. */
+:where(.hv-inicio) h1,
+:where(.hv-inicio) h2,
+:where(.hv-inicio) h3,
+:where(.hv-inicio) h4,
+:where(.hv-inicio) p {
+  margin: 0;
+  font-family: var(--hv-font);
+  color: inherit;
+}
+
+:where(.hv-inicio) h1 {
+  font-size: clamp(27px, 3vw, 40px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.8px;
+}
+
+:where(.hv-inicio) h2 {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+}
+
+:where(.hv-inicio) a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(.hv-inicio) button {
+  font-family: inherit;
+  color: inherit;
+}
+
+:where(.hv-inicio) ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where(.hv-inicio) img {
+  display: block;
+  max-width: 100%;
+}
+
+/* ---------------------------- Hojas decorativas --------------------------- */
+/* Contenedor que recorta las hojas sin crear barras de scroll en la página */
+.ini-hojas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ini-hoja {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  mix-blend-mode: multiply;
+  opacity: 0.9;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 42%, rgba(0, 0, 0, 0) 76%);
+  mask-image: radial-gradient(ellipse at 50% 50%, #000 42%, rgba(0, 0, 0, 0) 76%);
+}
+
+.ini-hoja--izq {
+  left: -34px;
+  bottom: -26px;
+  width: clamp(210px, 25vw, 380px);
+}
+
+.ini-hoja--der {
+  right: -46px;
+  bottom: 6%;
+  width: clamp(190px, 22vw, 330px);
+  transform: scaleX(-1);
+  opacity: 0.7;
+}
+
+/* ------------------------------ Contenido -------------------------------- */
+.ini-contenido {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 22px clamp(14px, 2.2vw, 32px) 34px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: clamp(16px, 1.7vw, 22px);
+}
+
+.ini-rejilla {
+  display: grid;
+  gap: clamp(12px, 1.4vw, 20px);
+}
+
+.ini-rejilla--indicadores {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.ini-rejilla--inferior {
+  grid-template-columns: minmax(0, 1.62fr) minmax(0, 1fr);
+  align-items: stretch;
+}
+
+/* ------------------------- Tarjeta base (glass) -------------------------- */
+.ini-tarjeta {
+  background: rgba(255, 255, 255, 0.84);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 20px;
+  box-shadow: 0 16px 38px rgba(5, 30, 15, 0.2);
+  min-width: 0;
+}
+
+/* -------------------------------- Aviso ---------------------------------- */
+.ini-aviso {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  z-index: 80;
+  transform: translateX(-50%);
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 12px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(6, 43, 23, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #eef8ea;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 18px 44px rgba(3, 20, 10, 0.45);
+  animation: ini-aviso-entra 0.24s ease-out;
+}
+
+@keyframes ini-aviso-entra {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ------------------------------ Responsive ------------------------------- */
+@media (max-width: 1180px) {
+  .ini-rejilla--indicadores {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .ini-rejilla--inferior {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 760px) {
+  .ini-contenido {
+    padding: 16px 14px 28px;
+    gap: 16px;
+  }
+
+  .ini-rejilla--indicadores {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .ini-hoja--der {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .ini-aviso {
+    border-radius: 16px;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ini-aviso {
+    animation: none;
+  }
+}

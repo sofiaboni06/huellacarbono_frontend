@@ -1,0 +1,10 @@
+/* Gestión de Usuarios — reglas propias de esta vista.
+   Los estilos de barra, tabla, estados, acciones y paginación son comunes
+   a todo el módulo y viven en `../gestion.css`. */
+
+@import '../gestion.css';
+
+.gst-usuarios .gst-tabla-tarjeta {
+  overflow: hidden;
+  padding-bottom: 4px;
+}

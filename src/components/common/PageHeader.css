@@ -1,0 +1,35 @@
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+
+.page-header-texto h1 {
+  font-size: 30px;
+  font-weight: 700;
+  color: var(--hv-ink);
+  letter-spacing: -0.4px;
+  line-height: 1.15;
+}
+
+.page-header-texto p {
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--hv-muted);
+}
+
+.page-header-acciones {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .page-header-texto h1 {
+    font-size: 24px;
+  }
+}

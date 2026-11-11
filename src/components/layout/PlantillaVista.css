@@ -1,0 +1,493 @@
+/* ==========================================================================
+   Armazón compartido por todas las vistas (Cálculos, Reportes, Configuración,
+   Ayuda y Perfil). No afecta al Login ni al Dashboard, que tienen sus propios
+   estilos.
+   ========================================================================== */
+
+/* Neutraliza las restricciones de la plantilla Vite sobre #root */
+#root:has(.hv-vista) {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  text-align: left;
+  border-inline: none;
+  min-height: 100svh;
+  display: block;
+  box-sizing: border-box;
+}
+
+.hv-vista,
+.hv-vista *,
+.hv-vista *::before,
+.hv-vista *::after {
+  box-sizing: border-box;
+}
+
+.hv-vista {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--hv-font);
+  font-size: 16px;
+  line-height: 1.45;
+  color: var(--hv-ink);
+  /* Fondo claro de la maqueta con tintes ambientales */
+  background:
+    radial-gradient(1100px 620px at 92% -8%, rgba(103, 182, 92, 0.3) 0%, rgba(103, 182, 92, 0) 62%),
+    radial-gradient(880px 620px at -8% 104%, rgba(168, 224, 99, 0.34) 0%, rgba(168, 224, 99, 0) 58%),
+    linear-gradient(158deg, #edf3e9 0%, #f6f8f3 52%, #e9f1e5 100%);
+}
+
+/* ------------------------- Temas visuales (compartidos) ------------------- */
+.hv-vista[data-tema='claro'] {
+  background:
+    radial-gradient(1100px 620px at 92% -8%, rgba(214, 228, 206, 0.75) 0%, rgba(214, 228, 206, 0) 62%),
+    radial-gradient(880px 620px at -8% 104%, rgba(231, 240, 224, 0.9) 0%, rgba(231, 240, 224, 0) 58%),
+    linear-gradient(158deg, #f6f7f3 0%, #fbfcf9 52%, #f2f4ee 100%);
+}
+
+.hv-vista[data-tema='profundo'] {
+  background:
+    radial-gradient(1100px 620px at 92% -8%, rgba(20, 96, 47, 0.34) 0%, rgba(20, 96, 47, 0) 62%),
+    radial-gradient(880px 620px at -8% 104%, rgba(143, 206, 63, 0.3) 0%, rgba(143, 206, 63, 0) 58%),
+    linear-gradient(158deg, #dfeada 0%, #ebf2e6 52%, #d7e6d3 100%);
+}
+
+/* Preferencia: ocultar las hojas decorativas. */
+.hv-vista[data-hojas='ocultas'] .vst-hojas {
+  display: none;
+}
+
+/* Preferencia: reducir animaciones y transiciones. */
+.hv-vista[data-animaciones='reducidas'] *,
+.hv-vista[data-animaciones='reducidas'] *::before,
+.hv-vista[data-animaciones='reducidas'] *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Reinicia los estilos heredados de la plantilla index.css. `:where()` mantiene
+   especificidad 0, de modo que cualquier clase de vista puede sobrescribirlas. */
+:where(.hv-vista) h1,
+:where(.hv-vista) h2,
+:where(.hv-vista) h3,
+:where(.hv-vista) h4,
+:where(.hv-vista) p {
+  margin: 0;
+  font-family: var(--hv-font);
+  color: inherit;
+}
+
+:where(.hv-vista) h1 {
+  font-size: clamp(24px, 2.6vw, 30px);
+  font-weight: 700;
+  line-height: 1.16;
+  letter-spacing: -0.5px;
+}
+
+:where(.hv-vista) h2 {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: -0.2px;
+}
+
+:where(.hv-vista) h3 {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+:where(.hv-vista) a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:where(.hv-vista) button {
+  font-family: inherit;
+  color: inherit;
+}
+
+:where(.hv-vista) ul,
+:where(.hv-vista) ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where(.hv-vista) img {
+  display: block;
+  max-width: 100%;
+}
+
+/* ---------------------------- Hojas decorativas --------------------------- */
+.vst-hojas {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.vst-hoja {
+  position: absolute;
+  pointer-events: none;
+  user-select: none;
+  mix-blend-mode: multiply;
+  opacity: 0.72;
+  -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 40%, rgba(0, 0, 0, 0) 76%);
+  mask-image: radial-gradient(ellipse at 50% 50%, #000 40%, rgba(0, 0, 0, 0) 76%);
+}
+
+.vst-hoja--izq {
+  left: -46px;
+  bottom: -34px;
+  width: clamp(200px, 22vw, 330px);
+}
+
+.vst-hoja--der {
+  right: -54px;
+  top: 16%;
+  width: clamp(170px, 18vw, 280px);
+  transform: scaleX(-1);
+  opacity: 0.5;
+}
+
+/* ------------------------------ Contenido -------------------------------- */
+.vst-contenido {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: clamp(20px, 2.4vw, 30px) clamp(14px, 2.2vw, 32px) 44px;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: clamp(16px, 1.8vw, 24px);
+  min-width: 0;
+}
+
+/* ------------------------- Tarjeta base (glass) -------------------------- */
+.vst-tarjeta {
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  box-shadow: 0 16px 38px rgba(9, 44, 24, 0.14);
+  min-width: 0;
+}
+
+/* ------------------------------ Menú lateral ----------------------------- */
+.vst-sidebar {
+  position: sticky;
+  top: 16px;
+  padding: 16px 12px 14px;
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  box-shadow: 0 16px 38px rgba(9, 44, 24, 0.14);
+}
+
+.vst-sidebar-titulo {
+  padding: 0 10px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--hv-muted);
+}
+
+.vst-sidebar-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.vst-sidebar-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  font-family: var(--hv-font);
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--hv-text);
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background 0.16s ease,
+    color 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.vst-sidebar-item svg {
+  flex-shrink: 0;
+}
+
+.vst-sidebar-item:hover {
+  background: rgba(47, 143, 70, 0.1);
+  color: var(--hv-green-700);
+}
+
+.vst-sidebar-item:focus-visible {
+  outline: 2px solid var(--hv-lime-500);
+  outline-offset: 2px;
+}
+
+.vst-sidebar-item.activo {
+  background: linear-gradient(135deg, rgba(168, 224, 99, 0.6), rgba(123, 191, 106, 0.42));
+  border-color: rgba(47, 143, 70, 0.28);
+  color: var(--hv-green-800);
+  font-weight: 600;
+}
+
+@media (max-width: 940px) {
+  .vst-sidebar {
+    position: static;
+    padding: 10px;
+  }
+
+  .vst-sidebar-titulo {
+    display: none;
+  }
+
+  .vst-sidebar-lista {
+    flex-direction: row;
+    gap: 8px;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding-bottom: 2px;
+  }
+
+  .vst-sidebar-item {
+    width: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    border-radius: 999px;
+    padding: 9px 15px;
+    background: rgba(255, 255, 255, 0.72);
+    border-color: rgba(17, 56, 32, 0.12);
+  }
+
+  .vst-sidebar-item.activo {
+    background: linear-gradient(135deg, rgba(168, 224, 99, 0.75), rgba(123, 191, 106, 0.6));
+  }
+}
+
+/* -------------------------------- Aviso ---------------------------------- */
+.vst-aviso {
+  position: fixed;
+  left: 50%;
+  bottom: 26px;
+  z-index: 90;
+  transform: translateX(-50%);
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 12px 20px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 999px;
+  background: rgba(6, 43, 23, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #eef8ea;
+  font-size: 13.5px;
+  font-weight: 500;
+  text-align: center;
+  box-shadow: 0 18px 44px rgba(3, 20, 10, 0.45);
+  animation: vst-aviso-entra 0.24s ease-out;
+}
+
+@keyframes vst-aviso-entra {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* --------------------------- Elementos de formulario --------------------- */
+.vst-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.vst-campo > label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--hv-muted);
+}
+
+.vst-input,
+.vst-select,
+.vst-textarea {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1px solid rgba(17, 56, 32, 0.16);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  font-family: var(--hv-font);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--hv-ink);
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.vst-textarea {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.vst-input::placeholder,
+.vst-textarea::placeholder {
+  color: #9aa89d;
+  font-weight: 400;
+}
+
+.vst-input:focus,
+.vst-select:focus,
+.vst-textarea:focus {
+  outline: none;
+  border-color: var(--hv-green-500);
+  box-shadow: 0 0 0 3px rgba(47, 143, 70, 0.18);
+}
+
+.vst-input[aria-invalid='true'],
+.vst-select[aria-invalid='true'] {
+  border-color: var(--hv-red);
+  box-shadow: 0 0 0 3px rgba(226, 87, 76, 0.16);
+}
+
+.vst-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236d7f71' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 34px;
+  cursor: pointer;
+}
+
+.vst-error {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--hv-red);
+}
+
+/* --------------------------- Fila de control ----------------------------- */
+.vst-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--hv-line);
+}
+
+.vst-fila:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.vst-fila-texto {
+  min-width: 0;
+}
+
+.vst-fila-texto label {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--hv-ink);
+  cursor: pointer;
+}
+
+.vst-fila-texto p {
+  margin-top: 3px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--hv-muted);
+}
+
+/* ----------------------------- Interruptor ------------------------------- */
+.vst-switch {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 44px;
+  height: 25px;
+  border: 0;
+  border-radius: 999px;
+  background: #c9d3c8;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.vst-switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(9, 44, 24, 0.28);
+  transition: transform 0.2s ease;
+}
+
+.vst-switch[aria-checked='true'] {
+  background: var(--hv-green-600);
+}
+
+.vst-switch[aria-checked='true']::after {
+  transform: translateX(19px);
+}
+
+.vst-switch:focus-visible {
+  outline: 2px solid var(--hv-lime-500);
+  outline-offset: 2px;
+}
+
+/* ------------------------------ Responsive ------------------------------- */
+@media (max-width: 760px) {
+  .vst-contenido {
+    padding: 16px 14px 34px;
+    gap: 16px;
+  }
+
+  .vst-hoja--der {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .vst-aviso {
+    border-radius: 16px;
+    font-size: 13px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vst-aviso {
+    animation: none;
+  }
+}

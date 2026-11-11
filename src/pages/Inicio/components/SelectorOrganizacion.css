@@ -1,0 +1,161 @@
+/* Cápsula de selección de organización y periodo */
+
+.ini-selector {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.ini-selector-pastilla {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 12px);
+  max-width: 100%;
+  padding: 11px clamp(14px, 1.4vw, 20px);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+  border-radius: 999px;
+  background: rgba(168, 224, 99, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  color: #fff;
+  font-size: clamp(12.5px, 1.05vw, 14px);
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.ini-selector-pastilla:hover {
+  background: rgba(168, 224, 99, 0.28);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.ini-selector-pastilla:focus-visible {
+  outline: 2px solid var(--hv-lime-400);
+  outline-offset: 3px;
+}
+
+.ini-selector-pastilla > svg:first-child {
+  flex-shrink: 0;
+  color: var(--hv-lime-400);
+}
+
+.ini-selector-dato {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.ini-selector-etiqueta {
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 400;
+}
+
+.ini-selector-dato b {
+  font-weight: 700;
+}
+
+.ini-selector-separador {
+  width: 1px;
+  height: 18px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.34);
+}
+
+.ini-selector-flecha {
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+}
+
+.ini-selector-flecha.girada {
+  transform: rotate(180deg);
+}
+
+/* ------------------------------- Menú ----------------------------------- */
+.ini-selector-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  z-index: 50;
+  min-width: min(280px, calc(100vw - 40px));
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 24px 54px rgba(4, 26, 13, 0.34);
+  animation: ini-selector-entra 0.16s ease-out;
+}
+
+@keyframes ini-selector-entra {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ini-selector-grupo {
+  margin: 6px 8px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hv-muted);
+}
+
+.ini-selector-opcion {
+  display: block;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--hv-ink);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ini-selector-opcion:hover {
+  background: var(--hv-lime-100);
+}
+
+.ini-selector-opcion:focus-visible {
+  outline: 2px solid var(--hv-lime-400);
+  outline-offset: -2px;
+}
+
+.ini-selector-opcion.activa {
+  background: var(--hv-green-700);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ini-selector-opcion.activa:hover {
+  background: var(--hv-green-700);
+}
+
+@media (max-width: 560px) {
+  .ini-selector-pastilla {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    border-radius: 18px;
+  }
+
+  .ini-selector-separador {
+    display: none;
+  }
+
+  .ini-selector-dato {
+    white-space: normal;
+  }
+}
