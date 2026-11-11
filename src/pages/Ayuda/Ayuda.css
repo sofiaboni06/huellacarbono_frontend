@@ -1,0 +1,361 @@
+/* ==========================================================================
+   Centro de ayuda.
+   ========================================================================== */
+
+.ayu-buscador {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+}
+
+.ayu-buscador > svg {
+  flex-shrink: 0;
+  color: var(--hv-muted);
+}
+
+.ayu-buscador-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--hv-font);
+  font-size: 15px;
+  color: var(--hv-ink);
+  outline: none;
+}
+
+.ayu-buscador-input::placeholder {
+  color: #9aa89d;
+}
+
+.ayu-buscador-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.ayu-buscador-limpiar {
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(17, 56, 32, 0.08);
+  color: var(--hv-muted);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.ayu-buscador-limpiar:hover {
+  background: rgba(17, 56, 32, 0.16);
+  color: var(--hv-ink);
+}
+
+.ayu-buscador-contador {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hv-muted);
+  white-space: nowrap;
+}
+
+/* --------------------------------- Rejilla -------------------------------- */
+.ayu-rejilla {
+  display: grid;
+  gap: clamp(16px, 2vw, 24px);
+  align-items: start;
+}
+
+.ayu-rejilla--principal {
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+}
+
+.ayu-rejilla--inferior {
+  grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+}
+
+.ayu-faq,
+.ayu-contacto,
+.ayu-guias,
+.ayu-secciones {
+  padding: clamp(18px, 2vw, 24px);
+  min-width: 0;
+}
+
+.ayu-faq h2,
+.ayu-contacto h2,
+.ayu-guias h2,
+.ayu-secciones h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--hv-ink);
+  margin-bottom: 16px;
+}
+
+/* --------------------------- Preguntas frecuentes ------------------------ */
+.ayu-faq-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ayu-faq-item {
+  border: 1px solid var(--hv-line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+  transition:
+    border-color 0.16s ease,
+    background 0.16s ease;
+}
+
+.ayu-faq-item.abierta {
+  background: #fff;
+  border-color: rgba(47, 143, 70, 0.32);
+}
+
+.ayu-faq-pregunta {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  font-family: var(--hv-font);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--hv-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.ayu-faq-pregunta:hover {
+  color: var(--hv-green-700);
+}
+
+.ayu-faq-pregunta:focus-visible {
+  outline: 2px solid var(--hv-lime-500);
+  outline-offset: -2px;
+}
+
+.ayu-faq-flecha {
+  flex-shrink: 0;
+  color: var(--hv-muted);
+  transition: transform 0.2s ease;
+}
+
+.ayu-faq-item.abierta .ayu-faq-flecha {
+  transform: rotate(180deg);
+  color: var(--hv-green-600);
+}
+
+.ayu-faq-respuesta {
+  padding: 0 16px 15px;
+}
+
+.ayu-faq-respuesta p {
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: var(--hv-muted);
+}
+
+.ayu-vacio {
+  padding: 24px 4px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--hv-muted);
+}
+
+/* -------------------------------- Contacto ------------------------------- */
+.ayu-contacto-texto {
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--hv-muted);
+  margin-bottom: 18px;
+}
+
+.ayu-contacto-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ayu-contacto-lista li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ayu-contacto-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: rgba(168, 224, 99, 0.4);
+  color: var(--hv-green-700);
+}
+
+.ayu-contacto-lista small {
+  display: block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--hv-muted);
+}
+
+.ayu-contacto-lista b {
+  display: block;
+  margin-top: 2px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--hv-ink);
+  word-break: break-word;
+}
+
+.ayu-contacto-boton {
+  width: 100%;
+  margin-top: 22px;
+}
+
+/* --------------------------------- Guías --------------------------------- */
+.ayu-guias-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ayu-guias-lista li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 13px;
+  align-items: center;
+  padding: 13px 15px;
+  border: 1px solid var(--hv-line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.ayu-guia-numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--hv-lime-400), var(--hv-green-500));
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.ayu-guia-texto b {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.ayu-guia-texto small {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--hv-muted);
+}
+
+.ayu-guia-duracion {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hv-muted);
+  white-space: nowrap;
+}
+
+/* ------------------------------ Secciones -------------------------------- */
+.ayu-seccion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--hv-line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.6);
+  font-family: var(--hv-font);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.ayu-seccion + .ayu-seccion {
+  margin-top: 10px;
+}
+
+.ayu-seccion:hover {
+  background: #fff;
+  border-color: rgba(47, 143, 70, 0.32);
+  transform: translateX(3px);
+  box-shadow: var(--hv-shadow-sm);
+}
+
+.ayu-seccion:focus-visible {
+  outline: 2px solid var(--hv-lime-500);
+  outline-offset: 2px;
+}
+
+.ayu-seccion-texto b {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.ayu-seccion-texto small {
+  display: block;
+  margin-top: 3px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--hv-muted);
+}
+
+.ayu-seccion > span:last-child {
+  flex-shrink: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--hv-green-700);
+}
+
+/* ------------------------------ Responsive ------------------------------- */
+@media (max-width: 980px) {
+  .ayu-rejilla--principal,
+  .ayu-rejilla--inferior {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .ayu-buscador-contador {
+    display: none;
+  }
+
+  .ayu-guias-lista li {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .ayu-guia-duracion {
+    grid-column: 2;
+  }
+}

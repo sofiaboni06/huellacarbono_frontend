@@ -1,0 +1,126 @@
+/* Historial de cálculos */
+
+.cal-historial {
+  padding: clamp(18px, 2vw, 24px);
+}
+
+.cal-historial-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.cal-historial-cabecera h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.cal-historial-contador {
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: var(--hv-lime-100);
+  color: var(--hv-green-700);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.cal-historial-tabla-envoltura {
+  overflow-x: auto;
+  border: 1px solid var(--hv-line);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.cal-historial-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  min-width: 640px;
+}
+
+.cal-historial-tabla thead th {
+  padding: 11px 16px;
+  background: rgba(47, 143, 70, 0.08);
+  color: var(--hv-green-800);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.cal-historial-tabla tbody th,
+.cal-historial-tabla tbody td {
+  padding: 12px 16px;
+  border-top: 1px solid var(--hv-line);
+  text-align: left;
+  color: var(--hv-text);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.cal-historial-tabla tbody th {
+  font-weight: 600;
+  color: var(--hv-ink);
+}
+
+.cal-historial-tabla tbody tr:hover {
+  background: rgba(168, 224, 99, 0.14);
+}
+
+.cal-resultado {
+  font-weight: 700 !important;
+  color: var(--hv-green-700) !important;
+}
+
+.cal-estado {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.cal-estado.ok {
+  background: rgba(47, 143, 70, 0.16);
+  color: var(--hv-green-700);
+}
+
+.cal-estado.revision {
+  background: rgba(245, 158, 11, 0.18);
+  color: #9a6507;
+}
+
+.cal-historial-vacio {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 30px 10px;
+  color: var(--hv-muted);
+  font-size: 14px;
+}
+
+.cal-historial-nota {
+  margin-top: 14px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: rgba(47, 143, 70, 0.08);
+  color: var(--hv-muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.cal-historial-oculto {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

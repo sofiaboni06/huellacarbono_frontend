@@ -1,0 +1,73 @@
+/* Sección Seguridad del perfil */
+
+.prf-seg {
+  padding: clamp(18px, 2vw, 24px);
+}
+
+.prf-seg-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 18px;
+}
+
+.prf-seg-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  background: rgba(168, 224, 99, 0.4);
+  color: var(--hv-green-700);
+}
+
+.prf-seg-cabecera h2 {
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.prf-seg-cabecera p {
+  margin-top: 3px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--hv-muted);
+}
+
+.prf-seg-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  gap: 14px;
+}
+
+.prf-seg-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.prf-seg-select {
+  min-width: 190px;
+  max-width: 100%;
+}
+
+@media (max-width: 560px) {
+  .prf-seg-acciones .hv-btn {
+    width: 100%;
+  }
+
+  .prf-seg-select {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .vst-fila {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+}

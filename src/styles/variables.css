@@ -1,0 +1,59 @@
+:root {
+  /* Verdes institucionales */
+  --hv-green-950: #062b17;
+  --hv-green-900: #093320;
+  --hv-green-850: #0b3d24;
+  --hv-green-800: #0e4a2a;
+  --hv-green-700: #14602f;
+  --hv-green-600: #1e7a3c;
+  --hv-green-500: #2f8f46;
+  --hv-green-400: #4a9242;
+  --hv-green-300: #7bbf6a;
+
+  /* Lima */
+  --hv-lime-500: #8fce3f;
+  --hv-lime-400: #a8e063;
+  --hv-lime-300: #bce877;
+  --hv-lime-100: #e7f6cf;
+
+  /* Neutros naturales */
+  --hv-bg: #edefe6;
+  --hv-bg-soft: #f4f4ee;
+  --hv-cream: #f7f7f2;
+  --hv-card: rgba(255, 255, 255, 0.72);
+  --hv-card-solid: #f6f6f2;
+  --hv-sage: #dde1d2;
+  --hv-line: rgba(17, 56, 32, 0.1);
+
+  /* Acentos */
+  --hv-blue: #3b82f6;
+  --hv-blue-soft: #e0edff;
+  --hv-purple: #a855f7;
+  --hv-purple-soft: #f3e8ff;
+  --hv-amber: #f59e0b;
+  --hv-red: #e2574c;
+
+  /* Texto */
+  --hv-ink: #17331f;
+  --hv-text: #26382c;
+  --hv-muted: #6d7f71;
+  --hv-on-dark: #f2f7ef;
+
+  /* Sombras */
+  --hv-shadow-sm: 0 2px 8px rgba(17, 46, 27, 0.06);
+  --hv-shadow: 0 10px 30px rgba(17, 46, 27, 0.09);
+  --hv-shadow-lg: 0 24px 60px rgba(10, 35, 18, 0.2);
+
+  /* Radios */
+  --hv-radius-sm: 10px;
+  --hv-radius: 16px;
+  --hv-radius-lg: 22px;
+  --hv-radius-pill: 999px;
+
+  /* Medidas */
+  --hv-nav-h: 64px;
+  --hv-sidebar-w: 250px;
+  --hv-maxw: 1440px;
+
+  --hv-font: 'Poppins', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+}
