@@ -1,0 +1,160 @@
+/* Selector de periodo (y organización) del Dashboard — tema oscuro */
+
+.ini-selector {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+}
+
+.ini-selector-pastilla {
+  display: inline-flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 11px);
+  max-width: 100%;
+  padding: 10px clamp(14px, 1.4vw, 18px);
+  border: 1px solid rgba(148, 166, 196, 0.22);
+  border-radius: 12px;
+  background: #14243a;
+  color: #f5f7fb;
+  font-size: clamp(12.5px, 1vw, 13.5px);
+  font-weight: 500;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(2, 8, 18, 0.3);
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.ini-selector-pastilla:hover {
+  background: #1b2c43;
+  border-color: rgba(22, 119, 242, 0.45);
+}
+
+.ini-selector-pastilla:focus-visible {
+  outline: 2px solid var(--ini-azul, #1677f2);
+  outline-offset: 3px;
+}
+
+.ini-selector-pastilla > svg:first-child {
+  flex-shrink: 0;
+  color: #4da3ff;
+}
+
+.ini-selector-dato {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  white-space: nowrap;
+}
+
+.ini-selector-etiqueta {
+  color: #a9b7c9;
+  font-weight: 400;
+}
+
+.ini-selector-dato b {
+  font-weight: 700;
+  color: #f5f7fb;
+}
+
+.ini-selector-flecha {
+  flex-shrink: 0;
+  color: #a9b7c9;
+  transition: transform 0.2s ease;
+}
+
+.ini-selector-flecha.girada {
+  transform: rotate(180deg);
+}
+
+/* ------------------------------- Menú ----------------------------------- */
+.ini-selector-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  left: auto;
+  z-index: 50;
+  min-width: min(250px, calc(100vw - 40px));
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 10px;
+  border: 1px solid rgba(148, 166, 196, 0.2);
+  border-radius: 14px;
+  background: #101d31;
+  box-shadow: 0 24px 54px rgba(2, 8, 18, 0.55);
+  animation: ini-selector-entra 0.16s ease-out;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(148, 166, 196, 0.35) transparent;
+}
+
+@keyframes ini-selector-entra {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ini-selector-grupo {
+  margin: 6px 8px 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #8b99ad;
+}
+
+.ini-selector-opcion {
+  display: block;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #d7dfea;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.ini-selector-opcion:hover {
+  background: rgba(169, 183, 201, 0.1);
+  color: #fff;
+}
+
+.ini-selector-opcion:focus-visible {
+  outline: 2px solid var(--ini-azul, #1677f2);
+  outline-offset: -2px;
+}
+
+.ini-selector-opcion.activa {
+  background: rgba(22, 119, 242, 0.2);
+  color: #fff;
+  font-weight: 600;
+}
+
+.ini-selector-opcion.activa:hover {
+  background: rgba(22, 119, 242, 0.26);
+}
+
+@media (max-width: 560px) {
+  .ini-selector {
+    width: 100%;
+  }
+
+  .ini-selector-pastilla {
+    width: 100%;
+    justify-content: center;
+    border-radius: 12px;
+  }
+
+  .ini-selector-menu {
+    left: 0;
+    right: 0;
+    min-width: 0;
+  }
+}

@@ -1,0 +1,246 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--hv-font);
+  background: var(--hv-bg);
+  color: var(--hv-text);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* ---------- Tarjeta base ---------- */
+.hv-card {
+  background: var(--hv-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  border-radius: var(--hv-radius);
+  box-shadow: var(--hv-shadow);
+}
+
+/* ---------- Campos de formulario ---------- */
+.hv-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.hv-label {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--hv-muted);
+}
+
+.hv-input,
+.hv-select,
+.hv-textarea {
+  width: 100%;
+  border: 1px solid rgba(23, 51, 31, 0.12);
+  background: rgba(255, 255, 255, 0.85);
+  color: var(--hv-ink);
+  border-radius: var(--hv-radius-sm);
+  padding: 11px 14px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.hv-input::placeholder {
+  color: #9aa89d;
+}
+
+.hv-input:focus,
+.hv-select:focus,
+.hv-textarea:focus {
+  border-color: var(--hv-green-400);
+  box-shadow: 0 0 0 3px rgba(74, 146, 66, 0.18);
+}
+
+.hv-input.hv-invalid,
+.hv-select.hv-invalid {
+  border-color: var(--hv-red);
+  box-shadow: 0 0 0 3px rgba(226, 87, 76, 0.14);
+}
+
+.hv-error {
+  font-size: 12px;
+  color: var(--hv-red);
+  font-weight: 500;
+}
+
+.hv-select-wrap {
+  position: relative;
+}
+
+.hv-select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 38px;
+  cursor: pointer;
+}
+
+.hv-select-wrap .hv-select-arrow {
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--hv-muted);
+  pointer-events: none;
+}
+
+/* ---------- Botones ---------- */
+.hv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--hv-radius-sm);
+  border: 1px solid transparent;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  transition: transform 0.15s ease, background 0.18s ease, box-shadow 0.18s ease,
+    border-color 0.18s ease, color 0.18s ease;
+}
+
+.hv-btn:active {
+  transform: translateY(1px);
+}
+
+.hv-btn:focus-visible {
+  outline: 3px solid rgba(168, 224, 99, 0.55);
+  outline-offset: 2px;
+}
+
+.hv-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.hv-btn-primary {
+  background: linear-gradient(135deg, var(--hv-green-700), var(--hv-green-800));
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(14, 74, 42, 0.28);
+}
+
+.hv-btn-primary:hover {
+  background: linear-gradient(135deg, var(--hv-green-600), var(--hv-green-700));
+}
+
+.hv-btn-outline {
+  background: rgba(255, 255, 255, 0.75);
+  border-color: rgba(23, 51, 31, 0.16);
+  color: var(--hv-ink);
+}
+
+.hv-btn-outline:hover {
+  border-color: var(--hv-green-400);
+  color: var(--hv-green-700);
+}
+
+.hv-btn-ghost {
+  background: transparent;
+  color: var(--hv-green-700);
+}
+
+.hv-btn-ghost:hover {
+  background: rgba(74, 146, 66, 0.12);
+}
+
+.hv-btn-block {
+  width: 100%;
+}
+
+/* ---------- Utilidades ---------- */
+.hv-section-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.hv-muted {
+  color: var(--hv-muted);
+}
+
+.hv-toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  background: var(--hv-green-900);
+  color: #eaf5e6;
+  padding: 13px 22px;
+  border-radius: var(--hv-radius-pill);
+  font-size: 13.5px;
+  font-weight: 500;
+  box-shadow: var(--hv-shadow-lg);
+  z-index: 90;
+  animation: hv-toast-in 0.28s ease;
+}
+
+@keyframes hv-toast-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 12px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

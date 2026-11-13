@@ -1,0 +1,434 @@
+/* ==========================================================================
+   Asistente de cálculo (3 pasos) e imagen ambiental de la maqueta.
+   ========================================================================== */
+
+.cal-formulario {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(186px, 19vw, 244px);
+  gap: clamp(16px, 2vw, 24px);
+  align-items: start;
+}
+
+.cal-form-principal {
+  padding: clamp(18px, 2vw, 26px);
+  min-width: 0;
+}
+
+/* ------------------------------- Asistente ------------------------------- */
+.cal-pasos {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px 4px;
+  margin-bottom: 24px;
+}
+
+.cal-paso {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.cal-paso-numero {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  /* Círculo inactivo: fondo oscuro translúcido con borde claro */
+  border: 2px solid rgba(148, 177, 210, 0.28);
+  border-radius: 50%;
+  background: rgba(9, 19, 33, 0.78);
+  font-family: var(--hv-font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--hv-muted);
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.cal-paso.activo .cal-paso-numero {
+  /* Paso activo: degradado azul primario (identidad Dark Glass) */
+  background: linear-gradient(135deg, #1677f2 0%, #258fef 100%);
+  border-color: #1677f2;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(22, 119, 242, 0.36);
+}
+
+.cal-paso.hecho .cal-paso-numero {
+  background: var(--hv-lime-400);
+  border-color: var(--hv-lime-400);
+  color: var(--hv-green-900);
+}
+
+.cal-paso-etiqueta {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--hv-muted);
+  white-space: nowrap;
+}
+
+.cal-paso.activo .cal-paso-etiqueta {
+  color: var(--hv-ink);
+}
+
+.cal-paso.hecho .cal-paso-etiqueta {
+  color: var(--hv-verde);
+}
+
+.cal-conector {
+  flex-shrink: 0;
+  width: clamp(24px, 5vw, 64px);
+  height: 3px;
+  margin-left: 9px;
+  border-radius: 999px;
+  /* Conector pendiente: gris azulado translúcido */
+  background: rgba(148, 177, 210, 0.18);
+}
+
+.cal-conector.hecho {
+  background: var(--hv-verde);
+}
+
+/* -------------------------------- Secciones ------------------------------ */
+.cal-seccion {
+  animation: cal-seccion-entra 0.22s ease-out;
+}
+
+@keyframes cal-seccion-entra {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.cal-seccion-titulo {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.cal-seccion-texto {
+  margin-top: 5px;
+  font-size: 13.5px;
+  color: var(--hv-muted);
+}
+
+.cal-rejilla-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+  gap: 16px;
+  margin-top: 18px;
+}
+
+/* --------------------------------- Consumo ------------------------------- */
+.cal-grupos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 18px;
+}
+
+.cal-grupo {
+  margin: 0;
+  min-width: 0;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--hv-line);
+  border-radius: 16px;
+  /* Fieldset anidado: superficie oscura translúcida bajo la tarjeta glass */
+  background: rgba(9, 19, 33, 0.5);
+}
+
+.cal-grupo-titulo {
+  padding: 0 6px;
+  font-family: var(--hv-font);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--hv-verde);
+}
+
+.cal-grupo-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.cal-unidad-envoltura {
+  position: relative;
+  display: block;
+}
+
+.cal-unidad-envoltura .vst-input {
+  padding-right: 54px;
+}
+
+.cal-unidad-envoltura .vst-input::-webkit-outer-spin-button,
+.cal-unidad-envoltura .vst-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.cal-unidad-envoltura .vst-input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+.cal-unidad {
+  position: absolute;
+  top: 50%;
+  right: 13px;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hv-muted);
+  pointer-events: none;
+}
+
+/* ------------------------------- Resultados ------------------------------ */
+.cal-resultado {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 16px 18px;
+  border: 1px solid rgba(66, 216, 121, 0.3);
+  border-radius: 16px;
+  /* Panel de éxito: degradado verde ambiental en alpha sobre fondo oscuro */
+  background: linear-gradient(135deg, rgba(66, 216, 121, 0.16), rgba(66, 216, 121, 0.05));
+}
+
+.cal-resultado-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--hv-green-600);
+  color: #fff;
+  box-shadow: 0 8px 18px rgba(66, 216, 121, 0.28);
+}
+
+.cal-resultado-etiqueta {
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--hv-verde);
+}
+
+.cal-resultado-titulo {
+  margin-top: 3px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.cal-resultado-valor {
+  margin-left: auto;
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 700;
+  letter-spacing: -0.6px;
+  color: var(--hv-verde);
+}
+
+.cal-indicadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(155px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.cal-indicador {
+  padding: 13px 16px;
+  border: 1px solid var(--hv-line);
+  border-radius: 14px;
+  /* KPI: superficie oscura translúcida */
+  background: rgba(9, 19, 33, 0.6);
+}
+
+.cal-indicador dt {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hv-muted);
+}
+
+.cal-indicador dd {
+  margin: 6px 0 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.cal-subtitulo {
+  margin-top: 22px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.cal-detalle {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(235px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.cal-detalle-grupo {
+  padding: 14px 16px;
+  border: 1px solid var(--hv-line);
+  border-radius: 14px;
+  /* Panel de detalle: superficie oscura translúcida */
+  background: rgba(9, 19, 33, 0.55);
+}
+
+.cal-detalle-grupo-titulo {
+  margin-bottom: 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hv-verde);
+}
+
+.cal-detalle-grupo ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cal-detalle-grupo li {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13.5px;
+  color: var(--hv-text);
+}
+
+.cal-detalle-grupo li strong {
+  font-weight: 700;
+  color: var(--hv-ink);
+  white-space: nowrap;
+}
+
+.cal-nota {
+  margin-top: 16px;
+  padding: 11px 14px;
+  border-left: 3px solid var(--hv-verde);
+  border-radius: 0 10px 10px 0;
+  /* Nota sobre resultado: tinte verde oscuro en alpha */
+  background: rgba(66, 216, 121, 0.1);
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--hv-muted);
+}
+
+/* -------------------------------- Acciones ------------------------------- */
+.cal-acciones {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--hv-line);
+}
+
+/* --------------------------- Imagen ambiental ---------------------------- */
+.cal-lamina {
+  position: sticky;
+  top: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 16px 20px;
+  border: 1px solid rgba(148, 177, 210, 0.24);
+  border-radius: 22px;
+  /* Lámina decorativa: gradiente glass oscuro */
+  background: linear-gradient(172deg, rgba(27, 44, 67, 0.82), rgba(18, 32, 52, 0.92));
+  box-shadow: 0 16px 38px rgba(2, 8, 18, 0.4);
+  text-align: center;
+  overflow: hidden;
+}
+
+.cal-lamina-img {
+  width: 100%;
+  max-width: 210px;
+  border-radius: 16px;
+  object-fit: cover;
+}
+
+.cal-lamina-texto {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--hv-verde);
+}
+
+/* ------------------------------ Responsive ------------------------------- */
+@media (max-width: 1180px) {
+  .cal-formulario {
+    grid-template-columns: 1fr;
+  }
+
+  .cal-lamina {
+    position: static;
+    flex-direction: row;
+    justify-content: center;
+    gap: 18px;
+    padding: 14px 18px;
+    text-align: left;
+  }
+
+  .cal-lamina-img {
+    max-width: 128px;
+    border-radius: 12px;
+  }
+
+  .cal-lamina-texto br {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .cal-pasos {
+    gap: 8px 4px;
+  }
+
+  .cal-paso-etiqueta {
+    font-size: 12px;
+  }
+
+  .cal-conector {
+    width: 22px;
+  }
+
+  .cal-resultado-valor {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .cal-acciones .hv-btn {
+    flex: 1 1 auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cal-seccion {
+    animation: none;
+  }
+}

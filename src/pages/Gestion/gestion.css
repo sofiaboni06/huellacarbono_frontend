@@ -1,0 +1,873 @@
+/* ==========================================================================
+   Gestión — estilos compartidos entre Usuarios, Perfiles y Roles/Permisos.
+   Prefijo `gst-`. Lo importan las tres vistas para no duplicar reglas.
+   ========================================================================== */
+
+/* Texto visible solo para lectores de pantalla. */
+.gst-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ------------------------------ Barra superior --------------------------- */
+.gst-barra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: clamp(14px, 1.6vw, 20px);
+}
+
+.gst-buscador {
+  position: relative;
+  flex: 1 1 280px;
+  min-width: 200px;
+}
+
+.gst-buscador svg {
+  position: absolute;
+  left: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--hv-muted);
+  pointer-events: none;
+}
+
+.gst-buscador .vst-input {
+  padding-left: 40px;
+  padding-right: 38px;
+}
+
+.gst-buscador-limpiar {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  /* Botón fantasma sobre campo oscuro */
+  background: rgba(32, 52, 77, 0.6);
+  color: var(--hv-muted);
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.gst-buscador-limpiar:hover {
+  background: rgba(22, 119, 242, 0.14);
+  color: #8ec1ff;
+}
+
+.gst-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.gst-filtro {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 150px;
+}
+
+.gst-filtro > span {
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hv-muted);
+}
+
+.gst-filtro .vst-select {
+  padding-top: 9px;
+  padding-bottom: 9px;
+  font-size: 13.5px;
+}
+
+/* Contador de resultados que acompaña a la barra. */
+.gst-contador {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: var(--hv-radius-pill);
+  /* Chip verde ambiental en alpha sobre superficie oscura */
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* -------------------------------- Pestañas ------------------------------ */
+.gst-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  margin: 0 clamp(14px, 1.6vw, 20px);
+  /* Pestañas: contenedor oscuro tipo píldora */
+  background: rgba(25, 43, 66, 0.6);
+  border-radius: var(--hv-radius-pill);
+  width: fit-content;
+  max-width: calc(100% - clamp(28px, 3.2vw, 40px));
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.gst-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.gst-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  border: 0;
+  border-radius: var(--hv-radius-pill);
+  background: transparent;
+  color: var(--hv-muted);
+  font-family: var(--hv-font);
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.gst-tab:hover {
+  background: rgba(40, 62, 90, 0.75);
+  color: #eaf0f8;
+}
+
+.gst-tab:focus-visible {
+  outline: 2px solid var(--hv-blue-2);
+  outline-offset: 2px;
+}
+
+.gst-tab.activo {
+  /* Pestaña activa: tinte azul primario + subrayado azul */
+  background: rgba(22, 119, 242, 0.14);
+  color: #8ec1ff;
+  box-shadow: inset 0 0 0 1px rgba(22, 119, 242, 0.35), inset 0 -2px 0 var(--hv-blue),
+    0 6px 16px rgba(2, 8, 18, 0.32);
+}
+
+/* --------------------------------- Tabla -------------------------------- */
+.gst-tabla-envoltura {
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 18px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Scrollbar horizontal de la tabla (Dark Glass) */
+.gst-tabla-envoltura::-webkit-scrollbar {
+  height: 10px;
+}
+
+.gst-tabla-envoltura::-webkit-scrollbar-track {
+  background: rgba(9, 19, 33, 0.55);
+}
+
+.gst-tabla-envoltura::-webkit-scrollbar-thumb {
+  background: rgba(148, 166, 196, 0.35);
+  border-radius: 999px;
+}
+
+.gst-tabla-envoltura::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 166, 196, 0.5);
+}
+
+.gst-tabla {
+  width: 100%;
+  min-width: 880px;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.gst-tabla--perfiles {
+  min-width: 640px;
+}
+
+.gst-tabla thead th {
+  position: sticky;
+  top: 0;
+  padding: 14px 16px;
+  /* Cabecera de tabla (sticky): tinte azul primario sobre base sólida
+     para que no se transparenten las filas al hacer scroll */
+  background: linear-gradient(180deg, rgba(22, 119, 242, 0.1) 0%, rgba(22, 119, 242, 0.06) 100%),
+    #0f1d31;
+  border-bottom: 1px solid rgba(148, 177, 210, 0.18);
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--hv-muted);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.gst-tabla thead th:first-child {
+  padding-left: clamp(16px, 1.8vw, 24px);
+}
+
+.gst-tabla thead th:last-child {
+  padding-right: clamp(16px, 1.8vw, 24px);
+  text-align: right;
+}
+
+.gst-tabla tbody td {
+  padding: 13px 16px;
+  border-bottom: 1px solid rgba(148, 177, 210, 0.1);
+  font-size: 13.5px;
+  color: var(--hv-text);
+  vertical-align: middle;
+}
+
+.gst-tabla tbody td:first-child {
+  padding-left: clamp(16px, 1.8vw, 24px);
+}
+
+.gst-tabla tbody td:last-child {
+  padding-right: clamp(16px, 1.8vw, 24px);
+  text-align: right;
+}
+
+.gst-tabla tbody tr {
+  transition: background 0.16s ease;
+}
+
+/* Zebra: filas pares en alpha oscuro (el hover siguiente tiene la misma
+   especificidad y va más abajo, así que sigue ganando). */
+.gst-tabla tbody tr:nth-child(even) {
+  background: rgba(20, 36, 58, 0.5);
+}
+
+.gst-tabla tbody tr:hover {
+  background: rgba(22, 119, 242, 0.1);
+}
+
+.gst-tabla tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.gst-tabla tbody tr.gst-fila--inactiva td:not(:last-child) {
+  opacity: 0.66;
+}
+
+/* Celda "Usuario": avatar + nombre + documento. */
+.gst-usuario {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-width: 0;
+}
+
+.gst-avatar {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, var(--hv-green-600), var(--hv-green-800));
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  box-shadow: 0 4px 10px rgba(2, 8, 18, 0.4);
+}
+
+.gst-avatar--azul {
+  background: linear-gradient(145deg, #4b8bf5, #2f6fd0);
+}
+
+.gst-avatar--violeta {
+  background: linear-gradient(145deg, #b07be8, #8048c4);
+}
+
+.gst-avatar--ambar {
+  background: linear-gradient(145deg, #f2b34a, #d18a1c);
+}
+
+.gst-usuario-texto {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.gst-usuario-texto b {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--hv-ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gst-usuario-texto small {
+  font-size: 11.5px;
+  color: var(--hv-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gst-correo {
+  /* Enlace suave sobre panel oscuro */
+  color: #8ec1ff;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.gst-centro {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+
+.gst-centro b {
+  font-weight: 600;
+  color: var(--hv-ink);
+}
+
+.gst-centro small {
+  font-size: 11.5px;
+  color: var(--hv-muted);
+}
+
+/* Etiqueta de perfil. */
+.gst-etiqueta-perfil {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: var(--hv-radius-pill);
+  /* Chip verde en alpha sobre fondo oscuro */
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* -------------------------------- Estados ------------------------------- */
+.gst-estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: var(--hv-radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.gst-estado::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.gst-estado--activo {
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
+}
+
+.gst-estado--inactivo {
+  background: rgba(148, 177, 210, 0.14);
+  color: #8ea0b8;
+}
+
+/* -------------------------------- Acciones ------------------------------ */
+.gst-acciones {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.gst-accion {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  /* Botón fantasma/icono sobre fila oscura */
+  background: rgba(32, 52, 77, 0.6);
+  color: var(--hv-muted);
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease,
+    border-color 0.16s ease;
+}
+
+.gst-accion:hover {
+  background: rgba(22, 119, 242, 0.14);
+  color: #8ec1ff;
+  transform: translateY(-1px);
+}
+
+.gst-accion:focus-visible {
+  outline: 2px solid var(--hv-blue-2);
+  outline-offset: 2px;
+}
+
+.gst-accion--apagar:hover {
+  background: rgba(245, 158, 11, 0.18);
+  color: #f5b942;
+}
+
+.gst-accion--encender:hover {
+  background: rgba(66, 216, 121, 0.18);
+  color: var(--hv-verde);
+}
+
+.gst-accion--peligro:hover {
+  background: rgba(226, 87, 76, 0.16);
+  color: #ff9d92;
+}
+
+/* ------------------------------ Paginación ------------------------------ */
+.gst-paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px clamp(14px, 1.8vw, 24px) 4px;
+  border-top: 1px solid rgba(148, 177, 210, 0.14);
+}
+
+.gst-paginacion-info {
+  font-size: 12.5px;
+  color: var(--hv-muted);
+}
+
+.gst-paginacion-info b {
+  color: var(--hv-ink);
+  font-weight: 600;
+}
+
+.gst-paginacion-botones {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gst-pagina {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid rgba(148, 177, 210, 0.18);
+  border-radius: 10px;
+  background: var(--hv-surface);
+  color: var(--hv-muted);
+  font-family: var(--hv-font);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: background 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+}
+
+.gst-pagina:hover:not(:disabled):not(.gst-pagina--activo) {
+  background: var(--hv-surface-2);
+  border-color: rgba(148, 177, 210, 0.3);
+  color: #eaf0f8;
+}
+
+.gst-pagina:focus-visible {
+  outline: 2px solid var(--hv-blue-2);
+  outline-offset: 2px;
+}
+
+.gst-pagina--activo {
+  background: var(--hv-blue);
+  border-color: var(--hv-blue);
+  color: #fff;
+  box-shadow: 0 8px 20px rgba(22, 119, 242, 0.32);
+}
+
+.gst-pagina:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* --------------------------- Estados vacíos ----------------------------- */
+.gst-vacio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: clamp(34px, 5vw, 56px) 20px;
+  text-align: center;
+}
+
+.gst-vacio-icono {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(66, 216, 121, 0.14);
+  color: var(--hv-verde);
+}
+
+.gst-vacio h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--hv-ink);
+}
+
+.gst-vacio p {
+  margin: 0;
+  max-width: 420px;
+  font-size: 13.5px;
+  color: var(--hv-muted);
+}
+
+.gst-cargando {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  padding: clamp(34px, 5vw, 56px) 20px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--hv-muted);
+}
+
+.gst-spinner {
+  width: 20px;
+  height: 20px;
+  border: 2.5px solid rgba(148, 177, 210, 0.18);
+  border-top-color: var(--hv-blue-2);
+  border-radius: 50%;
+  animation: gst-girar 0.75s linear infinite;
+}
+
+@keyframes gst-girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* -------------------------- Formularios (modales) ----------------------- */
+.gst-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.gst-rejilla {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 13px;
+}
+
+.gst-rejilla .gst-ancha {
+  grid-column: 1 / -1;
+}
+
+.gst-modal .vst-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.gst-modal .vst-error {
+  font-size: 11.5px;
+  font-weight: 500;
+}
+
+.gst-modal-pie {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(148, 177, 210, 0.14);
+  margin-top: 2px;
+  padding-top: 14px;
+}
+
+/* --------------------------- Confirmación ------------------------------- */
+.gst-confirmar {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: center;
+  padding: 4px 2px 2px;
+}
+
+.gst-confirmar-icono {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin: 0 auto;
+  border-radius: 50%;
+  background: rgba(226, 87, 76, 0.14);
+  color: var(--hv-red);
+}
+
+.gst-confirmar h4 {
+  margin: 0;
+  font-size: 16.5px;
+  font-weight: 600;
+  color: var(--hv-ink);
+}
+
+.gst-confirmar p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--hv-muted);
+}
+
+.gst-confirmar p b {
+  color: var(--hv-ink);
+}
+
+.gst-confirmar-pie {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+/* --------------------------- Permisos (checks) -------------------------- */
+.gst-permiso-celda {
+  text-align: center !important;
+}
+
+.gst-check {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid rgba(148, 177, 210, 0.3);
+  border-radius: 7px;
+  /* Casilla sin marcar: tono de input oscuro */
+  background: rgba(9, 19, 33, 0.78);
+  color: transparent;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.gst-check:hover {
+  border-color: var(--hv-blue-2);
+  transform: scale(1.06);
+}
+
+.gst-check:focus-visible {
+  outline: 2px solid var(--hv-blue-2);
+  outline-offset: 2px;
+}
+
+.gst-check[aria-checked='true'] {
+  /* Marcada: chip verde ambiental con marca en verde brillante */
+  background: rgba(66, 216, 121, 0.16);
+  border-color: rgba(66, 216, 121, 0.55);
+  color: var(--hv-verde);
+}
+
+.gst-check:disabled {
+  opacity: 0.42;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.gst-modulo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: var(--hv-ink);
+}
+
+.gst-modulo-icono {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: rgba(66, 216, 121, 0.14);
+  color: var(--hv-verde);
+  flex-shrink: 0;
+}
+
+/* Cabecera de la tabla de permisos: primera columna a la izquierda, resto centrada. */
+.gst-tabla--permisos thead th:not(:first-child) {
+  text-align: center;
+}
+
+.gst-tabla--permisos tbody td:first-child {
+  text-align: left;
+}
+
+/* ------------------------------ Resumen --------------------------------- */
+.gst-resumen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 15px clamp(14px, 1.8vw, 24px);
+  border-top: 1px solid rgba(148, 177, 210, 0.14);
+}
+
+.gst-resumen-datos {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px;
+  font-size: 13px;
+  color: var(--hv-muted);
+}
+
+.gst-resumen-datos b {
+  color: var(--hv-ink);
+  font-weight: 600;
+}
+
+.gst-resumen-contador {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 13px;
+  border-radius: var(--hv-radius-pill);
+  /* Chip verde en alpha, igual que el contador de la barra */
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.gst-sucio {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--hv-amber);
+}
+
+.gst-sucio::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* --------------------------- Nota de datos ------------------------------ */
+.gst-demo {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 11px clamp(14px, 1.8vw, 24px);
+  border-top: 1px dashed rgba(148, 177, 210, 0.18);
+  background: rgba(245, 158, 11, 0.1);
+  font-size: 12px;
+  line-height: 1.55;
+  /* Texto ámbar claro legible sobre fondo oscuro */
+  color: #f5b942;
+}
+
+.gst-demo svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* La ruta del archivo se muestra discreta y al tamaño del texto. */
+.gst-demo code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11.5px;
+  line-height: 1.4;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: rgba(9, 19, 33, 0.78);
+  color: #8ec1ff;
+}
+
+/* ----------------------------- Responsive ------------------------------- */
+@media (max-width: 1080px) {
+  .gst-barra {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gst-buscador {
+    flex-basis: auto;
+  }
+
+  .gst-filtros {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+
+  .gst-contador {
+    margin-left: 0;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 720px) {
+  .gst-rejilla {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .gst-paginacion {
+    justify-content: center;
+    text-align: center;
+  }
+
+  .gst-tabla {
+    min-width: 720px;
+  }
+
+  .gst-tabla--perfiles {
+    min-width: 560px;
+  }
+
+  .gst-modal-pie,
+  .gst-confirmar-pie {
+    flex-direction: column-reverse;
+  }
+
+  .gst-modal-pie > *,
+  .gst-confirmar-pie > * {
+    width: 100%;
+  }
+
+  .gst-resumen {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .gst-resumen-datos {
+    justify-content: center;
+  }
+}

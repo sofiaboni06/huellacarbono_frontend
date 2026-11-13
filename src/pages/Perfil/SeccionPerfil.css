@@ -1,0 +1,160 @@
+/* Sección Mi Perfil: tarjeta de identidad, sistema y edición */
+
+.prf-identidad-tarjeta {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: center;
+  padding: clamp(18px, 2vw, 26px);
+}
+
+.prf-avatar-marco {
+  display: block;
+  width: 92px;
+  height: 92px;
+  padding: 4px;
+  border-radius: 50%;
+  /* Anillo de identidad en degradado azul→verde (Dark Glass) */
+  background: linear-gradient(140deg, var(--hv-blue), var(--hv-verde));
+  box-shadow: 0 12px 26px rgba(22, 119, 242, 0.32);
+  flex-shrink: 0;
+}
+
+.prf-avatar {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Separación oscura entre el anillo y la foto (sin destellos blancos) */
+  border: 3px solid rgba(7, 17, 31, 0.85);
+  border-radius: 50%;
+  background: var(--hv-card-solid);
+}
+
+.prf-identidad h2 {
+  font-size: clamp(20px, 2.2vw, 24px);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--hv-ink);
+}
+
+.prf-identidad-cargo {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  /* Cargo sobre panel oscuro: verde brillante (Dark Glass) */
+  color: var(--hv-verde);
+}
+
+.prf-identidad-correo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 9px;
+  font-size: 13.5px;
+  color: var(--hv-muted);
+  word-break: break-all;
+}
+
+/* ------------------------- Información del sistema ------------------------ */
+.prf-sistema {
+  padding: clamp(18px, 2vw, 24px);
+}
+
+.prf-sistema h2 {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--hv-ink);
+  margin-bottom: 16px;
+}
+
+.prf-sistema-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(225px, 1fr));
+  gap: 12px;
+}
+
+.prf-sistema-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--hv-line);
+  border-radius: 14px;
+  /* Celda de dato: superficie oscura translúcida sobre la tarjeta glass */
+  background: rgba(27, 44, 67, 0.5);
+}
+
+.prf-sistema-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  /* Chip alpha oscuro con icono en verde brillante */
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
+}
+
+.prf-sistema-item dt {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--hv-muted);
+}
+
+.prf-sistema-item dd {
+  margin: 4px 0 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.prf-sistema-nota {
+  margin-top: 14px;
+  font-size: 12.5px;
+  color: var(--hv-muted);
+}
+
+/* ------------------------------ Formulario ------------------------------- */
+.prf-formulario-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+  gap: 14px;
+}
+
+.prf-campo-ancho {
+  grid-column: 1 / -1;
+}
+
+.prf-formulario-nota {
+  margin-top: 14px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--hv-muted);
+}
+
+.prf-formulario-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hv-line);
+}
+
+/* ------------------------------ Responsive ------------------------------- */
+@media (max-width: 760px) {
+  .prf-identidad-tarjeta {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: start;
+    gap: 16px;
+  }
+
+  .prf-formulario-acciones .hv-btn {
+    flex: 1 1 auto;
+  }
+}

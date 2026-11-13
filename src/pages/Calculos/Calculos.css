@@ -1,0 +1,23 @@
+/* ==========================================================================
+   Vista de Cálculos — maquetación general (menú lateral + contenido).
+   ========================================================================== */
+
+.cal-plantilla {
+  display: grid;
+  grid-template-columns: clamp(212px, 17vw, 248px) minmax(0, 1fr);
+  gap: clamp(16px, 2vw, 26px);
+  align-items: start;
+}
+
+.cal-panel {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 1.6vw, 20px);
+}
+
+@media (max-width: 940px) {
+  .cal-plantilla {
+    grid-template-columns: 1fr;
+  }
+}

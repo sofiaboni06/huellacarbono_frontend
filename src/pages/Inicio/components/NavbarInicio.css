@@ -1,0 +1,294 @@
+/* Barra de navegación superior del Dashboard */
+
+.ini-nav {
+  position: relative;
+  z-index: 40;
+  background: linear-gradient(180deg, #0b3f24 0%, #08301b 100%);
+  box-shadow: 0 8px 26px rgba(3, 20, 10, 0.34);
+}
+
+.ini-nav-interno {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  min-height: 64px;
+  margin: 0 auto;
+  padding: 0 clamp(14px, 2.2vw, 32px);
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1.4vw, 20px);
+}
+
+/* ------------------------------- Marca ---------------------------------- */
+.ini-marca {
+  order: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  flex-shrink: 0;
+}
+
+.ini-marca-icono {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
+
+.ini-marca-texto {
+  font-size: 17.5px;
+  font-weight: 600;
+  letter-spacing: -0.4px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ini-marca-texto b {
+  font-weight: 700;
+  color: #fff;
+}
+
+.ini-marca-texto i {
+  font-style: normal;
+  font-weight: 600;
+  color: var(--hv-lime-400);
+}
+
+/* ------------------------------ Enlaces --------------------------------- */
+.ini-nav-links {
+  order: 1;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(2px, 0.5vw, 8px);
+}
+
+.ini-nav-enlace {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 15px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  color: rgba(255, 255, 255, 0.86);
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.ini-nav-enlace:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.ini-nav-enlace:focus-visible {
+  outline: 2px solid var(--hv-lime-400);
+  outline-offset: 2px;
+}
+
+.ini-nav-enlace.activo {
+  background: linear-gradient(180deg, #22874b 0%, #1a6f3f 100%);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 6px 16px rgba(8, 52, 28, 0.45);
+}
+
+/* ----------------------------- Acciones --------------------------------- */
+.ini-nav-acciones {
+  order: 2;
+  display: flex;
+  align-items: center;
+  gap: clamp(6px, 0.9vw, 12px);
+  flex-shrink: 0;
+}
+
+.ini-desplegable {
+  position: relative;
+}
+
+.ini-nav-campana,
+.ini-nav-perfil,
+.ini-nav-burger {
+  border: 0;
+  cursor: pointer;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  transition: background 0.18s ease;
+}
+
+.ini-nav-campana:hover,
+.ini-nav-perfil:hover,
+.ini-nav-burger:hover {
+  background: rgba(255, 255, 255, 0.19);
+}
+
+.ini-nav-campana:focus-visible,
+.ini-nav-perfil:focus-visible,
+.ini-nav-burger:focus-visible {
+  outline: 2px solid var(--hv-lime-400);
+  outline-offset: 2px;
+}
+
+.ini-nav-campana {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+}
+
+.ini-nav-punto {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ef4444;
+  border: 1.5px solid #0b3f24;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.8);
+}
+
+.ini-nav-perfil {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 8px 4px 4px;
+  border-radius: 999px;
+}
+
+.ini-nav-foto {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.55);
+  background: #fff;
+}
+
+.ini-nav-burger {
+  order: 1;
+  display: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+}
+
+/* --------------------------- Desplegable Gestión ------------------------ */
+.ini-gestion {
+  position: relative;
+  display: inline-flex;
+}
+
+.ini-nav-gestion {
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.ini-gestion-flecha {
+  transition: transform 0.2s ease;
+}
+
+.ini-gestion-flecha.girada {
+  transform: rotate(180deg);
+}
+
+/* Panel del desplegable: alineado a la izquierda del botón. */
+.ini-menu--gestion {
+  left: 0;
+  right: auto;
+  width: 254px;
+  padding: 8px;
+}
+
+.ini-menu--gestion .ini-menu-item {
+  text-decoration: none;
+  font-weight: 600;
+  color: var(--hv-green-900);
+}
+
+.ini-menu--gestion .ini-menu-item svg {
+  flex-shrink: 0;
+  color: var(--hv-green-600);
+}
+
+.ini-menu--gestion .ini-menu-item.activo {
+  background: var(--hv-lime-100);
+  color: var(--hv-green-800);
+}
+
+.ini-menu--gestion .ini-menu-item.activo::after {
+  content: '';
+  width: 7px;
+  height: 7px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--hv-lime-500);
+}
+
+/* ----------------------------- Responsive ------------------------------- */
+@media (max-width: 1080px) {
+  .ini-nav-burger {
+    display: grid;
+  }
+
+  .ini-nav-links {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    order: 3;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 4px;
+    padding: 12px clamp(14px, 2.2vw, 32px) 16px;
+    background: rgba(8, 48, 27, 0.97);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 20px 36px rgba(3, 20, 10, 0.4);
+    display: none;
+  }
+
+  .ini-nav-links.abierto {
+    display: flex;
+  }
+
+  .ini-nav-enlace {
+    justify-content: flex-start;
+    padding: 12px 14px;
+    font-size: 14.5px;
+  }
+
+  /* En el menú móvil el desplegable se despliega dentro del panel. */
+  .ini-menu--gestion {
+    position: static;
+    width: auto;
+    margin-top: 4px;
+    padding: 6px;
+    box-shadow: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .ini-marca-texto {
+    font-size: 16px;
+  }
+
+  .ini-nav-foto {
+    width: 28px;
+    height: 28px;
+  }
+
+  /* El desplegable de Gestión sigue integrado en el panel del menú. */
+  .ini-menu--gestion {
+    position: static;
+    width: auto;
+    margin-top: 4px;
+    padding: 6px;
+  }
+}

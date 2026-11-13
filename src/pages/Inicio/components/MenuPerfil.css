@@ -1,0 +1,119 @@
+/* ==========================================================================
+   Menú desplegable de perfil — tema oscuro global (compartido por el
+   Dashboard y por la barra superior de la plantilla de todas las vistas).
+   ========================================================================== */
+
+.ini-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  z-index: 60;
+  width: 264px;
+  padding: 12px;
+  border: 1px solid rgba(148, 166, 196, 0.2);
+  border-radius: 18px;
+  background: #101d31;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  box-shadow: 0 24px 54px rgba(2, 8, 18, 0.55);
+  animation: ini-menu-entra 0.18s ease-out;
+}
+
+@keyframes ini-menu-entra {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ini-menu-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px 8px;
+}
+
+.ini-menu-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #1b2c43;
+  border: 1px solid rgba(148, 166, 196, 0.24);
+}
+
+.ini-menu-nombre {
+  font-size: 14px;
+  font-weight: 700;
+  color: #f5f7fb;
+  line-height: 1.25;
+}
+
+.ini-menu-correo {
+  font-size: 11.5px;
+  color: #8b99ad;
+  word-break: break-all;
+}
+
+.ini-menu-regla {
+  display: block;
+  height: 1px;
+  margin: 8px 4px;
+  background: rgba(148, 166, 196, 0.16);
+}
+
+.ini-menu-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ini-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: #d7dfea;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.16s ease, color 0.16s ease;
+}
+
+.ini-menu-item:hover {
+  background: rgba(169, 183, 201, 0.1);
+  color: #fff;
+}
+
+.ini-menu-item:focus-visible {
+  outline: 2px solid var(--hv-blue);
+  outline-offset: -2px;
+}
+
+.ini-menu-item--salir {
+  color: #ff9d92;
+}
+
+.ini-menu-item--salir:hover {
+  background: rgba(239, 68, 68, 0.14);
+  color: #ffb4ab;
+}
+
+@media (max-width: 520px) {
+  .ini-menu {
+    position: fixed;
+    top: 70px;
+    right: 12px;
+    left: 12px;
+    width: auto;
+  }
+}

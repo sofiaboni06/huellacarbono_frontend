@@ -1,0 +1,139 @@
+/* ==========================================================================
+   Vista de Configuración — tema Dark Glass.
+   Paneles glass, chips en alpha oscuro, acentos azul #1677F2 y verde #42D879.
+   ========================================================================== */
+
+.cfg-rejilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr));
+  gap: clamp(16px, 2vw, 24px);
+  align-items: start;
+}
+
+.cfg-cuenta {
+  grid-column: 1 / -1;
+}
+
+.cfg-tarjeta {
+  padding: clamp(18px, 2vw, 24px);
+  min-width: 0;
+}
+
+.cfg-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 18px;
+}
+
+.cfg-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  /* Chip oscuro: verde ambiental translúcido sobre tarjeta glass */
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
+}
+
+.cfg-cabecera h2 {
+  font-size: 16.5px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.cfg-cabecera p {
+  margin-top: 3px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--hv-muted);
+}
+
+.cfg-campos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(215px, 100%), 1fr));
+  gap: 14px;
+}
+
+.cfg-tema {
+  margin-bottom: 4px;
+}
+
+/* --------------------------- Gestión de cuenta --------------------------- */
+.cfg-cuenta-lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(290px, 100%), 1fr));
+  gap: 12px;
+}
+
+.cfg-cuenta-item {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 14px 16px;
+  border: 1px solid var(--hv-line);
+  border-radius: 14px;
+  /* Acceso secundario: superficie azulada translúcida */
+  background: rgba(32, 52, 77, 0.6);
+  text-decoration: none;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+
+.cfg-cuenta-item:hover {
+  background: rgba(40, 62, 90, 0.75);
+  border-color: var(--hv-blue-2);
+  transform: translateY(-2px);
+  box-shadow: var(--hv-shadow-sm);
+}
+
+.cfg-cuenta-item:focus-visible {
+  outline: 2px solid var(--hv-blue-2);
+  outline-offset: 2px;
+}
+
+.cfg-cuenta-icono {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  /* Chip azul oscuro con icono brillante */
+  background: rgba(22, 119, 242, 0.18);
+  color: #8ec1ff;
+}
+
+.cfg-cuenta-texto {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.cfg-cuenta-texto b {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--hv-ink);
+}
+
+.cfg-cuenta-texto small {
+  font-size: 12.5px;
+  line-height: 1.4;
+  color: var(--hv-muted);
+}
+
+.cfg-cuenta-flecha {
+  font-size: 16px;
+  font-weight: 700;
+  /* Flecha tipo enlace sobre panel oscuro */
+  color: #8ec1ff;
+}
