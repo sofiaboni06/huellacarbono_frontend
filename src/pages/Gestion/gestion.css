@@ -56,15 +56,16 @@
   height: 26px;
   border: 0;
   border-radius: 50%;
-  background: rgba(17, 56, 32, 0.08);
+  /* Botón fantasma sobre campo oscuro */
+  background: rgba(32, 52, 77, 0.6);
   color: var(--hv-muted);
   cursor: pointer;
   transition: background 0.16s ease, color 0.16s ease;
 }
 
 .gst-buscador-limpiar:hover {
-  background: rgba(17, 56, 32, 0.16);
-  color: var(--hv-ink);
+  background: rgba(22, 119, 242, 0.14);
+  color: #8ec1ff;
 }
 
 .gst-filtros {
@@ -102,8 +103,9 @@
   gap: 7px;
   padding: 7px 13px;
   border-radius: var(--hv-radius-pill);
-  background: var(--hv-lime-100);
-  color: var(--hv-green-800);
+  /* Chip verde ambiental en alpha sobre superficie oscura */
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
   font-size: 12.5px;
   font-weight: 600;
   white-space: nowrap;
@@ -115,7 +117,8 @@
   gap: 6px;
   padding: 6px;
   margin: 0 clamp(14px, 1.6vw, 20px);
-  background: rgba(17, 56, 32, 0.06);
+  /* Pestañas: contenedor oscuro tipo píldora */
+  background: rgba(25, 43, 66, 0.6);
   border-radius: var(--hv-radius-pill);
   width: fit-content;
   max-width: calc(100% - clamp(28px, 3.2vw, 40px));
@@ -146,19 +149,21 @@
 }
 
 .gst-tab:hover {
-  background: rgba(255, 255, 255, 0.75);
-  color: var(--hv-green-800);
+  background: rgba(40, 62, 90, 0.75);
+  color: #eaf0f8;
 }
 
 .gst-tab:focus-visible {
-  outline: 2px solid var(--hv-lime-400);
+  outline: 2px solid var(--hv-blue-2);
   outline-offset: 2px;
 }
 
 .gst-tab.activo {
-  background: linear-gradient(180deg, #22874b 0%, #1a6f3f 100%);
-  color: #fff;
-  box-shadow: 0 6px 16px rgba(8, 52, 28, 0.32);
+  /* Pestaña activa: tinte azul primario + subrayado azul */
+  background: rgba(22, 119, 242, 0.14);
+  color: #8ec1ff;
+  box-shadow: inset 0 0 0 1px rgba(22, 119, 242, 0.35), inset 0 -2px 0 var(--hv-blue),
+    0 6px 16px rgba(2, 8, 18, 0.32);
 }
 
 /* --------------------------------- Tabla -------------------------------- */
@@ -167,6 +172,24 @@
   overflow-y: hidden;
   border-radius: 18px;
   -webkit-overflow-scrolling: touch;
+}
+
+/* Scrollbar horizontal de la tabla (Dark Glass) */
+.gst-tabla-envoltura::-webkit-scrollbar {
+  height: 10px;
+}
+
+.gst-tabla-envoltura::-webkit-scrollbar-track {
+  background: rgba(9, 19, 33, 0.55);
+}
+
+.gst-tabla-envoltura::-webkit-scrollbar-thumb {
+  background: rgba(148, 166, 196, 0.35);
+  border-radius: 999px;
+}
+
+.gst-tabla-envoltura::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 166, 196, 0.5);
 }
 
 .gst-tabla {
@@ -184,13 +207,16 @@
   position: sticky;
   top: 0;
   padding: 14px 16px;
-  background: linear-gradient(180deg, rgba(11, 61, 36, 0.05) 0%, rgba(11, 61, 36, 0.02) 100%);
-  border-bottom: 1px solid rgba(17, 56, 32, 0.14);
+  /* Cabecera de tabla (sticky): tinte azul primario sobre base sólida
+     para que no se transparenten las filas al hacer scroll */
+  background: linear-gradient(180deg, rgba(22, 119, 242, 0.1) 0%, rgba(22, 119, 242, 0.06) 100%),
+    #0f1d31;
+  border-bottom: 1px solid rgba(148, 177, 210, 0.18);
   font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--hv-green-800);
+  color: var(--hv-muted);
   text-align: left;
   white-space: nowrap;
 }
@@ -206,7 +232,7 @@
 
 .gst-tabla tbody td {
   padding: 13px 16px;
-  border-bottom: 1px solid rgba(17, 56, 32, 0.08);
+  border-bottom: 1px solid rgba(148, 177, 210, 0.1);
   font-size: 13.5px;
   color: var(--hv-text);
   vertical-align: middle;
@@ -225,8 +251,14 @@
   transition: background 0.16s ease;
 }
 
+/* Zebra: filas pares en alpha oscuro (el hover siguiente tiene la misma
+   especificidad y va más abajo, así que sigue ganando). */
+.gst-tabla tbody tr:nth-child(even) {
+  background: rgba(20, 36, 58, 0.5);
+}
+
 .gst-tabla tbody tr:hover {
-  background: rgba(143, 206, 63, 0.11);
+  background: rgba(22, 119, 242, 0.1);
 }
 
 .gst-tabla tbody tr:last-child td {
@@ -257,7 +289,7 @@
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  box-shadow: 0 4px 10px rgba(9, 44, 24, 0.22);
+  box-shadow: 0 4px 10px rgba(2, 8, 18, 0.4);
 }
 
 .gst-avatar--azul {
@@ -297,7 +329,8 @@
 }
 
 .gst-correo {
-  color: var(--hv-green-700);
+  /* Enlace suave sobre panel oscuro */
+  color: #8ec1ff;
   font-weight: 500;
   word-break: break-word;
 }
@@ -325,8 +358,9 @@
   gap: 6px;
   padding: 5px 11px;
   border-radius: var(--hv-radius-pill);
-  background: rgba(20, 96, 47, 0.1);
-  color: var(--hv-green-700);
+  /* Chip verde en alpha sobre fondo oscuro */
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
   font-size: 12px;
   font-weight: 600;
   white-space: nowrap;
@@ -353,13 +387,13 @@
 }
 
 .gst-estado--activo {
-  background: rgba(47, 143, 70, 0.15);
-  color: #1c7a3c;
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
 }
 
 .gst-estado--inactivo {
-  background: rgba(109, 127, 113, 0.18);
-  color: #6d7f71;
+  background: rgba(148, 177, 210, 0.14);
+  color: #8ea0b8;
 }
 
 /* -------------------------------- Acciones ------------------------------ */
@@ -376,34 +410,38 @@
   height: 32px;
   border: 1px solid transparent;
   border-radius: 10px;
-  background: rgba(17, 56, 32, 0.07);
-  color: var(--hv-green-700);
+  /* Botón fantasma/icono sobre fila oscura */
+  background: rgba(32, 52, 77, 0.6);
+  color: var(--hv-muted);
   cursor: pointer;
   transition: background 0.16s ease, color 0.16s ease, transform 0.16s ease,
     border-color 0.16s ease;
 }
 
 .gst-accion:hover {
-  background: var(--hv-green-700);
-  color: #fff;
+  background: rgba(22, 119, 242, 0.14);
+  color: #8ec1ff;
   transform: translateY(-1px);
 }
 
 .gst-accion:focus-visible {
-  outline: 2px solid var(--hv-lime-400);
+  outline: 2px solid var(--hv-blue-2);
   outline-offset: 2px;
 }
 
 .gst-accion--apagar:hover {
-  background: var(--hv-amber);
+  background: rgba(245, 158, 11, 0.18);
+  color: #f5b942;
 }
 
 .gst-accion--encender:hover {
-  background: var(--hv-green-500);
+  background: rgba(66, 216, 121, 0.18);
+  color: var(--hv-verde);
 }
 
 .gst-accion--peligro:hover {
-  background: var(--hv-red);
+  background: rgba(226, 87, 76, 0.16);
+  color: #ff9d92;
 }
 
 /* ------------------------------ Paginación ------------------------------ */
@@ -414,7 +452,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 15px clamp(14px, 1.8vw, 24px) 4px;
-  border-top: 1px solid rgba(17, 56, 32, 0.09);
+  border-top: 1px solid rgba(148, 177, 210, 0.14);
 }
 
 .gst-paginacion-info {
@@ -437,10 +475,10 @@
   min-width: 32px;
   height: 32px;
   padding: 0 8px;
-  border: 1px solid rgba(17, 56, 32, 0.14);
+  border: 1px solid rgba(148, 177, 210, 0.18);
   border-radius: 10px;
-  background: rgba(255, 255, 255, 0.8);
-  color: var(--hv-text);
+  background: var(--hv-surface);
+  color: var(--hv-muted);
   font-family: var(--hv-font);
   font-size: 13px;
   font-weight: 600;
@@ -451,19 +489,21 @@
 }
 
 .gst-pagina:hover:not(:disabled):not(.gst-pagina--activo) {
-  background: var(--hv-lime-100);
-  border-color: var(--hv-lime-500);
+  background: var(--hv-surface-2);
+  border-color: rgba(148, 177, 210, 0.3);
+  color: #eaf0f8;
 }
 
 .gst-pagina:focus-visible {
-  outline: 2px solid var(--hv-lime-400);
+  outline: 2px solid var(--hv-blue-2);
   outline-offset: 2px;
 }
 
 .gst-pagina--activo {
-  background: linear-gradient(180deg, #22874b 0%, #1a6f3f 100%);
-  border-color: transparent;
+  background: var(--hv-blue);
+  border-color: var(--hv-blue);
   color: #fff;
+  box-shadow: 0 8px 20px rgba(22, 119, 242, 0.32);
 }
 
 .gst-pagina:disabled {
@@ -487,8 +527,8 @@
   width: 56px;
   height: 56px;
   border-radius: 50%;
-  background: rgba(143, 206, 63, 0.2);
-  color: var(--hv-green-700);
+  background: rgba(66, 216, 121, 0.14);
+  color: var(--hv-verde);
 }
 
 .gst-vacio h3 {
@@ -519,8 +559,8 @@
 .gst-spinner {
   width: 20px;
   height: 20px;
-  border: 2.5px solid rgba(17, 56, 32, 0.16);
-  border-top-color: var(--hv-green-600);
+  border: 2.5px solid rgba(148, 177, 210, 0.18);
+  border-top-color: var(--hv-blue-2);
   border-radius: 50%;
   animation: gst-girar 0.75s linear infinite;
 }
@@ -565,7 +605,7 @@
   justify-content: flex-end;
   gap: 10px;
   padding-top: 4px;
-  border-top: 1px solid rgba(17, 56, 32, 0.1);
+  border-top: 1px solid rgba(148, 177, 210, 0.14);
   margin-top: 2px;
   padding-top: 14px;
 }
@@ -625,9 +665,10 @@
   place-items: center;
   width: 22px;
   height: 22px;
-  border: 1.5px solid rgba(17, 56, 32, 0.26);
+  border: 1.5px solid rgba(148, 177, 210, 0.3);
   border-radius: 7px;
-  background: rgba(255, 255, 255, 0.85);
+  /* Casilla sin marcar: tono de input oscuro */
+  background: rgba(9, 19, 33, 0.78);
   color: transparent;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease,
@@ -635,19 +676,20 @@
 }
 
 .gst-check:hover {
-  border-color: var(--hv-green-500);
+  border-color: var(--hv-blue-2);
   transform: scale(1.06);
 }
 
 .gst-check:focus-visible {
-  outline: 2px solid var(--hv-lime-400);
+  outline: 2px solid var(--hv-blue-2);
   outline-offset: 2px;
 }
 
 .gst-check[aria-checked='true'] {
-  background: linear-gradient(180deg, #2f9b4c 0%, #1e7a3c 100%);
-  border-color: transparent;
-  color: #fff;
+  /* Marcada: chip verde ambiental con marca en verde brillante */
+  background: rgba(66, 216, 121, 0.16);
+  border-color: rgba(66, 216, 121, 0.55);
+  color: var(--hv-verde);
 }
 
 .gst-check:disabled {
@@ -670,8 +712,8 @@
   width: 30px;
   height: 30px;
   border-radius: 9px;
-  background: rgba(143, 206, 63, 0.22);
-  color: var(--hv-green-700);
+  background: rgba(66, 216, 121, 0.14);
+  color: var(--hv-verde);
   flex-shrink: 0;
 }
 
@@ -692,7 +734,7 @@
   justify-content: space-between;
   gap: 14px;
   padding: 15px clamp(14px, 1.8vw, 24px);
-  border-top: 1px solid rgba(17, 56, 32, 0.1);
+  border-top: 1px solid rgba(148, 177, 210, 0.14);
 }
 
 .gst-resumen-datos {
@@ -715,8 +757,9 @@
   gap: 7px;
   padding: 6px 13px;
   border-radius: var(--hv-radius-pill);
-  background: var(--hv-lime-100);
-  color: var(--hv-green-800);
+  /* Chip verde en alpha, igual que el contador de la barra */
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
   font-size: 12.5px;
   font-weight: 600;
 }
@@ -744,11 +787,12 @@
   align-items: flex-start;
   gap: 9px;
   padding: 11px clamp(14px, 1.8vw, 24px);
-  border-top: 1px dashed rgba(17, 56, 32, 0.16);
-  background: rgba(245, 158, 11, 0.08);
+  border-top: 1px dashed rgba(148, 177, 210, 0.18);
+  background: rgba(245, 158, 11, 0.1);
   font-size: 12px;
   line-height: 1.55;
-  color: #8a6417;
+  /* Texto ámbar claro legible sobre fondo oscuro */
+  color: #f5b942;
 }
 
 .gst-demo svg {
@@ -763,8 +807,8 @@
   line-height: 1.4;
   padding: 2px 6px;
   border-radius: 6px;
-  background: rgba(17, 56, 32, 0.1);
-  color: var(--hv-green-900);
+  background: rgba(9, 19, 33, 0.78);
+  color: #8ec1ff;
 }
 
 /* ----------------------------- Responsive ------------------------------- */

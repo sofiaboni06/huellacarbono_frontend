@@ -1,5 +1,29 @@
 :root {
-  /* Verdes institucionales */
+  /* ==========================================================================
+     Sistema de diseño HuellaVerde — Dark Glass (identidad global)
+     Paleta de referencia: Dashboard /inicio.
+     Fondos #07111F · #081321 · #14243A · #192B42 · #20344D
+     Azules #1677F2 · #258FEF   Verde #42D879
+     Texto #F5F7FB · #A9B7C9     Bordes rgba(148, 177, 210, 0.18)
+     ========================================================================== */
+
+  /* ------------------------------- Fondos --------------------------------- */
+  --hv-bg: #07111f; /* fondo general */
+  --hv-bg-soft: #081321; /* fondo del menú lateral */
+  --hv-cream: #0e1b2e; /* superficie suave */
+  --hv-card: rgba(20, 36, 58, 0.72); /* tarjeta translúcida */
+  --hv-card-solid: #14243a; /* tarjeta opaca */
+  --hv-sage: #1b2c43; /* superficie secundaria */
+  --hv-line: rgba(148, 177, 210, 0.18); /* bordes translúcidos */
+
+  /* Superficies de tarjeta (glass) reutilizables */
+  --hv-surface: #192b42;
+  --hv-surface-2: #20344d;
+  --hv-glass: linear-gradient(180deg, rgba(27, 44, 67, 0.82) 0%, rgba(18, 32, 52, 0.92) 100%);
+  --hv-glass-brd: rgba(148, 166, 196, 0.14);
+
+  /* ------------------------------ Verdes ---------------------------------- */
+  /* Verdes institucionales (semánticos: éxito, ambiental) */
   --hv-green-950: #062b17;
   --hv-green-900: #093320;
   --hv-green-850: #0b3d24;
@@ -14,46 +38,43 @@
   --hv-lime-500: #8fce3f;
   --hv-lime-400: #a8e063;
   --hv-lime-300: #bce877;
-  --hv-lime-100: #e7f6cf;
+  --hv-lime-100: rgba(143, 206, 63, 0.16); /* chip oscuro sobre superficies oscuras */
 
-  /* Neutros naturales */
-  --hv-bg: #edefe6;
-  --hv-bg-soft: #f4f4ee;
-  --hv-cream: #f7f7f2;
-  --hv-card: rgba(255, 255, 255, 0.72);
-  --hv-card-solid: #f6f6f2;
-  --hv-sage: #dde1d2;
-  --hv-line: rgba(17, 56, 32, 0.1);
-
-  /* Acentos */
-  --hv-blue: #3b82f6;
-  --hv-blue-soft: #e0edff;
+  /* ------------------------------ Acentos --------------------------------- */
+  --hv-blue: #1677f2; /* azul principal */
+  --hv-blue-2: #258fef; /* azul secundario */
+  --hv-blue-soft: rgba(22, 119, 242, 0.18); /* chip azul oscuro */
+  --hv-verde: #42d879; /* verde ambiental */
   --hv-purple: #a855f7;
-  --hv-purple-soft: #f3e8ff;
+  --hv-purple-soft: rgba(168, 85, 247, 0.18); /* chip morado oscuro */
   --hv-amber: #f59e0b;
   --hv-red: #e2574c;
 
-  /* Texto */
-  --hv-ink: #17331f;
-  --hv-text: #26382c;
-  --hv-muted: #6d7f71;
-  --hv-on-dark: #f2f7ef;
+  /* -------------------------------- Texto --------------------------------- */
+  --hv-ink: #f5f7fb; /* texto principal */
+  --hv-text: #dfe7f2; /* texto corrido */
+  --hv-muted: #a9b7c9; /* texto secundario */
+  --hv-on-dark: #f5f7fb; /* texto sobre acentos */
 
-  /* Sombras */
-  --hv-shadow-sm: 0 2px 8px rgba(17, 46, 27, 0.06);
-  --hv-shadow: 0 10px 30px rgba(17, 46, 27, 0.09);
-  --hv-shadow-lg: 0 24px 60px rgba(10, 35, 18, 0.2);
+  /* ------------------------------- Sombras -------------------------------- */
+  --hv-shadow-sm: 0 2px 8px rgba(2, 8, 18, 0.34);
+  --hv-shadow: 0 10px 30px rgba(2, 8, 18, 0.44);
+  --hv-shadow-lg: 0 24px 60px rgba(1, 5, 12, 0.62);
 
-  /* Radios */
+  /* -------------------------------- Radios -------------------------------- */
   --hv-radius-sm: 10px;
   --hv-radius: 16px;
   --hv-radius-lg: 22px;
   --hv-radius-pill: 999px;
 
-  /* Medidas */
+  /* ------------------------------- Medidas -------------------------------- */
   --hv-nav-h: 64px;
   --hv-sidebar-w: 250px;
+  --hv-side-w: 146px; /* ancho del menú lateral global (Dashboard) */
   --hv-maxw: 1440px;
+
+  /* ------------------------------ Transiciones ---------------------------- */
+  --hv-trans: 0.18s ease;
 
   --hv-font: 'Poppins', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
 }

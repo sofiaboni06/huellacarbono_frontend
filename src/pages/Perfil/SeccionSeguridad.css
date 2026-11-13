@@ -19,8 +19,9 @@
   width: 40px;
   height: 40px;
   border-radius: 13px;
-  background: rgba(168, 224, 99, 0.4);
-  color: var(--hv-green-700);
+  /* Chip de cabecera: verde brillante sobre fondo alpha oscuro */
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
 }
 
 .prf-seg-cabecera h2 {

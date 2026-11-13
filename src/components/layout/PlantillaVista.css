@@ -23,7 +23,15 @@
   box-sizing: border-box;
 }
 
+/* Fondo del documento coherente con la identidad oscura (no afecta al Login) */
+body:has(.hv-vista) {
+  background: var(--hv-bg);
+}
+
 .hv-vista {
+  /* El menú lateral global (.ini-lateral) lee este ancho dentro de la plantilla */
+  --ini-side-w: var(--hv-side-w);
+
   position: relative;
   isolation: isolate;
   min-height: 100vh;
@@ -34,26 +42,29 @@
   font-size: 16px;
   line-height: 1.45;
   color: var(--hv-ink);
-  /* Fondo claro de la maqueta con tintes ambientales */
+  color-scheme: dark;
+  /* Fondo azul marino oscuro con resplandores sutiles (estilo Dashboard) */
   background:
-    radial-gradient(1100px 620px at 92% -8%, rgba(103, 182, 92, 0.3) 0%, rgba(103, 182, 92, 0) 62%),
-    radial-gradient(880px 620px at -8% 104%, rgba(168, 224, 99, 0.34) 0%, rgba(168, 224, 99, 0) 58%),
-    linear-gradient(158deg, #edf3e9 0%, #f6f8f3 52%, #e9f1e5 100%);
+    radial-gradient(1000px 560px at 16% -8%, rgba(22, 119, 242, 0.14) 0%, rgba(22, 119, 242, 0) 60%),
+    radial-gradient(760px 480px at 104% 104%, rgba(66, 216, 121, 0.07) 0%, rgba(66, 216, 121, 0) 62%),
+    #07111f;
 }
 
 /* ------------------------- Temas visuales (compartidos) ------------------- */
+/* Las tres preferencias de tema siguen cambiando el fondo, pero comparten la
+   identidad azul oscura global de la plataforma. */
 .hv-vista[data-tema='claro'] {
   background:
-    radial-gradient(1100px 620px at 92% -8%, rgba(214, 228, 206, 0.75) 0%, rgba(214, 228, 206, 0) 62%),
-    radial-gradient(880px 620px at -8% 104%, rgba(231, 240, 224, 0.9) 0%, rgba(231, 240, 224, 0) 58%),
-    linear-gradient(158deg, #f6f7f3 0%, #fbfcf9 52%, #f2f4ee 100%);
+    radial-gradient(1100px 620px at 92% -8%, rgba(37, 143, 239, 0.16) 0%, rgba(37, 143, 239, 0) 62%),
+    radial-gradient(880px 620px at -8% 104%, rgba(66, 216, 121, 0.08) 0%, rgba(66, 216, 121, 0) 58%),
+    linear-gradient(158deg, #0c1a2e 0%, #10203a 52%, #0c1a2e 100%);
 }
 
 .hv-vista[data-tema='profundo'] {
   background:
-    radial-gradient(1100px 620px at 92% -8%, rgba(20, 96, 47, 0.34) 0%, rgba(20, 96, 47, 0) 62%),
-    radial-gradient(880px 620px at -8% 104%, rgba(143, 206, 63, 0.3) 0%, rgba(143, 206, 63, 0) 58%),
-    linear-gradient(158deg, #dfeada 0%, #ebf2e6 52%, #d7e6d3 100%);
+    radial-gradient(1100px 620px at 92% -8%, rgba(22, 119, 242, 0.1) 0%, rgba(22, 119, 242, 0) 62%),
+    radial-gradient(880px 620px at -8% 104%, rgba(143, 206, 63, 0.06) 0%, rgba(143, 206, 63, 0) 58%),
+    linear-gradient(158deg, #050c17 0%, #081321 52%, #050c17 100%);
 }
 
 /* Preferencia: ocultar las hojas decorativas. */
@@ -138,8 +149,8 @@
   position: absolute;
   pointer-events: none;
   user-select: none;
-  mix-blend-mode: multiply;
-  opacity: 0.72;
+  mix-blend-mode: screen;
+  opacity: 0.1;
   -webkit-mask-image: radial-gradient(ellipse at 50% 50%, #000 40%, rgba(0, 0, 0, 0) 76%);
   mask-image: radial-gradient(ellipse at 50% 50%, #000 40%, rgba(0, 0, 0, 0) 76%);
 }
@@ -155,7 +166,43 @@
   top: 16%;
   width: clamp(170px, 18vw, 280px);
   transform: scaleX(-1);
-  opacity: 0.5;
+  opacity: 0.07;
+}
+
+/* ------------------------- Estructura (sidebar + barra) ------------------- */
+/* Zona de contenido desplazada por el menú lateral global (.ini-lateral) */
+.vst-zona {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  margin-left: var(--ini-side-w);
+}
+
+/* Cajón móvil del menú lateral (fondo) */
+.vst-velo {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  padding: 0;
+  border: 0;
+  background: rgba(3, 9, 18, 0.62);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  cursor: pointer;
+}
+
+@media (max-width: 959px) {
+  .vst-zona {
+    margin-left: 0;
+  }
+
+  .vst-velo {
+    display: block;
+  }
 }
 
 /* ------------------------------ Contenido -------------------------------- */
@@ -175,26 +222,27 @@
 
 /* ------------------------- Tarjeta base (glass) -------------------------- */
 .vst-tarjeta {
-  background: rgba(255, 255, 255, 0.86);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--hv-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--hv-glass-brd);
   border-radius: 20px;
-  box-shadow: 0 16px 38px rgba(9, 44, 24, 0.14);
+  box-shadow: 0 12px 32px rgba(2, 8, 18, 0.36);
   min-width: 0;
 }
 
 /* ------------------------------ Menú lateral ----------------------------- */
+/* Navegación secundaria dentro de la página (Cálculos, Perfil) */
 .vst-sidebar {
   position: sticky;
-  top: 16px;
+  top: calc(var(--hv-nav-h) + 14px);
   padding: 16px 12px 14px;
-  background: rgba(255, 255, 255, 0.86);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: var(--hv-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--hv-glass-brd);
   border-radius: 20px;
-  box-shadow: 0 16px 38px rgba(9, 44, 24, 0.14);
+  box-shadow: 0 12px 32px rgba(2, 8, 18, 0.36);
 }
 
 .vst-sidebar-titulo {
@@ -241,20 +289,21 @@
 }
 
 .vst-sidebar-item:hover {
-  background: rgba(47, 143, 70, 0.1);
-  color: var(--hv-green-700);
+  background: rgba(22, 119, 242, 0.14);
+  color: #8ec5ff;
 }
 
 .vst-sidebar-item:focus-visible {
-  outline: 2px solid var(--hv-lime-500);
+  outline: 2px solid var(--hv-blue-2);
   outline-offset: 2px;
 }
 
 .vst-sidebar-item.activo {
-  background: linear-gradient(135deg, rgba(168, 224, 99, 0.6), rgba(123, 191, 106, 0.42));
-  border-color: rgba(47, 143, 70, 0.28);
-  color: var(--hv-green-800);
+  background: linear-gradient(135deg, rgba(22, 119, 242, 0.92), rgba(37, 143, 239, 0.78));
+  border-color: rgba(37, 143, 239, 0.55);
+  color: #fff;
   font-weight: 600;
+  box-shadow: 0 8px 18px rgba(22, 119, 242, 0.28);
 }
 
 @media (max-width: 940px) {
@@ -281,12 +330,12 @@
     white-space: nowrap;
     border-radius: 999px;
     padding: 9px 15px;
-    background: rgba(255, 255, 255, 0.72);
-    border-color: rgba(17, 56, 32, 0.12);
+    background: rgba(25, 43, 66, 0.72);
+    border-color: rgba(148, 177, 210, 0.18);
   }
 
   .vst-sidebar-item.activo {
-    background: linear-gradient(135deg, rgba(168, 224, 99, 0.75), rgba(123, 191, 106, 0.6));
+    background: linear-gradient(135deg, rgba(22, 119, 242, 0.95), rgba(37, 143, 239, 0.82));
   }
 }
 
@@ -299,16 +348,16 @@
   transform: translateX(-50%);
   max-width: min(560px, calc(100vw - 32px));
   padding: 12px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
+  border: 1px solid rgba(148, 166, 196, 0.28);
   border-radius: 999px;
-  background: rgba(6, 43, 23, 0.94);
+  background: rgba(16, 29, 49, 0.96);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  color: #eef8ea;
+  color: #e6ebf3;
   font-size: 13.5px;
   font-weight: 500;
   text-align: center;
-  box-shadow: 0 18px 44px rgba(3, 20, 10, 0.45);
+  box-shadow: 0 18px 44px rgba(2, 8, 18, 0.55);
   animation: vst-aviso-entra 0.24s ease-out;
 }
 
@@ -342,9 +391,9 @@
 .vst-textarea {
   width: 100%;
   padding: 10px 13px;
-  border: 1px solid rgba(17, 56, 32, 0.16);
+  border: 1px solid rgba(148, 177, 210, 0.18);
   border-radius: 12px;
-  background: rgba(255, 255, 255, 0.92);
+  background: rgba(9, 19, 33, 0.78);
   font-family: var(--hv-font);
   font-size: 14px;
   font-weight: 500;
@@ -360,7 +409,7 @@
 
 .vst-input::placeholder,
 .vst-textarea::placeholder {
-  color: #9aa89d;
+  color: #8ea0b8;
   font-weight: 400;
 }
 
@@ -368,19 +417,19 @@
 .vst-select:focus,
 .vst-textarea:focus {
   outline: none;
-  border-color: var(--hv-green-500);
-  box-shadow: 0 0 0 3px rgba(47, 143, 70, 0.18);
+  border-color: var(--hv-blue);
+  box-shadow: 0 0 0 3px rgba(22, 119, 242, 0.24);
 }
 
 .vst-input[aria-invalid='true'],
 .vst-select[aria-invalid='true'] {
   border-color: var(--hv-red);
-  box-shadow: 0 0 0 3px rgba(226, 87, 76, 0.16);
+  box-shadow: 0 0 0 3px rgba(226, 87, 76, 0.18);
 }
 
 .vst-select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236d7f71' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23a9b7c9' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   padding-right: 34px;
@@ -436,7 +485,7 @@
   height: 25px;
   border: 0;
   border-radius: 999px;
-  background: #c9d3c8;
+  background: #243a56;
   cursor: pointer;
   transition: background 0.2s ease;
 }
@@ -450,12 +499,12 @@
   height: 19px;
   border-radius: 50%;
   background: #fff;
-  box-shadow: 0 2px 6px rgba(9, 44, 24, 0.28);
+  box-shadow: 0 2px 6px rgba(2, 8, 18, 0.4);
   transition: transform 0.2s ease;
 }
 
 .vst-switch[aria-checked='true'] {
-  background: var(--hv-green-600);
+  background: var(--hv-blue);
 }
 
 .vst-switch[aria-checked='true']::after {
@@ -463,7 +512,7 @@
 }
 
 .vst-switch:focus-visible {
-  outline: 2px solid var(--hv-lime-500);
+  outline: 2px solid var(--hv-blue-2);
   outline-offset: 2px;
 }
 

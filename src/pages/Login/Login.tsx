@@ -3,7 +3,7 @@ import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
   ArrowRight,
-  Cloud,
+  ChartColumn,
   Droplets,
   Eye,
   EyeOff,
@@ -16,6 +16,10 @@ import {
 import Modal from '../../components/common/Modal'
 import hvLeaf from '../../assets/images/hv-leaf.png'
 import senaLogo from '../../assets/images/sena-logo.png'
+// Planeta del panel izquierdo. Hoy se usa globe.png (recurso disponible);
+// cuando exista src/assets/images/login-planet.png (alta resolución)
+// basta con sustituir esta importación: la maquetación ya está preparada.
+import planetaTierra from '../../assets/images/globe.png'
 import '../../styles/variables.css'
 import './Login.css'
 
@@ -129,6 +133,13 @@ export default function Login() {
       <div className="hv-login__shell">
         {/* ============ PANEL IZQUIERDO ============ */}
         <section className="hv-panel hv-panel--brand" aria-label="Presentación de HuellaVerde">
+          {/* Contenedor exclusivamente visual: planeta Tierra como
+              protagonista del panel de marca. */}
+          <div className="brand__planet" aria-hidden="true">
+            <span className="brand__planet-glow" />
+            <img src={planetaTierra} alt="" />
+          </div>
+
           <header className="brand__head">
             <img className="brand__mark" src={hvLeaf} alt="" aria-hidden="true" />
             <div className="brand__titles">
@@ -140,39 +151,42 @@ export default function Login() {
           </header>
 
           <div className="brand__mid">
-            <span className="brand__rule" aria-hidden="true" />
             <p className="brand__slogan">
-              Juntos por un
-              <br />
-              planeta más <span className="brand__slogan-accent">sostenible</span>
+              Un planeta más sostenible,{' '}
+              <span className="brand__slogan-accent">en tus manos</span>
             </p>
             <p className="brand__desc">
-              Plataforma para el cálculo de
-              <br />
-              Huella Hídrica y Huella de Carbono
+              Mide tu huella ambiental y contribuye a un futuro más verde.
             </p>
+            <span className="brand__rule" aria-hidden="true" />
           </div>
 
           <ul className="brand__icons">
             <li className="brand__icon">
-              <Droplets size={20} aria-hidden="true" />
-              <span className="hv-sr-only">Huella Hídrica</span>
+              <span className="brand__icon-bubble">
+                <Droplets size={20} aria-hidden="true" />
+              </span>
+              <span className="brand__icon-label">Huella Hídrica</span>
             </li>
             <li className="brand__icon">
-              <Leaf size={20} aria-hidden="true" />
-              <span className="hv-sr-only">Huella de Carbono</span>
+              <span className="brand__icon-bubble brand__icon-bubble--green">
+                <Leaf size={20} aria-hidden="true" />
+              </span>
+              <span className="brand__icon-label">Huella de Carbono</span>
             </li>
             <li className="brand__icon">
-              <Cloud size={20} aria-hidden="true" />
-              <span className="hv-sr-only">Emisiones atmosféricas</span>
+              <span className="brand__icon-bubble">
+                <ChartColumn size={20} aria-hidden="true" />
+              </span>
+              <span className="brand__icon-label">Reportes en tiempo real</span>
             </li>
           </ul>
         </section>
 
         {/* ============ PANEL DERECHO (FORMULARIO) ============ */}
         <section className="hv-panel hv-panel--card">
-          <h2 className="card__title">Iniciar Sesión</h2>
-          <p className="card__subtitle">Ingresa tus credenciales para continuar</p>
+          <h2 className="card__title">¡Bienvenido!</h2>
+          <p className="card__subtitle">Inicia sesión para continuar</p>
 
           <form className="card__form" onSubmit={enviarLogin} noValidate>
             {/* Usuario */}

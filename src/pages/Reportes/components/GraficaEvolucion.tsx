@@ -19,9 +19,9 @@ const ARRIBA = 18
 const ABAJO = 44
 
 const COLOR_HIDRICA = '#3b82f6'
-const COLOR_CARBONO = '#22c55e'
-const COLOR_REJILLA = 'rgba(17, 56, 32, 0.12)'
-const COLOR_EJE = 'rgba(17, 56, 32, 0.45)'
+const COLOR_CARBONO = '#42d879'
+const COLOR_REJILLA = 'rgba(148, 177, 210, 0.12)'
+const COLOR_EJE = 'rgba(148, 177, 210, 0.28)'
 
 /**
  * Gráfica de líneas de evolución (SVG real, interactiva con punto de consulta).
@@ -106,7 +106,7 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
             x2={posicionX(activo)}
             y1={ARRIBA}
             y2={ARRIBA + altoUtil}
-            stroke="rgba(20, 96, 47, 0.4)"
+            stroke="rgba(148, 177, 210, 0.35)"
             strokeWidth={1.4}
             strokeDasharray="4 4"
           />
@@ -122,7 +122,7 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
               cx={posicionX(i)}
               cy={posicionY(d.hidrica)}
               r={activo === i ? 5.5 : 3.6}
-              fill="#fff"
+              fill="#0b1526"
               stroke={COLOR_HIDRICA}
               strokeWidth={2.4}
             />
@@ -130,7 +130,7 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
               cx={posicionX(i)}
               cy={posicionY(d.carbono)}
               r={activo === i ? 5.5 : 3.6}
-              fill="#fff"
+              fill="#0b1526"
               stroke={COLOR_CARBONO}
               strokeWidth={2.4}
             />

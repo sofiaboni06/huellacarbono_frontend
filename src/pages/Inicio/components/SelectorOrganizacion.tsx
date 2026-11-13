@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronDown, Leaf } from 'lucide-react'
+import { CalendarDays, ChevronDown } from 'lucide-react'
 import { PERIODOS } from '../../../data/demo'
 import { useClickOutside } from '../../../hooks/useClickOutside'
 import './SelectorOrganizacion.css'
@@ -37,12 +37,7 @@ export default function SelectorOrganizacion() {
         aria-haspopup="listbox"
         aria-expanded={abierto}
       >
-        <Leaf size={17} strokeWidth={2.2} aria-hidden="true" />
-        <span className="ini-selector-dato">
-          <span className="ini-selector-etiqueta">Organización:</span>
-          <b>{organizacion}</b>
-        </span>
-        <span className="ini-selector-separador" aria-hidden="true" />
+        <CalendarDays size={17} strokeWidth={2.2} aria-hidden="true" />
         <span className="ini-selector-dato">
           <span className="ini-selector-etiqueta">Periodo:</span>
           <b>{periodo}</b>
