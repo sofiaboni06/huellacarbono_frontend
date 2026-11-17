@@ -17,6 +17,7 @@ import SeccionPreferencias from './pages/Perfil/SeccionPreferencias'
 import Usuarios from './pages/Gestion/Usuarios/Usuarios'
 import Perfiles from './pages/Gestion/Perfiles/Perfiles'
 import RolesPermisos from './pages/Gestion/RolesPermisos/RolesPermisos'
+import UnidadesMedida from './pages/Gestion/UnidadesMedida/UnidadesMedida'
 
 /**
  * Rutas de la aplicación.
@@ -35,6 +36,7 @@ import RolesPermisos from './pages/Gestion/RolesPermisos/RolesPermisos'
  *  /gestion/usuarios         → gestión de usuarios
  *  /gestion/perfiles         → gestión de perfiles
  *  /gestion/roles-permisos   → roles y permisos
+ *  /gestion/unidades-medida  → unidades de medida
  *
  * Los proveedores globales (perfil, notificaciones y preferencias visuales)
  * viven aquí para que el estado esté compartido en todas las vistas.
@@ -65,6 +67,7 @@ function App() {
                 <Route path="/gestion/usuarios" element={<Usuarios />} />
                 <Route path="/gestion/perfiles" element={<Perfiles />} />
                 <Route path="/gestion/roles-permisos" element={<RolesPermisos />} />
+                <Route path="/gestion/unidades-medida" element={<UnidadesMedida />} />
 
                 <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="*" element={<Navigate to="/login" replace />} />

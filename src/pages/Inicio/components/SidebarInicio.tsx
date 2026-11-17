@@ -7,6 +7,7 @@ import {
   FileText,
   HelpCircle,
   Home,
+  Ruler,
   Settings,
   ShieldCheck,
   UserRound,
@@ -16,6 +17,7 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { usePerfil } from '../../../context/PerfilContext'
 import { useClickOutside } from '../../../hooks/useClickOutside'
+import { tienePermiso } from '../../../services/sesionService'
 import MenuPerfil from './MenuPerfil'
 import hvLeaf from '../../../assets/images/hv-leaf.png'
 import fotoPerfil from '../../../assets/images/profile.png'
@@ -25,6 +27,8 @@ interface EnlaceLateral {
   to: string
   etiqueta: string
   Icono: LucideIcon
+  /** Código de permiso requerido para ver la opción (si falta, se oculta). */
+  permiso?: string
 }
 
 /** Secciones con ruta propia en la aplicación. */
@@ -34,6 +38,12 @@ const ENLACES: EnlaceLateral[] = [
   { to: '/reportes', etiqueta: 'Reportes', Icono: FileText },
   { to: '/configuracion', etiqueta: 'Configuración', Icono: Settings },
   { to: '/ayuda', etiqueta: 'Ayuda', Icono: HelpCircle },
+  {
+    to: '/gestion/unidades-medida',
+    etiqueta: 'Unidades de Medida',
+    Icono: Ruler,
+    permiso: 'unidad_medida.ver',
+  },
 ]
 
 /** Secciones del desplegable «Gestión» (rutas existentes). */
@@ -42,6 +52,14 @@ const GESTION: EnlaceLateral[] = [
   { to: '/gestion/perfiles', etiqueta: 'Perfiles', Icono: Contact },
   { to: '/gestion/roles-permisos', etiqueta: 'Roles y permisos', Icono: ShieldCheck },
 ]
+
+/**
+ * «Unidades de Medida» vive fuera del desplegable, así que sus rutas no
+ * cuentan como parte del grupo «Gestión» para abrirlo o resaltarlo.
+ */
+function esRutaGestion(pathname: string): boolean {
+  return pathname.startsWith('/gestion') && !pathname.startsWith('/gestion/unidades-medida')
+}
 
 interface SidebarInicioProps {
   /** Estado del cajón en pantallas pequeñas. */
@@ -58,7 +76,7 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
   const { perfil, rol } = usePerfil()
   const { pathname } = useLocation()
 
-  const [gestionAbierta, setGestionAbierta] = useState(() => pathname.startsWith('/gestion'))
+  const [gestionAbierta, setGestionAbierta] = useState(() => esRutaGestion(pathname))
   const [perfilAbierto, setPerfilAbierto] = useState(false)
 
   const cerrarGestion = useCallback(() => setGestionAbierta(false), [])
@@ -72,12 +90,15 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
   const [rutaPrevia, setRutaPrevia] = useState(pathname)
   if (rutaPrevia !== pathname) {
     setRutaPrevia(pathname)
-    setGestionAbierta(pathname.startsWith('/gestion'))
+    setGestionAbierta(esRutaGestion(pathname))
     setPerfilAbierto(false)
   }
 
   const nombreCompleto = `${perfil.nombre} ${perfil.apellidos}`.trim()
-  const enGestion = pathname.startsWith('/gestion')
+  const enGestion = esRutaGestion(pathname)
+
+  // Solo se muestran las opciones cuyo permiso conceda la sesión actual.
+  const enlacesVisibles = ENLACES.filter(({ permiso }) => !permiso || tienePermiso(permiso))
 
   return (
     <aside className={`ini-lateral ${abierto ? 'abierto' : ''}`} aria-label="Menú lateral">
@@ -102,7 +123,7 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
 
       <nav className="ini-lateral-nav" aria-label="Módulos">
         <ul className="ini-lateral-lista">
-          {ENLACES.map(({ to, etiqueta, Icono }) => (
+          {enlacesVisibles.map(({ to, etiqueta, Icono }) => (
             <li key={to}>
               <NavLink
                 to={to}

@@ -598,6 +598,13 @@
   outline-offset: 2px;
 }
 
+/* Estado «Ingresando…»: sin interacción mientras valida el backend. */
+.login-btn:disabled {
+  opacity: 0.65;
+  cursor: wait;
+  transform: none;
+}
+
 .login-btn--primary {
   margin-top: 16px;
   height: 47px;
@@ -652,6 +659,16 @@
 
 .card__demo strong {
   color: #35a4ff;
+}
+
+/* Aviso de error del inicio de sesión real (credenciales o servidor). */
+.card__demo--error {
+  background: rgba(226, 87, 76, 0.12);
+  border-color: rgba(226, 87, 76, 0.55);
+}
+
+.card__demo--error strong {
+  color: #ff8b82;
 }
 
 /* ------------------------- Separador ------------------------- */

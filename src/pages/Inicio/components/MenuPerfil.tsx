@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Bell, HelpCircle, LogOut, Shield, SlidersHorizontal, User } from 'lucide-react'
 import { usePerfil } from '../../../context/PerfilContext'
+import { cerrarSesionServidor } from '../../../services/authService'
 import fotoPerfil from '../../../assets/images/profile.png'
 import './MenuPerfil.css'
 
@@ -24,6 +25,13 @@ export default function MenuPerfil({ onCerrar }: MenuPerfilProps) {
   const ir = (to: string) => {
     onCerrar()
     navigate(to)
+  }
+
+  /** Revoca el token en el backend, limpia la sesión local y vuelve al login. */
+  const salir = async () => {
+    onCerrar()
+    await cerrarSesionServidor()
+    navigate('/login', { replace: true })
   }
 
   const nombreCompleto = `${perfil.nombre} ${perfil.apellidos}`.trim()
@@ -57,7 +65,7 @@ export default function MenuPerfil({ onCerrar }: MenuPerfilProps) {
         type="button"
         role="menuitem"
         className="ini-menu-item ini-menu-item--salir"
-        onClick={() => ir('/login')}
+        onClick={() => void salir()}
       >
         <LogOut size={16} strokeWidth={2.1} aria-hidden="true" />
         <span>Cerrar sesión</span>

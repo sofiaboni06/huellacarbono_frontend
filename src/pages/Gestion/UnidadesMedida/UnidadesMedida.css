@@ -1,0 +1,158 @@
+/* Unidades de Medida — reglas propias de esta vista.
+   Barra, buscador, filtros, tabla, estados, acciones, vacío, carga y
+   paginación reutilizan los estilos comunes de `../gestion.css`. */
+
+@import '../gestion.css';
+
+/* La tarjeta de la tabla se cierra sin dobles bordes. */
+.gst-unidades .gst-tabla-tarjeta {
+  overflow: hidden;
+  padding-bottom: 4px;
+}
+
+/* Código: chip monoespaciado para leer identificadores de un vistazo. */
+.umd-codigo {
+  display: inline-block;
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: var(--hv-ink);
+  background: var(--hv-blue-soft);
+  border: 1px solid var(--hv-line);
+  border-radius: var(--hv-radius-pill, 999px);
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+/* Nombre de la unidad: la columna protagonista de la tabla. */
+.umd-nombre {
+  font-weight: 600;
+  color: var(--hv-ink);
+}
+
+/* Símbolo: monoespaciado, tal como se escribe en las fórmulas. */
+.umd-simbolo {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: 0.86rem;
+  color: var(--hv-text);
+  white-space: nowrap;
+}
+
+/* Magnitud: texto libre del backend, tratado como etiqueta secundaria. */
+.umd-magnitud {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--hv-muted);
+  white-space: nowrap;
+}
+
+/* Factor base: cadena decimal completa, sin abreviar ni redondear. */
+.umd-factor {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--hv-verde);
+  white-space: nowrap;
+}
+
+/* Aviso junto al campo del factor base en el formulario. */
+.umd-nota {
+  margin-top: 12px;
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: var(--hv-muted);
+}
+
+/* Campo del factor base: se escribe como texto, no como número. */
+.umd-factor-input {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+}
+
+/* Detalle de consulta (GET /measurement-units/:id). */
+.umd-detalle {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.umd-detalle > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 12px;
+  background: var(--hv-sage);
+  border: 1px solid var(--hv-line);
+  border-radius: var(--hv-radius-sm, 10px);
+}
+
+.umd-detalle dt {
+  font-size: 0.78rem;
+  color: var(--hv-muted);
+}
+
+.umd-detalle dd {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--hv-ink);
+  text-align: right;
+  word-break: break-word;
+}
+
+.umd-detalle dd.umd-detalle-mono {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-weight: 500;
+}
+
+/* ------------------------- Buscador y contador --------------------------- */
+
+/* Un solo botón X: se oculta el decorador nativo de `input[type=search]`
+   (Chrome/Edge/Safari) para que solo exista el botón propio del módulo. */
+.gst-unidades .gst-buscador input[type='search']::-webkit-search-cancel-button,
+.gst-unidades .gst-buscador input[type='search']::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Contador de resultados: icono de regla y texto siempre alineados,
+   con separación uniforme y sin que el chip se comprima ni se desborde. */
+.gst-unidades .gst-contador {
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  line-height: 1;
+}
+
+.gst-unidades .gst-contador svg {
+  flex: 0 0 auto;
+}
+
+/* En pantallas angostas la tabla se desplaza de forma horizontal
+   (el envoltorio `.gst-tabla-envoltura` ya lo permite) y la barra de
+   búsqueda apila sus controles. */
+@media (max-width: 720px) {
+  .gst-unidades .gst-barra {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gst-unidades .gst-filtros {
+    width: 100%;
+  }
+
+  .gst-unidades .gst-contador {
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .gst-unidades .gst-paginacion {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+}

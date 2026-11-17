@@ -114,7 +114,10 @@
   line-height: 1;
   color: #a9b7c9;
   text-align: left;
-  white-space: nowrap;
+  /* Si una etiqueta es larga (p. ej. «Unidades de Medida») el texto nunca se
+     corta: ocupa una sola línea cuando cabe y, si no, salta a la siguiente. */
+  white-space: normal;
+  text-wrap: balance;
   cursor: pointer;
   transition: background 0.16s ease, color 0.16s ease;
 }
