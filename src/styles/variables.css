@@ -70,7 +70,7 @@
   /* ------------------------------- Medidas -------------------------------- */
   --hv-nav-h: 64px;
   --hv-sidebar-w: 250px;
-  --hv-side-w: 146px; /* ancho del menú lateral global (Dashboard) */
+  --hv-side-w: 180px; /* ancho del menú lateral global (Dashboard) */
   --hv-maxw: 1440px;
 
   /* ------------------------------ Transiciones ---------------------------- */

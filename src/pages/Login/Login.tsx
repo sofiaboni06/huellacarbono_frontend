@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
@@ -14,6 +14,8 @@ import {
   User,
 } from 'lucide-react'
 import Modal from '../../components/common/Modal'
+import { ErrorApi } from '../../services/apiCliente'
+import { iniciarSesion } from '../../services/authService'
 import hvLeaf from '../../assets/images/hv-leaf.png'
 import senaLogo from '../../assets/images/sena-logo.png'
 // Planeta del panel izquierdo. Hoy se usa globe.png (recurso disponible);
@@ -46,26 +48,22 @@ export default function Login() {
   const [recordarme, setRecordarme] = useState(true)
 
   const [errores, setErrores] = useState<ErroresLogin>({})
-  const [avisoDemo, setAvisoDemo] = useState('')
+  /** Aviso de la autenticación real (credenciales inválidas, red caída…). */
+  const [avisoAcceso, setAvisoAcceso] = useState('')
+  const [enviando, setEnviando] = useState(false)
 
   const [modalRecuperacion, setModalRecuperacion] = useState(false)
   const [correo, setCorreo] = useState('')
   const [errorCorreo, setErrorCorreo] = useState('')
   const [solicitudEnviada, setSolicitudEnviada] = useState(false)
 
-  /** Evita navegar tras desmontar la vista. */
-  const accesoDemo = useRef<number | null>(null)
-  useEffect(() => () => {
-    if (accesoDemo.current !== null) window.clearTimeout(accesoDemo.current)
-  }, [])
-
-  /* ---------------- Validación de demostración del formulario ---------------- */
-  const enviarLogin = (e: FormEvent<HTMLFormElement>) => {
+  /* --------------------- Autenticación real (backend) --------------------- */
+  const enviarLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const nuevos: ErroresLogin = {}
     if (!usuario.trim()) {
-      nuevos.usuario = 'Ingresa tu usuario o correo electrónico.'
+      nuevos.usuario = 'Ingresa tu correo electrónico.'
     }
     if (!password) {
       nuevos.password = 'Ingresa tu contraseña.'
@@ -74,11 +72,11 @@ export default function Login() {
     setErrores(nuevos)
 
     if (Object.keys(nuevos).length > 0) {
-      setAvisoDemo('')
+      setAvisoAcceso('')
       return
     }
 
-    // No hay backend en esta fase: la validación ocurre íntegramente en el navegador.
+    // Recuerda solo el usuario (nunca la contraseña).
     try {
       if (recordarme) {
         localStorage.setItem(CLAVE_USUARIO_RECORDADO, usuario.trim())
@@ -89,16 +87,26 @@ export default function Login() {
       /* almacenamiento no disponible */
     }
 
-    setAvisoDemo(
-      'Acceso de demostración: la validación ocurrió solo en tu navegador. No hay backend ' +
-        'ni autenticación real; entrando a Inicio…',
-    )
-
-    // Acceso demostrativo: no existe autenticación, únicamente navegación al panel.
-    accesoDemo.current = window.setTimeout(() => {
-      accesoDemo.current = null
-      navigate('/inicio')
-    }, 900)
+    setAvisoAcceso('')
+    setEnviando(true)
+    try {
+      // POST /api/v1/auth/login: guarda token y permisos en sesionService.
+      await iniciarSesion(usuario.trim(), password)
+      navigate('/inicio', { replace: true })
+    } catch (error) {
+      // El backend responde 400 «Invalid user credentials» con credenciales
+      // incorrectas: se traduce a un mensaje claro para la persona usuaria.
+      const credencialesInvalidas =
+        error instanceof ErrorApi && (error.status === 400 || error.status === 401)
+      setAvisoAcceso(
+        credencialesInvalidas
+          ? 'Correo electrónico o contraseña incorrectos.'
+          : error instanceof ErrorApi
+            ? error.message
+            : 'No se pudo conectar con el servidor. Intenta nuevamente.',
+      )
+      setEnviando(false)
+    }
   }
 
   /* ---------------- Recuperación de contraseña (sin backend) ---------------- */
@@ -197,8 +205,8 @@ export default function Login() {
                   type="text"
                   name="usuario"
                   autoComplete="username"
-                  placeholder="Usuario o correo electrónico"
-                  aria-label="Usuario o correo electrónico"
+                  placeholder="Correo electrónico"
+                  aria-label="Correo electrónico"
                   aria-invalid={Boolean(errores.usuario)}
                   value={usuario}
                   onChange={(e) => {
@@ -263,13 +271,18 @@ export default function Login() {
               </button>
             </div>
 
-            <button type="submit" className="login-btn login-btn--primary">
-              Ingresar <ArrowRight size={17} aria-hidden="true" />
+            <button
+              type="submit"
+              className="login-btn login-btn--primary"
+              disabled={enviando}
+            >
+              {enviando ? 'Ingresando…' : 'Ingresar'}{' '}
+              <ArrowRight size={17} aria-hidden="true" />
             </button>
 
-            {avisoDemo && (
-              <p className="card__demo" role="status">
-                <strong>Modo demostración.</strong> {avisoDemo}
+            {avisoAcceso && (
+              <p className="card__demo card__demo--error" role="alert">
+                <strong>No se pudo iniciar sesión.</strong> {avisoAcceso}
               </p>
             )}
 

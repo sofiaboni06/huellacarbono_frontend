@@ -71,3 +71,37 @@ export type UsuarioFormulario = Omit<Usuario, 'id'>
 
 /** Datos de entrada para crear o actualizar un perfil. */
 export type PerfilFormulario = Omit<Perfil, 'id'>
+
+/** Registro completo de una unidad de medida (backend: measurement-units). */
+export interface UnidadMedida {
+  id: number
+  code: string
+  name: string
+  symbol: string
+  magnitude: string
+  /**
+   * DECIMAL(24, 12). Siempre cadena: convertirlo a `Number` perdería
+   * precisión antes de enviarlo o mostrarlo.
+   */
+  baseFactor: string
+  active: boolean
+}
+
+/** Datos de entrada del formulario de unidades de medida. */
+export interface UnidadMedidaFormulario {
+  codigo: string
+  nombre: string
+  simbolo: string
+  magnitud: string
+  /** Cadena decimal (nunca `number`), respetando el formato del backend. */
+  factorBase: string
+}
+
+/** Sesión guardada tras autenticar contra el backend. */
+export interface UsuarioSesion {
+  token: string
+  /** Códigos de permiso devueltos por `POST /api/v1/auth/login`. */
+  permisos: string[]
+  nombre: string
+  correo: string
+}
