@@ -1,36 +1,23 @@
+import { usePerfil } from '../../../context/PerfilContext'
 import SelectorOrganizacion from './SelectorOrganizacion'
-import globoTierra from '../../../assets/images/globe.png'
-import hojaMarca from '../../../assets/images/hv-leaf.png'
 import './Bienvenida.css'
 
-/** Cabecera de bienvenida del panel de inicio. */
+/** Cabecera del panel de inicio: saludo dinámico y selector de periodo. */
 export default function Bienvenida() {
+  const { perfil } = usePerfil()
+
+  const nombre = perfil.nombre.trim() || 'de nuevo'
+
   return (
     <section className="ini-bienvenida" aria-label="Bienvenida">
-      <div className="ini-bienvenida-fondo" aria-hidden="true" />
-      <div className="ini-bienvenida-brillo" aria-hidden="true" />
-
       <div className="ini-bienvenida-texto">
-        <h1 className="ini-bienvenida-saludo">¡Hola, Sofía!</h1>
-        <p className="ini-bienvenida-subtitulo">Bienvenida de nuevo a HuellaVerde</p>
-        <SelectorOrganizacion />
+        <h1 className="ini-bienvenida-saludo">¡Hola, {nombre}!</h1>
+        <p className="ini-bienvenida-subtitulo">
+          Aquí tienes un resumen del estado ambiental de tu organización.
+        </p>
       </div>
 
-      <div className="ini-bienvenida-visual">
-        <img
-          className="ini-bienvenida-globo"
-          src={globoTierra}
-          alt="Planeta Tierra rodeado de vegetación"
-        />
-        <aside className="ini-bienvenida-nota">
-          <img className="ini-bienvenida-nota-icono" src={hojaMarca} alt="" aria-hidden="true" />
-          <p className="ini-bienvenida-nota-texto">
-            Pequeñas acciones,
-            <br />
-            grandes cambios
-          </p>
-        </aside>
-      </div>
+      <SelectorOrganizacion />
     </section>
   )
 }

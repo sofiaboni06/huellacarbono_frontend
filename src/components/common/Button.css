@@ -39,26 +39,26 @@
 }
 
 .hv-btn-primario {
-  background: linear-gradient(180deg, var(--hv-green-600) 0%, var(--hv-green-700) 100%);
+  background: linear-gradient(135deg, var(--hv-blue) 0%, var(--hv-blue-2) 100%);
   color: #fff;
-  box-shadow: 0 8px 20px rgba(20, 96, 47, 0.3);
+  box-shadow: 0 8px 20px rgba(22, 119, 242, 0.32);
 }
 
 .hv-btn-primario:hover:not(:disabled) {
-  background: linear-gradient(180deg, var(--hv-green-500) 0%, var(--hv-green-600) 100%);
-  box-shadow: 0 10px 24px rgba(20, 96, 47, 0.38);
+  background: linear-gradient(135deg, var(--hv-blue-2) 0%, #3ba4f7 100%);
+  box-shadow: 0 10px 24px rgba(22, 119, 242, 0.44);
 }
 
 .hv-btn-contorno {
-  background: rgba(255, 255, 255, 0.82);
-  border-color: rgba(17, 56, 32, 0.18);
-  color: var(--hv-ink);
+  background: rgba(32, 52, 77, 0.6);
+  border-color: rgba(148, 177, 210, 0.24);
+  color: #eaf0f8;
 }
 
 .hv-btn-contorno:hover:not(:disabled) {
-  background: #fff;
-  border-color: var(--hv-green-500);
-  color: var(--hv-green-700);
+  background: rgba(40, 62, 90, 0.75);
+  border-color: var(--hv-blue-2);
+  color: #cfe6ff;
 }
 
 .hv-btn-fantasma {
@@ -67,12 +67,12 @@
 }
 
 .hv-btn-fantasma:hover:not(:disabled) {
-  background: rgba(17, 56, 32, 0.07);
+  background: rgba(22, 119, 242, 0.12);
   color: var(--hv-ink);
 }
 
 .hv-btn-success {
-  background: linear-gradient(135deg, var(--hv-green-500), var(--hv-green-700));
+  background: linear-gradient(135deg, #2fa95c, #177a45);
   color: #fff;
   box-shadow: 0 8px 20px rgba(47, 143, 70, 0.3);
 }

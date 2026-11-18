@@ -1,51 +1,80 @@
-/* Tarjeta de indicador del panel de inicio */
+/* Tarjeta de indicador del panel de inicio — tema oscuro */
 
 .ini-indicador {
   display: flex;
   flex-direction: column;
-  gap: clamp(8px, 1vw, 14px);
-  padding: clamp(15px, 1.4vw, 20px) clamp(15px, 1.5vw, 22px) clamp(13px, 1.3vw, 17px);
+  gap: clamp(9px, 1vw, 14px);
+  padding: clamp(14px, 1.3vw, 19px) clamp(14px, 1.4vw, 21px) clamp(13px, 1.2vw, 17px);
+  transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.ini-indicador:hover {
+  border-color: rgba(22, 119, 242, 0.35);
+  transform: translateY(-3px);
+  box-shadow: 0 18px 42px rgba(2, 8, 18, 0.42);
 }
 
 .ini-indicador-cabecera {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 10px;
   min-width: 0;
 }
 
 .ini-indicador-icono {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
   border-radius: 50%;
   color: #fff;
-  box-shadow: 0 6px 16px rgba(6, 40, 20, 0.22);
+  box-shadow: 0 8px 18px rgba(2, 8, 18, 0.35);
 }
 
 .ini-indicador-icono.tono-azul {
-  background: linear-gradient(160deg, #4f93ff 0%, var(--hv-blue) 100%);
+  background: linear-gradient(160deg, #3b93ff 0%, #1677f2 100%);
+  box-shadow: 0 8px 18px rgba(22, 119, 242, 0.32);
 }
 
 .ini-indicador-icono.tono-verde {
-  background: linear-gradient(160deg, #34a957 0%, var(--hv-green-500) 100%);
+  background: linear-gradient(160deg, #5ce79a 0%, #23b264 100%);
+  box-shadow: 0 8px 18px rgba(66, 216, 121, 0.28);
+}
+
+.ini-indicador-icono.tono-morado {
+  background: linear-gradient(160deg, #c084fc 0%, #9333ea 100%);
+  box-shadow: 0 8px 18px rgba(168, 85, 247, 0.3);
 }
 
 .ini-indicador-titulo {
   font-size: 13.5px;
   font-weight: 600;
   line-height: 1.3;
-  color: var(--hv-muted);
+  color: #a9b7c9;
+  min-width: 0;
 }
 
 .ini-indicador-valor {
-  font-size: clamp(25px, 2.2vw, 33px);
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  font-size: clamp(27px, 2.3vw, 34px);
   font-weight: 700;
   line-height: 1.05;
   letter-spacing: -1.2px;
-  color: var(--hv-ink);
+  color: #f5f7fb;
+}
+
+.ini-indicador-unidad {
+  font-size: clamp(13px, 1.1vw, 15px);
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  color: #c7d2e2;
+}
+
+.ini-indicador-unidad--apretada {
+  margin-left: -7px;
 }
 
 .ini-indicador-pie {
@@ -57,27 +86,29 @@
   margin-top: auto;
 }
 
+.ini-indicador-comparacion {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-bottom: 3px;
+  min-width: 0;
+}
+
 .ini-indicador-variacion {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  padding-bottom: 4px;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 700;
-  color: var(--hv-green-500);
+  color: #42d879;
   white-space: nowrap;
 }
 
-.ini-indicador-chip {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  margin-bottom: 2px;
-  border-radius: 50%;
-  background: var(--hv-green-500);
-  color: #fff;
-  box-shadow: 0 5px 14px rgba(31, 122, 60, 0.32);
+.ini-indicador-vs {
+  font-size: 10.5px;
+  font-weight: 500;
+  color: #8b99ad;
+  white-space: nowrap;
 }
 
 .ini-indicador-grafica {
@@ -88,11 +119,12 @@
   overflow: visible;
 }
 
-@media (max-width: 760px) {
-  .ini-indicador {
-    padding: 16px 18px;
-  }
+.ini-indicador-barras {
+  flex-shrink: 0;
+  display: block;
+}
 
+@media (max-width: 760px) {
   .ini-indicador-valor {
     font-size: 30px;
   }

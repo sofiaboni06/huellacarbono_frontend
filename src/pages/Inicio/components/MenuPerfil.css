@@ -1,4 +1,7 @@
-/* Menú desplegable de perfil (demostración) */
+/* ==========================================================================
+   Menú desplegable de perfil — tema oscuro global (compartido por el
+   Dashboard y por la barra superior de la plantilla de todas las vistas).
+   ========================================================================== */
 
 .ini-menu {
   position: absolute;
@@ -7,12 +10,12 @@
   z-index: 60;
   width: 264px;
   padding: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(148, 166, 196, 0.2);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.94);
+  background: #101d31;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 24px 54px rgba(4, 26, 13, 0.32);
+  box-shadow: 0 24px 54px rgba(2, 8, 18, 0.55);
   animation: ini-menu-entra 0.18s ease-out;
 }
 
@@ -39,19 +42,20 @@
   height: 38px;
   border-radius: 50%;
   object-fit: cover;
-  background: var(--hv-lime-100);
+  background: #1b2c43;
+  border: 1px solid rgba(148, 166, 196, 0.24);
 }
 
 .ini-menu-nombre {
   font-size: 14px;
   font-weight: 700;
-  color: var(--hv-ink);
+  color: #f5f7fb;
   line-height: 1.25;
 }
 
 .ini-menu-correo {
   font-size: 11.5px;
-  color: var(--hv-muted);
+  color: #8b99ad;
   word-break: break-all;
 }
 
@@ -59,7 +63,7 @@
   display: block;
   height: 1px;
   margin: 8px 4px;
-  background: var(--hv-line);
+  background: rgba(148, 166, 196, 0.16);
 }
 
 .ini-menu-lista {
@@ -79,29 +83,29 @@
   background: transparent;
   font-size: 13.5px;
   font-weight: 500;
-  color: var(--hv-ink);
+  color: #d7dfea;
   text-align: left;
   cursor: pointer;
   transition: background 0.16s ease, color 0.16s ease;
 }
 
 .ini-menu-item:hover {
-  background: var(--hv-lime-100);
-  color: var(--hv-green-700);
+  background: rgba(169, 183, 201, 0.1);
+  color: #fff;
 }
 
 .ini-menu-item:focus-visible {
-  outline: 2px solid var(--hv-lime-400);
+  outline: 2px solid var(--hv-blue);
   outline-offset: -2px;
 }
 
 .ini-menu-item--salir {
-  color: #c0392b;
+  color: #ff9d92;
 }
 
 .ini-menu-item--salir:hover {
-  background: #fdecea;
-  color: #a5281b;
+  background: rgba(239, 68, 68, 0.14);
+  color: #ffb4ab;
 }
 
 @media (max-width: 520px) {

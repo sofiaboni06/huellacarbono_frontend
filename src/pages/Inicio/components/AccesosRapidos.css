@@ -1,24 +1,26 @@
-/* Accesos rápidos del panel de inicio */
+/* Accesos rápidos del panel de inicio — tema oscuro (tira compacta) */
 
 .ini-accesos {
   display: flex;
   flex-direction: column;
-  gap: clamp(12px, 1.4vw, 18px);
-  padding: clamp(17px, 1.6vw, 24px) clamp(17px, 1.7vw, 26px) clamp(18px, 1.7vw, 26px);
+  gap: clamp(10px, 1.2vw, 14px);
+  padding: clamp(14px, 1.4vw, 20px) clamp(15px, 1.6vw, 24px) clamp(15px, 1.5vw, 22px);
 }
 
 .ini-titulo-seccion {
-  font-size: 17px;
+  font-size: 15.5px;
   font-weight: 700;
   letter-spacing: -0.3px;
-  color: var(--hv-ink);
+  color: #f5f7fb;
 }
 
 .ini-accesos-rejilla {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: clamp(10px, 1.2vw, 16px);
-  flex: 1;
+  gap: clamp(8px, 1vw, 14px);
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .ini-accesos-rejilla > li {
@@ -29,42 +31,44 @@
 .ini-acceso {
   display: flex;
   flex: 1;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: clamp(8px, 0.9vw, 12px);
-  min-height: clamp(104px, 11vw, 132px);
-  padding: 14px 10px;
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  border-radius: 16px;
-  background: #eaeee5;
+  min-height: 54px;
+  padding: 10px clamp(10px, 1vw, 16px);
+  border: 1px solid rgba(148, 166, 196, 0.16);
+  border-radius: 13px;
+  background: rgba(27, 44, 67, 0.55);
+  font-family: inherit;
+  color: #d7dfea;
   cursor: pointer;
-  text-align: center;
-  transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  text-align: left;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
 }
 
 .ini-acceso:hover {
-  background: #e0e6d9;
-  transform: translateY(-3px);
-  box-shadow: 0 12px 26px rgba(10, 44, 24, 0.16);
+  background: rgba(27, 44, 67, 0.95);
+  border-color: rgba(22, 119, 242, 0.4);
+  transform: translateY(-2px);
 }
 
 .ini-acceso:active {
-  transform: translateY(-1px);
+  transform: translateY(0);
 }
 
 .ini-acceso:focus-visible {
-  outline: 2px solid var(--hv-green-600);
+  outline: 2px solid var(--ini-azul, #1677f2);
   outline-offset: 2px;
 }
 
 .ini-acceso-icono {
   display: grid;
   place-items: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 50%;
-  transition: transform 0.18s ease;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  transition: transform 0.16s ease;
 }
 
 .ini-acceso:hover .ini-acceso-icono {
@@ -72,43 +76,36 @@
 }
 
 .ini-acceso-icono.tono-azul {
-  background: rgba(59, 130, 246, 0.16);
-  color: var(--hv-blue);
+  background: rgba(22, 119, 242, 0.18);
+  color: #4da3ff;
 }
 
 .ini-acceso-icono.tono-verde {
-  background: rgba(47, 143, 70, 0.16);
-  color: var(--hv-green-600);
+  background: rgba(66, 216, 121, 0.16);
+  color: #42d879;
 }
 
 .ini-acceso-texto {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 600;
   line-height: 1.32;
-  color: var(--hv-text);
+  color: #d7dfea;
   overflow-wrap: break-word;
 }
 
 /* ----------------------------- Responsive ------------------------------- */
 @media (max-width: 1180px) {
   .ini-accesos-rejilla {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-  }
-}
-
-@media (max-width: 900px) {
-  .ini-accesos-rejilla {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 480px) {
-  .ini-acceso {
-    min-height: 108px;
-    padding: 14px 8px;
+@media (max-width: 560px) {
+  .ini-accesos-rejilla {
+    grid-template-columns: minmax(0, 1fr);
   }
 
-  .ini-acceso-texto {
-    font-size: 12.5px;
+  .ini-acceso {
+    min-height: 50px;
   }
 }

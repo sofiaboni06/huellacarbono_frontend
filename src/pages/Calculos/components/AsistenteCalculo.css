@@ -36,9 +36,10 @@
   flex-shrink: 0;
   width: 28px;
   height: 28px;
-  border: 2px solid var(--hv-sage);
+  /* Círculo inactivo: fondo oscuro translúcido con borde claro */
+  border: 2px solid rgba(148, 177, 210, 0.28);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(9, 19, 33, 0.78);
   font-family: var(--hv-font);
   font-size: 13px;
   font-weight: 700;
@@ -51,10 +52,11 @@
 }
 
 .cal-paso.activo .cal-paso-numero {
-  background: var(--hv-green-600);
-  border-color: var(--hv-green-600);
+  /* Paso activo: degradado azul primario (identidad Dark Glass) */
+  background: linear-gradient(135deg, #1677f2 0%, #258fef 100%);
+  border-color: #1677f2;
   color: #fff;
-  box-shadow: 0 6px 14px rgba(20, 96, 47, 0.32);
+  box-shadow: 0 6px 14px rgba(22, 119, 242, 0.36);
 }
 
 .cal-paso.hecho .cal-paso-numero {
@@ -75,7 +77,7 @@
 }
 
 .cal-paso.hecho .cal-paso-etiqueta {
-  color: var(--hv-green-700);
+  color: var(--hv-verde);
 }
 
 .cal-conector {
@@ -84,11 +86,12 @@
   height: 3px;
   margin-left: 9px;
   border-radius: 999px;
-  background: var(--hv-sage);
+  /* Conector pendiente: gris azulado translúcido */
+  background: rgba(148, 177, 210, 0.18);
 }
 
 .cal-conector.hecho {
-  background: var(--hv-green-500);
+  background: var(--hv-verde);
 }
 
 /* -------------------------------- Secciones ------------------------------ */
@@ -140,7 +143,8 @@
   padding: 14px 16px 16px;
   border: 1px solid var(--hv-line);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.58);
+  /* Fieldset anidado: superficie oscura translúcida bajo la tarjeta glass */
+  background: rgba(9, 19, 33, 0.5);
 }
 
 .cal-grupo-titulo {
@@ -150,7 +154,7 @@
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--hv-green-700);
+  color: var(--hv-verde);
 }
 
 .cal-grupo-rejilla {
@@ -197,9 +201,10 @@
   gap: 14px;
   flex-wrap: wrap;
   padding: 16px 18px;
-  border: 1px solid rgba(47, 143, 70, 0.24);
+  border: 1px solid rgba(66, 216, 121, 0.3);
   border-radius: 16px;
-  background: linear-gradient(135deg, rgba(168, 224, 99, 0.3), rgba(47, 143, 70, 0.14));
+  /* Panel de éxito: degradado verde ambiental en alpha sobre fondo oscuro */
+  background: linear-gradient(135deg, rgba(66, 216, 121, 0.16), rgba(66, 216, 121, 0.05));
 }
 
 .cal-resultado-icono {
@@ -212,7 +217,7 @@
   border-radius: 50%;
   background: var(--hv-green-600);
   color: #fff;
-  box-shadow: 0 8px 18px rgba(20, 96, 47, 0.32);
+  box-shadow: 0 8px 18px rgba(66, 216, 121, 0.28);
 }
 
 .cal-resultado-etiqueta {
@@ -220,7 +225,7 @@
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--hv-green-700);
+  color: var(--hv-verde);
 }
 
 .cal-resultado-titulo {
@@ -235,7 +240,7 @@
   font-size: clamp(24px, 3vw, 34px);
   font-weight: 700;
   letter-spacing: -0.6px;
-  color: var(--hv-green-700);
+  color: var(--hv-verde);
 }
 
 .cal-indicadores {
@@ -249,7 +254,8 @@
   padding: 13px 16px;
   border: 1px solid var(--hv-line);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.72);
+  /* KPI: superficie oscura translúcida */
+  background: rgba(9, 19, 33, 0.6);
 }
 
 .cal-indicador dt {
@@ -283,7 +289,8 @@
   padding: 14px 16px;
   border: 1px solid var(--hv-line);
   border-radius: 14px;
-  background: rgba(255, 255, 255, 0.66);
+  /* Panel de detalle: superficie oscura translúcida */
+  background: rgba(9, 19, 33, 0.55);
 }
 
 .cal-detalle-grupo-titulo {
@@ -292,7 +299,7 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--hv-green-700);
+  color: var(--hv-verde);
 }
 
 .cal-detalle-grupo ul {
@@ -319,9 +326,10 @@
 .cal-nota {
   margin-top: 16px;
   padding: 11px 14px;
-  border-left: 3px solid var(--hv-lime-500);
+  border-left: 3px solid var(--hv-verde);
   border-radius: 0 10px 10px 0;
-  background: rgba(231, 246, 207, 0.6);
+  /* Nota sobre resultado: tinte verde oscuro en alpha */
+  background: rgba(66, 216, 121, 0.1);
   font-size: 12.5px;
   line-height: 1.5;
   color: var(--hv-muted);
@@ -348,10 +356,11 @@
   align-items: center;
   gap: 14px;
   padding: 16px 16px 20px;
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(148, 177, 210, 0.24);
   border-radius: 22px;
-  background: linear-gradient(172deg, rgba(255, 255, 255, 0.92), rgba(231, 246, 207, 0.7));
-  box-shadow: 0 16px 38px rgba(9, 44, 24, 0.14);
+  /* Lámina decorativa: gradiente glass oscuro */
+  background: linear-gradient(172deg, rgba(27, 44, 67, 0.82), rgba(18, 32, 52, 0.92));
+  box-shadow: 0 16px 38px rgba(2, 8, 18, 0.4);
   text-align: center;
   overflow: hidden;
 }
@@ -367,7 +376,7 @@
   font-size: 13px;
   font-weight: 600;
   line-height: 1.5;
-  color: var(--hv-green-700);
+  color: var(--hv-verde);
 }
 
 /* ------------------------------ Responsive ------------------------------- */

@@ -58,7 +58,7 @@ export default function GraficaDonut({ datos }: GraficaDonutProps) {
             cy={TAMANO / 2}
             r={RADIO}
             fill="none"
-            stroke="rgba(17, 56, 32, 0.08)"
+            stroke="rgba(148, 177, 210, 0.12)"
             strokeWidth={GROSOR}
           />
 

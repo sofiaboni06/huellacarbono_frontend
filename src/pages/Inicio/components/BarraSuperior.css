@@ -1,0 +1,275 @@
+/* ==========================================================================
+   Barra superior del Dashboard: buscador, notificaciones y perfil.
+   Prefijo de clases: `ini-barra` / `ini-busca`.
+   ========================================================================== */
+
+.ini-barra {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.6vw, 20px);
+  min-height: 64px;
+  padding: 10px clamp(14px, 2vw, 28px);
+  background: rgba(8, 19, 33, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(148, 166, 196, 0.1);
+}
+
+.ini-barra-burger {
+  display: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: 1px solid rgba(148, 166, 196, 0.18);
+  border-radius: 11px;
+  background: rgba(27, 44, 67, 0.6);
+  color: #d7dfea;
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+
+.ini-barra-burger:hover {
+  background: rgba(27, 44, 67, 0.95);
+}
+
+.ini-barra-burger:focus-visible {
+  outline: 2px solid var(--ini-azul, #1677f2);
+  outline-offset: 2px;
+}
+
+/* ------------------------------- Buscador ------------------------------- */
+.ini-busca {
+  position: relative;
+  flex: 1;
+  max-width: 600px;
+  min-width: 0;
+}
+
+.ini-busca-icono {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: #8b99ad;
+  pointer-events: none;
+}
+
+.ini-busca-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 38px 0 40px;
+  border: 1px solid rgba(148, 166, 196, 0.16);
+  border-radius: 12px;
+  background: #14243a;
+  font-family: inherit;
+  font-size: 13px;
+  color: #f5f7fb;
+  outline: none;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.ini-busca-input::placeholder {
+  color: #8b99ad;
+}
+
+.ini-busca-input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.ini-busca-input:focus {
+  border-color: rgba(22, 119, 242, 0.65);
+  box-shadow: 0 0 0 3px rgba(22, 119, 242, 0.18);
+}
+
+.ini-busca-limpiar {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(148, 166, 196, 0.14);
+  color: #a9b7c9;
+  cursor: pointer;
+}
+
+.ini-busca-limpiar:hover {
+  background: rgba(148, 166, 196, 0.26);
+  color: #f5f7fb;
+}
+
+.ini-busca-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  z-index: 70;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px;
+  border: 1px solid rgba(148, 166, 196, 0.18);
+  border-radius: 14px;
+  background: #101d31;
+  box-shadow: 0 24px 52px rgba(2, 8, 18, 0.55);
+  animation: ini-busca-entra 0.15s ease-out;
+}
+
+@keyframes ini-busca-entra {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ini-busca-opcion {
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: #d7dfea;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.14s ease, color 0.14s ease;
+}
+
+.ini-busca-opcion:hover,
+.ini-busca-opcion:focus-visible {
+  background: rgba(22, 119, 242, 0.16);
+  color: #fff;
+  outline: none;
+}
+
+.ini-busca-vacio {
+  margin: 0;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  color: #8b99ad;
+}
+
+/* -------------------------------- Acciones ------------------------------ */
+.ini-barra-acciones {
+  display: flex;
+  align-items: center;
+  gap: clamp(8px, 1vw, 14px);
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.ini-desplegable {
+  position: relative;
+}
+
+.ini-barra-campana {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(148, 166, 196, 0.16);
+  border-radius: 50%;
+  background: rgba(27, 44, 67, 0.6);
+  color: #d7dfea;
+  cursor: pointer;
+  transition: background 0.16s ease;
+}
+
+.ini-barra-campana:hover {
+  background: rgba(27, 44, 67, 0.95);
+}
+
+.ini-barra-campana:focus-visible,
+.ini-barra-perfil:focus-visible {
+  outline: 2px solid var(--ini-azul, #1677f2);
+  outline-offset: 2px;
+}
+
+.ini-barra-contador {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #ef4444;
+  border: 2px solid #0a1524;
+  color: #fff;
+  font-size: 9.5px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ini-barra-perfil {
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid rgba(148, 166, 196, 0.2);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: border-color 0.16s ease;
+}
+
+.ini-barra-perfil:hover {
+  border-color: rgba(22, 119, 242, 0.6);
+}
+
+.ini-barra-foto {
+  display: block;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* ----------------------------- Responsive ------------------------------- */
+@media (max-width: 959px) {
+  .ini-barra-burger {
+    display: grid;
+  }
+}
+
+@media (max-width: 560px) {
+  .ini-barra {
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .ini-busca {
+    max-width: none;
+  }
+
+  .ini-busca-input {
+    font-size: 12.5px;
+    padding-left: 36px;
+  }
+
+  .ini-busca-icono {
+    left: 12px;
+  }
+
+  .ini-barra-foto {
+    width: 32px;
+    height: 32px;
+  }
+}

@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import Navbar from './Navbar'
+import SidebarInicio from '../../pages/Inicio/components/SidebarInicio'
+import BarraSuperior from '../../pages/Inicio/components/BarraSuperior'
 import hojaIzquierda from '../../assets/images/leaf-bl.png'
 import hojaDerecha from '../../assets/images/leaf-tr.png'
 import { usePreferencias } from '../../context/PreferenciasContext'
@@ -63,11 +64,16 @@ interface PlantillaVistaProps {
 
 /**
  * Armazón común de todas las vistas fuera del Login y del Dashboard:
- * fondo ambiental, hojas decorativas, barra global y aviso flotante.
+ * comparte el mismo menú lateral y la misma barra superior que el Dashboard
+ * (`SidebarInicio` + `BarraSuperior`), con fondo oscuro, hojas decorativas y
+ * aviso flotante. Ningún módulo mantiene una navegación propia.
  */
 export default function PlantillaVista({ titulo, className = '', children }: PlantillaVistaProps) {
   const { tema, hojasVisibles, animacionesActivas } = usePreferencias()
   const aviso = useAvisoActual()
+  const [lateralAbierto, setLateralAbierto] = useState(false)
+
+  const cerrarLateral = useCallback(() => setLateralAbierto(false), [])
 
   useEffect(() => {
     const tituloAnterior = document.title
@@ -89,9 +95,22 @@ export default function PlantillaVista({ titulo, className = '', children }: Pla
         <img className="vst-hoja vst-hoja--der" src={hojaDerecha} alt="" />
       </div>
 
-      <Navbar />
+      <SidebarInicio abierto={lateralAbierto} onCerrar={cerrarLateral} />
 
-      <main className="vst-contenido">{children}</main>
+      {lateralAbierto ? (
+        <button
+          type="button"
+          className="vst-velo"
+          onClick={cerrarLateral}
+          aria-label="Cerrar menú lateral"
+        />
+      ) : null}
+
+      <div className="vst-zona">
+        <BarraSuperior onAlternarLateral={() => setLateralAbierto((v) => !v)} />
+
+        <main className="vst-contenido">{children}</main>
+      </div>
 
       {aviso ? (
         <div className="vst-aviso" role="status" aria-live="polite">

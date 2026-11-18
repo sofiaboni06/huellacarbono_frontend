@@ -16,15 +16,16 @@
 .prf-notif-contador {
   padding: 5px 13px;
   border-radius: 999px;
-  background: rgba(47, 143, 70, 0.14);
-  color: var(--hv-green-700);
+  /* Chip "todo leído": verde brillante sobre fondo alpha oscuro */
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
   font-size: 12px;
   font-weight: 700;
 }
 
 .prf-notif-contador.hay {
   background: rgba(226, 87, 76, 0.16);
-  color: var(--hv-red);
+  color: #ff9d92;
 }
 
 .prf-notif-total {
@@ -46,13 +47,26 @@
   padding: 14px 16px;
   border: 1px solid var(--hv-line);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.6);
+  /* Fila translúcida oscura (glass) con transición y hover suave */
+  background: rgba(27, 44, 67, 0.5);
+  transition: background 0.16s ease, border-color 0.16s ease;
+}
+
+.prf-notif-item:hover {
+  background: rgba(27, 44, 67, 0.92);
+  border-color: rgba(148, 177, 210, 0.3);
 }
 
 .prf-notif-item.no-leida {
-  background: #fff;
-  border-color: rgba(47, 143, 70, 0.3);
+  /* No leída: superficie más luminosa + borde verde de énfasis */
+  background: rgba(32, 52, 77, 0.72);
+  border-color: rgba(66, 216, 121, 0.34);
   box-shadow: var(--hv-shadow-sm);
+}
+
+.prf-notif-item.no-leida:hover {
+  background: rgba(38, 62, 94, 0.9);
+  border-color: rgba(66, 216, 121, 0.5);
 }
 
 .prf-notif-icono {
@@ -65,24 +79,25 @@
   border-radius: 50%;
 }
 
+/* Chips de tipo: fondo alpha oscuro + icono brillante */
 .prf-notif-icono.tipo-exito {
-  background: rgba(47, 143, 70, 0.16);
-  color: var(--hv-green-700);
+  background: rgba(66, 216, 121, 0.16);
+  color: var(--hv-verde);
 }
 
 .prf-notif-icono.tipo-info {
-  background: rgba(59, 130, 246, 0.16);
-  color: var(--hv-blue);
+  background: rgba(22, 119, 242, 0.18);
+  color: #8ec1ff;
 }
 
 .prf-notif-icono.tipo-usuario {
-  background: rgba(168, 85, 247, 0.16);
-  color: var(--hv-purple);
+  background: rgba(168, 85, 247, 0.18);
+  color: #c99bfb;
 }
 
 .prf-notif-icono.tipo-alerta {
   background: rgba(245, 158, 11, 0.18);
-  color: #9a6507;
+  color: #f5b942;
 }
 
 .prf-notif-fila {
@@ -117,7 +132,8 @@
   margin-top: 6px;
   font-size: 11.5px;
   font-weight: 600;
-  color: #94a498;
+  /* Tinta tenue (tono placeholder) para la hora */
+  color: #8ea0b8;
 }
 
 .prf-notif-estado {
@@ -126,7 +142,8 @@
   gap: 6px;
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--hv-green-700);
+  /* Estado "Leída": verde brillante sobre panel oscuro */
+  color: var(--hv-verde);
   white-space: nowrap;
 }
 

@@ -68,17 +68,17 @@
   font-family: var(--hv-font);
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--hv-green-700);
+  color: #8ec1ff; /* enlace claro sobre fondo oscuro */
   cursor: pointer;
   transition: background 0.16s ease;
 }
 
 .rep-ver-todos:hover {
-  background: rgba(47, 143, 70, 0.12);
+  background: rgba(22, 119, 242, 0.12);
 }
 
 .rep-ver-todos:focus-visible {
-  outline: 2px solid var(--hv-lime-500);
+  outline: 2px solid var(--hv-blue-2);
   outline-offset: 2px;
 }
 
@@ -97,12 +97,12 @@
   gap: 14px;
   align-items: start;
   padding: 18px;
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  border: 1px solid rgba(148, 177, 210, 0.18);
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.86);
+  background: var(--hv-glass); /* panel azul marino translúcido */
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 16px 38px rgba(9, 44, 24, 0.12);
+  box-shadow: 0 12px 32px rgba(2, 8, 18, 0.36);
   transition:
     transform 0.18s ease,
     box-shadow 0.18s ease;
@@ -110,7 +110,7 @@
 
 .rep-reporte:hover {
   transform: translateY(-2px);
-  box-shadow: 0 22px 46px rgba(9, 44, 24, 0.18);
+  box-shadow: 0 18px 42px rgba(2, 8, 18, 0.5);
 }
 
 .rep-reporte-icono {
@@ -121,7 +121,7 @@
   width: 46px;
   height: 46px;
   border-radius: 14px;
-  background: rgba(59, 130, 246, 0.14);
+  background: rgba(22, 119, 242, 0.16);
   color: var(--hv-blue);
 }
 
@@ -148,8 +148,8 @@
   margin-top: 9px;
   padding: 3px 11px;
   border-radius: 999px;
-  background: var(--hv-lime-100);
-  color: var(--hv-green-700);
+  background: rgba(66, 216, 121, 0.14); /* chip verde con tono alpha oscuro */
+  color: var(--hv-verde); /* verde brillante legible sobre chip oscuro */
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.05em;
