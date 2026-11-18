@@ -1,0 +1,213 @@
+/* Datos de actividad — reglas propias de esta vista.
+   Barra, buscador, filtros, tabla, estados, acciones, vacío, carga y
+   paginación reutilizan los estilos comunes de `gestion.css`. */
+
+@import '../Gestion/gestion.css';
+
+/* La tarjeta de la tabla se cierra sin dobles bordes. */
+.gst-datos .gst-tabla-tarjeta {
+  overflow: hidden;
+  padding-bottom: 4px;
+}
+
+/* Nueve columnas: más ancho que el mínimo genérico, con scroll horizontal. */
+.gst-tabla--datos {
+  min-width: 1120px;
+}
+
+/* Actividad: la columna protagonista de la tabla. */
+.dad-actividad {
+  font-weight: 600;
+  color: var(--hv-ink);
+}
+
+/* Proceso: línea secundaria bajo el nombre de la actividad. */
+.dad-proceso {
+  display: block;
+  margin-top: 3px;
+  font-size: 0.74rem;
+  color: var(--hv-muted);
+}
+
+/* Qué se copia: descripción libre del documento. */
+.dad-que-se-copia {
+  color: var(--hv-text);
+}
+
+/* Cantidad: cadena decimal original, sin abreviar ni redondear. */
+.dad-cantidad {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--hv-verde);
+  white-space: nowrap;
+}
+
+/* Unidad: símbolo tal como se escribe en las fórmulas. */
+.dad-unidad {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: 0.82rem;
+  color: var(--hv-text);
+  white-space: nowrap;
+}
+
+/* Alcance: chip con el código (Alcance 1, 2, 3…). */
+.dad-alcance {
+  display: inline-block;
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--hv-ink);
+  background: var(--hv-blue-soft);
+  border: 1px solid var(--hv-line);
+  border-radius: var(--hv-radius-pill, 999px);
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+/* Documento: referencia del archivo o factura de origen. */
+.dad-documento {
+  font-size: 0.84rem;
+  color: var(--hv-text);
+  word-break: break-word;
+}
+
+/* ------------------------------ Formulario ------------------------------ */
+
+/* Cantidad: se escribe como texto para conservar los decimales. */
+.dad-cantidad.vst-input {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-weight: 600;
+}
+
+/* Guía mientras carga el catálogo del proyecto. */
+.dad-cargando-catalogos {
+  margin: 0 0 12px;
+  font-size: 0.8rem;
+  color: var(--hv-muted);
+}
+
+/* Aviso bajo el formulario: este módulo no calcula emisiones. */
+.dad-nota-formulario {
+  margin-top: 14px;
+  font-size: 0.76rem;
+  line-height: 1.55;
+  color: var(--hv-muted);
+}
+
+/* --------------------------- Aviso de catálogos ------------------------- */
+
+/* Fallo parcial de los catálogos: no bloquea la pantalla, solo avisa. */
+.dad-aviso-catalogos {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 9px 14px;
+  font-size: 0.8rem;
+  color: #f3c66b;
+  background: rgba(243, 198, 107, 0.1);
+  border: 1px solid rgba(243, 198, 107, 0.35);
+  border-radius: var(--hv-radius-sm, 10px);
+}
+
+.dad-aviso-catalogos button {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: #f3c66b;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ------------------------------- Detalle -------------------------------- */
+
+/* Detalle de consulta (GET /activity-data/:id). */
+.dad-detalle {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.dad-detalle > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 12px;
+  background: var(--hv-sage);
+  border: 1px solid var(--hv-line);
+  border-radius: var(--hv-radius-sm, 10px);
+}
+
+.dad-detalle dt {
+  font-size: 0.78rem;
+  color: var(--hv-muted);
+}
+
+.dad-detalle dd {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--hv-ink);
+  text-align: right;
+  word-break: break-word;
+}
+
+.dad-detalle dd.dad-detalle-mono {
+  font-family: var(--mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+  font-weight: 500;
+}
+
+/* ------------------------- Buscador y contador --------------------------- */
+
+/* Un solo botón X: se oculta el decorador nativo de `input[type=search]`
+   (Chrome/Edge/Safari) para que solo exista el botón propio del módulo. */
+.gst-datos .gst-buscador input[type='search']::-webkit-search-cancel-button,
+.gst-datos .gst-buscador input[type='search']::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Contador de resultados: icono y texto siempre alineados, con separación
+   uniforme y sin que el chip se comprima ni se desborde. */
+.gst-datos .gst-contador {
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  line-height: 1;
+}
+
+.gst-datos .gst-contador svg {
+  flex: 0 0 auto;
+}
+
+/* En pantallas angostas la tabla se desplaza de forma horizontal
+   (el envoltorio `.gst-tabla-envoltura` ya lo permite) y la barra de
+   búsqueda apila sus controles. */
+@media (max-width: 720px) {
+  .gst-datos .gst-barra {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gst-datos .gst-filtros {
+    width: 100%;
+  }
+
+  .gst-datos .gst-contador {
+    margin-left: 0;
+    justify-content: center;
+  }
+
+  .gst-datos .gst-paginacion {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+}

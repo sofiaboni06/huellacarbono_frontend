@@ -21,6 +21,11 @@ interface SeccionBuscable {
 const SECCIONES: SeccionBuscable[] = [
   { titulo: 'Inicio', to: '/inicio', claves: 'inicio dashboard panel resumen' },
   { titulo: 'Cálculos', to: '/calculos', claves: 'calculos huella hidrica carbono asistente' },
+  {
+    titulo: 'Datos de actividad',
+    to: '/datos-actividad',
+    claves: 'datos actividad registro medicion cantidad documento fuente alcance',
+  },
   { titulo: 'Reportes', to: '/reportes', claves: 'reportes informes pdf descargas analitica' },
   { titulo: 'Configuración', to: '/configuracion', claves: 'configuracion preferencias tema idioma' },
   { titulo: 'Ayuda', to: '/ayuda', claves: 'ayuda faq preguntas guias contacto' },

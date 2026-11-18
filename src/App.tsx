@@ -3,6 +3,7 @@ import { AvisoProvider } from './components/layout/PlantillaVista'
 import { NotificacionesProvider } from './context/NotificacionesContext'
 import { PerfilProvider } from './context/PerfilContext'
 import { PreferenciasProvider } from './context/PreferenciasContext'
+import { ProyectoProvider } from './context/ProyectoContext'
 import Login from './pages/Login/Login'
 import Inicio from './pages/Inicio/Inicio'
 import Calculos from './pages/Calculos/Calculos'
@@ -18,6 +19,7 @@ import Usuarios from './pages/Gestion/Usuarios/Usuarios'
 import Perfiles from './pages/Gestion/Perfiles/Perfiles'
 import RolesPermisos from './pages/Gestion/RolesPermisos/RolesPermisos'
 import UnidadesMedida from './pages/Gestion/UnidadesMedida/UnidadesMedida'
+import DatosActividad from './pages/DatosActividad/DatosActividad'
 
 /**
  * Rutas de la aplicación.
@@ -37,9 +39,11 @@ import UnidadesMedida from './pages/Gestion/UnidadesMedida/UnidadesMedida'
  *  /gestion/perfiles         → gestión de perfiles
  *  /gestion/roles-permisos   → roles y permisos
  *  /gestion/unidades-medida  → unidades de medida
+ *  /datos-actividad          → registro de datos de actividad
  *
- * Los proveedores globales (perfil, notificaciones y preferencias visuales)
- * viven aquí para que el estado esté compartido en todas las vistas.
+ * Los proveedores globales (perfil, notificaciones, preferencias visuales y
+ * proyecto seleccionado) viven aquí para que el estado esté compartido en
+ * todas las vistas.
  */
 function App() {
   return (
@@ -48,7 +52,8 @@ function App() {
         <PerfilProvider>
           <NotificacionesProvider>
             <AvisoProvider>
-              <Routes>
+              <ProyectoProvider>
+                <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/inicio" element={<Inicio />} />
                 <Route path="/calculos" element={<Calculos />} />
@@ -68,10 +73,12 @@ function App() {
                 <Route path="/gestion/perfiles" element={<Perfiles />} />
                 <Route path="/gestion/roles-permisos" element={<RolesPermisos />} />
                 <Route path="/gestion/unidades-medida" element={<UnidadesMedida />} />
+                <Route path="/datos-actividad" element={<DatosActividad />} />
 
                 <Route path="/" element={<Navigate to="/login" replace />} />
                 <Route path="*" element={<Navigate to="/login" replace />} />
-              </Routes>
+                </Routes>
+              </ProyectoProvider>
             </AvisoProvider>
           </NotificacionesProvider>
         </PerfilProvider>

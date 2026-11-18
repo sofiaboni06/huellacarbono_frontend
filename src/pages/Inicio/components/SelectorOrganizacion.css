@@ -141,6 +141,38 @@
   background: rgba(22, 119, 242, 0.26);
 }
 
+/* ------------- Estados vacíos / error dentro del menú ------------------- */
+.ini-selector-vacio {
+  margin: 6px 10px 8px;
+  font-size: 12px;
+  line-height: 1.45;
+  color: #8b99ad;
+}
+
+.ini-selector-reintentar {
+  display: block;
+  margin: 0 8px 8px;
+  padding: 6px 10px;
+  border: 1px solid rgba(22, 119, 242, 0.45);
+  border-radius: 8px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4da3ff;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.ini-selector-reintentar:hover {
+  background: rgba(22, 119, 242, 0.14);
+}
+
+.ini-selector-reintentar:focus-visible {
+  outline: 2px solid var(--ini-azul, #1677f2);
+  outline-offset: 2px;
+}
+
 @media (max-width: 560px) {
   .ini-selector {
     width: 100%;

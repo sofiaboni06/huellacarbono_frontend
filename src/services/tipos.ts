@@ -105,3 +105,106 @@ export interface UsuarioSesion {
   nombre: string
   correo: string
 }
+
+/* --------------------------------------------------------------------------
+ * Datos de actividad (módulo «Registro de Datos de Actividad»)
+ * ----------------------------------------------------------------------- */
+
+/**
+ * Proyecto seleccionable. En el backend «proyecto» equivale a `organizacion`:
+ * no existe una tabla `proyecto` en el esquema.
+ */
+export interface Proyecto {
+  id: number
+  name: string
+  /** Nombre corto de la organización (`null` si no tiene). */
+  shortName: string | null
+  /** Dirección de la organización (`null` si no tiene). */
+  address: string | null
+  nit: string
+  active: boolean
+}
+
+/** Actividad activa de un proyecto, con su proceso y sede para identificarla. */
+export interface ActividadCatalogo {
+  id: number
+  name: string
+  processName: string | null
+  sedeName: string | null
+}
+
+/** Periodo de medición de un proyecto (`estado`: ABIERTO | CERRADO | BLOQUEADO). */
+export interface PeriodoCatalogo {
+  id: number
+  name: string
+  startDate: string
+  endDate: string
+  status: string
+}
+
+/** Fuente de emisión activa (catálogo global). */
+export interface FuenteEmisionCatalogo {
+  id: number
+  code: string
+  name: string
+  category: string | null
+}
+
+/** Alcance de emisión activo (catálogo global). */
+export interface AlcanceEmisionCatalogo {
+  id: number
+  code: string
+  name: string
+  description: string | null
+}
+
+/**
+ * Registro de dato de actividad (backend: `activity-data`).
+ *
+ * Guarda únicamente la cantidad original del documento (ej. `4000` kWh):
+ * no existe factor de emisión ni resultado CO2e, cálculo que pertenece a
+ * otro módulo.
+ */
+export interface DatoActividad {
+  id: number
+  projectId: number | null
+  activityId: number
+  activityName: string
+  processName: string | null
+  periodId: number
+  periodName: string
+  emissionSourceId: number
+  emissionSourceName: string
+  scopeId: number
+  scopeCode: string
+  scopeName: string
+  unitId: number
+  unitSymbol: string
+  unitName: string
+  /** DECIMAL(24, 8). Siempre cadena para no perder precisión. */
+  quantity: string
+  whatToCopy: string
+  document: string
+  status: string
+  dataDate: string | null
+  registeredBy: { id: number; name: string } | null
+  createdAt: string | null
+  updatedAt: string | null
+}
+
+/** Datos de entrada del formulario de datos de actividad. */
+export interface DatoActividadFormulario {
+  /**
+   * Los identificadores viajan como cadena porque así los maneja
+   * `<select>`; el servicio los convierte a número antes de enviarlos.
+   */
+  activityId: string
+  periodId: string
+  emissionSourceId: string
+  scopeId: string
+  unitId: string
+  /** Cadena decimal (nunca `number`), formato DECIMAL(24, 8). */
+  quantity: string
+  whatToCopy: string
+  document: string
+}

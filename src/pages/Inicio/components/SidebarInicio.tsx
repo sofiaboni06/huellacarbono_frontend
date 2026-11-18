@@ -3,6 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import {
   Calculator,
   ChevronDown,
+  ClipboardList,
   Contact,
   FileText,
   HelpCircle,
@@ -35,6 +36,12 @@ interface EnlaceLateral {
 const ENLACES: EnlaceLateral[] = [
   { to: '/inicio', etiqueta: 'Inicio', Icono: Home },
   { to: '/calculos', etiqueta: 'Cálculos', Icono: Calculator },
+  {
+    to: '/datos-actividad',
+    etiqueta: 'Datos de actividad',
+    Icono: ClipboardList,
+    permiso: 'dato_actividad.ver',
+  },
   { to: '/reportes', etiqueta: 'Reportes', Icono: FileText },
   { to: '/configuracion', etiqueta: 'Configuración', Icono: Settings },
   { to: '/ayuda', etiqueta: 'Ayuda', Icono: HelpCircle },
