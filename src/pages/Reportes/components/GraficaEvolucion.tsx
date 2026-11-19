@@ -30,8 +30,11 @@ const COLOR_EJE = 'rgba(148, 177, 210, 0.28)'
 export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
   const [activo, setActivo] = useState<number | null>(null)
 
-  const maximo = Math.max(100, ...datos.flatMap((d) => [d.hidrica, d.carbono]))
-  const tope = Math.ceil(maximo / 250) * 250
+  const hayHidrica = datos.some((punto) => punto.hidrica > 0)
+  const valores = datos.flatMap((punto) => (hayHidrica ? [punto.hidrica, punto.carbono] : [punto.carbono]))
+  const maximo = Math.max(...valores, 0)
+  const magnitud = maximo <= 0 ? 1 : 10 ** Math.floor(Math.log10(maximo))
+  const tope = Math.ceil(maximo / magnitud) * magnitud || 1
   const divisiones = 5
 
   const anchoUtil = ANCHO - IZQ - DER
@@ -76,7 +79,7 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
               strokeDasharray={valor === 0 ? '0' : '4 5'}
             />
             <text className="ge-eje ge-eje-y" x={IZQ - 10} y={posicionY(valor) + 4} textAnchor="end">
-              {Math.round(valor).toLocaleString('es-CO')}
+              {valor.toLocaleString('es-CO', { maximumFractionDigits: tope < 10 ? 2 : 0 })}
             </text>
           </g>
         ))}
@@ -113,19 +116,23 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
         ) : null}
 
         {/* ------------------------------- Series ------------------------------ */}
-        <path d={trazar('hidrica')} fill="none" stroke={COLOR_HIDRICA} strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" />
+        {hayHidrica ? (
+          <path d={trazar('hidrica')} fill="none" stroke={COLOR_HIDRICA} strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" />
+        ) : null}
         <path d={trazar('carbono')} fill="none" stroke={COLOR_CARBONO} strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" />
 
         {datos.map((d, i) => (
           <g key={`p-${d.mes}`}>
-            <circle
-              cx={posicionX(i)}
-              cy={posicionY(d.hidrica)}
-              r={activo === i ? 5.5 : 3.6}
-              fill="#0b1526"
-              stroke={COLOR_HIDRICA}
-              strokeWidth={2.4}
-            />
+            {hayHidrica ? (
+              <circle
+                cx={posicionX(i)}
+                cy={posicionY(d.hidrica)}
+                r={activo === i ? 5.5 : 3.6}
+                fill="#0b1526"
+                stroke={COLOR_HIDRICA}
+                strokeWidth={2.4}
+              />
+            ) : null}
             <circle
               cx={posicionX(i)}
               cy={posicionY(d.carbono)}
@@ -185,8 +192,12 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
         >
           <strong className="ge-consulta-mes">{puntoActivo.mes}</strong>
           <span className="ge-consulta-fila">
-            <i style={{ background: COLOR_HIDRICA }} aria-hidden="true" />
-            Hídrica <b>{puntoActivo.hidrica.toLocaleString('es-CO')} m³</b>
+            {hayHidrica ? (
+              <>
+                <i style={{ background: COLOR_HIDRICA }} aria-hidden="true" />
+                Hídrica <b>{puntoActivo.hidrica.toLocaleString('es-CO')} m³</b>
+              </>
+            ) : null}
           </span>
           <span className="ge-consulta-fila">
             <i style={{ background: COLOR_CARBONO }} aria-hidden="true" />
@@ -197,10 +208,12 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
       </div>
 
       <ul className="ge-leyenda">
-        <li>
-          <span className="ge-leyenda-muestra" style={{ background: COLOR_HIDRICA }} aria-hidden="true" />
-          Hídrica (m³)
-        </li>
+        {hayHidrica ? (
+          <li>
+            <span className="ge-leyenda-muestra" style={{ background: COLOR_HIDRICA }} aria-hidden="true" />
+            Hídrica (m³)
+          </li>
+        ) : null}
         <li>
           <span className="ge-leyenda-muestra" style={{ background: COLOR_CARBONO }} aria-hidden="true" />
           Carbono (tCO₂e)

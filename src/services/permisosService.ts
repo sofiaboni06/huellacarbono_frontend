@@ -1,116 +1,123 @@
-/**
- * Servicio de permisos por perfil (demostración local).
- *
- * La matriz de permisos se guarda por perfil y por módulo. La lógica está
- * deliberadamente desacoplada de la UI: `cargarPermisos` / `guardarPermisos`
- * son las dos únicas puertas de entrada, de modo que más adelante se
- * reemplacen por `GET /perfiles/:id/permisos` y `PUT /perfiles/:id/permisos`
- * sin tocar `RolesPermisos.tsx`.
- *
- * NOTA: mientras no exista integración con el backend, estos permisos solo
- * se reflejan en esta pantalla; no condicionan el acceso real a los módulos.
- */
-
-import { guardarColeccion, leerColeccion } from './persistencia'
-import { MODULOS, PERMISOS_DEMO } from './datosDemo'
+import { api } from './api'
+import { MODULOS } from './datosDemo'
+import { obtenerPerfil } from './perfilesService'
 import type { Accion, MatrizPermisos, PermisoAccion } from './tipos'
 
-const CLAVE = 'permisos'
+const ACCIONES: Accion[] = ['consultar', 'crear', 'editar', 'eliminar']
 
-interface RegistroPermiso {
-  perfilId: string
-  matriz: MatrizPermisos
+/** Qué código de la API enciende cada casilla. Las que no están no se pueden guardar. */
+const CODIGOS: Record<string, Partial<Record<Accion, string>>> = {
+  usuarios: { consultar: 'usuario.ver', crear: 'usuario.crear', editar: 'usuario.editar' },
+  perfiles: { consultar: 'rol.ver', crear: 'rol.crear', editar: 'rol.editar' },
+  roles: { consultar: 'rol.ver', crear: 'rol.crear', editar: 'rol.editar' },
 }
 
-const SEMILLA: RegistroPermiso[] = Object.entries(PERMISOS_DEMO).map(([perfilId, matriz]) => ({
-  perfilId,
-  matriz,
-}))
+const cache = new Map<string, MatrizPermisos>()
 
-let almacen: RegistroPermiso[] = leerColeccion<RegistroPermiso>(CLAVE, SEMILLA)
-
-function red(ms = 140): Promise<void> {
-  return new Promise((resolver) => setTimeout(resolver, ms))
+function filaVacia(): PermisoAccion {
+  return { consultar: false, crear: false, editar: false, eliminar: false }
 }
 
-function persistir(): void {
-  guardarColeccion(CLAVE, almacen)
-}
-
-/** Matriz vacía: ningún módulo, ninguna acción. */
 export function matrizVacia(): MatrizPermisos {
   const salida: MatrizPermisos = {}
-  for (const modulo of MODULOS) {
-    salida[modulo.id] = { consultar: false, crear: false, editar: false, eliminar: false }
-  }
+  for (const modulo of MODULOS) salida[modulo.id] = filaVacia()
   return salida
 }
 
 function clonarMatriz(matriz: MatrizPermisos): MatrizPermisos {
   const salida: MatrizPermisos = {}
   for (const modulo of MODULOS) {
-    const origen = matriz[modulo.id]
-    salida[modulo.id] = origen
-      ? {
-          consultar: Boolean(origen.consultar),
-          crear: Boolean(origen.crear),
-          editar: Boolean(origen.editar),
-          eliminar: Boolean(origen.eliminar),
-        }
-      : { consultar: false, crear: false, editar: false, eliminar: false }
+    salida[modulo.id] = { ...(matriz[modulo.id] ?? filaVacia()) }
   }
   return salida
 }
 
-/**
- * Carga los permisos de un perfil.
- * Si el perfil todavía no tiene matriz guardada, devuelve una matriz vacía.
- */
+function desdeCodigos(codigos: string[]): MatrizPermisos {
+  const matriz = matrizVacia()
+  for (const modulo of MODULOS) {
+    const mapa = CODIGOS[modulo.id]
+    if (!mapa) continue
+    for (const accion of ACCIONES) {
+      const codigo = mapa[accion]
+      matriz[modulo.id][accion] = codigo ? codigos.includes(codigo) : false
+    }
+  }
+  return matriz
+}
+
 export async function cargarPermisos(perfilId: string): Promise<MatrizPermisos> {
-  await red()
-  const registro = almacen.find((item) => item.perfilId === perfilId)
-  return clonarMatriz(registro ? registro.matriz : matrizVacia())
+  const perfil = await obtenerPerfil(perfilId)
+  const matriz = desdeCodigos(perfil.permisos)
+  cache.set(perfilId, matriz)
+  return clonarMatriz(matriz)
 }
 
-/** Guarda (crea o reemplaza) la matriz completa de un perfil. */
-export async function guardarPermisos(
-  perfilId: string,
-  matriz: MatrizPermisos,
-): Promise<MatrizPermisos> {
-  await red(220)
-  const limpia = clonarMatriz(matriz)
-  const existe = almacen.some((item) => item.perfilId === perfilId)
-  almacen = existe
-    ? almacen.map((item) => (item.perfilId === perfilId ? { perfilId, matriz: limpia } : item))
-    : [...almacen, { perfilId, matriz: limpia }]
-  persistir()
-  return clonarMatriz(limpia)
-}
-
-/**
- * Devuelve la matriz original guardada (para descartar cambios sin guardar).
- * Devuelve una matriz vacía si nunca se guardó nada para ese perfil.
- */
 export function permisosGuardados(perfilId: string): MatrizPermisos {
-  const registro = almacen.find((item) => item.perfilId === perfilId)
-  return clonarMatriz(registro ? registro.matriz : matrizVacia())
+  return clonarMatriz(cache.get(perfilId) ?? matrizVacia())
 }
 
-/** Cuenta cuántas casillas están marcadas en una matriz. */
+export function accionGuardable(moduloId: string, accion: Accion): boolean {
+  return Boolean(CODIGOS[moduloId]?.[accion])
+}
+
+/** Enciende o apaga todas las casillas que comparten el mismo código. */
+export function cambiarMatriz(
+  matriz: MatrizPermisos,
+  moduloId: string,
+  accion: Accion,
+  valor: boolean,
+): MatrizPermisos {
+  const codigo = CODIGOS[moduloId]?.[accion]
+  const siguiente = clonarMatriz(matriz)
+  if (!codigo) return siguiente
+
+  for (const modulo of MODULOS) {
+    const mapa = CODIGOS[modulo.id]
+    if (!mapa) continue
+    for (const item of ACCIONES) {
+      if (mapa[item] === codigo) siguiente[modulo.id][item] = valor
+    }
+  }
+  return siguiente
+}
+
+/** Marca solo las casillas que el servidor puede guardar. */
+export function marcarMatriz(matriz: MatrizPermisos, valor: boolean): MatrizPermisos {
+  const siguiente = clonarMatriz(matriz)
+  for (const modulo of MODULOS) {
+    for (const accion of ACCIONES) {
+      siguiente[modulo.id][accion] = valor && accionGuardable(modulo.id, accion)
+    }
+  }
+  return siguiente
+}
+
+function codigosDe(matriz: MatrizPermisos): string[] {
+  const codes = new Set<string>()
+  for (const modulo of MODULOS) {
+    const mapa = CODIGOS[modulo.id]
+    const fila = matriz[modulo.id]
+    if (!mapa || !fila) continue
+    for (const accion of ACCIONES) {
+      const codigo = mapa[accion]
+      if (codigo && fila[accion]) codes.add(codigo)
+    }
+  }
+  return [...codes]
+}
+
+export async function guardarPermisos(perfilId: string, matriz: MatrizPermisos): Promise<MatrizPermisos> {
+  await api(`/roles/${perfilId}/permissions`, {
+    method: 'PUT',
+    body: JSON.stringify({ codes: codigosDe(matriz) }),
+  })
+  return cargarPermisos(perfilId)
+}
+
 export function contarPermisos(matriz: MatrizPermisos): number {
   return MODULOS.reduce((total, modulo) => {
-    const fila: PermisoAccion | undefined = matriz[modulo.id]
+    const fila = matriz[modulo.id]
     if (!fila) return total
-    return total + (['consultar', 'crear', 'editar', 'eliminar'] as Accion[]).reduce(
-      (suma, accion) => suma + (fila[accion] ? 1 : 0),
-      0,
-    )
+    return total + ACCIONES.reduce((suma, accion) => suma + (fila[accion] ? 1 : 0), 0)
   }, 0)
-}
-
-/** Restaura los permisos de demostración. */
-export async function reiniciarPermisos(): Promise<void> {
-  await red(80)
-  almacen = SEMILLA.map((item) => ({ perfilId: item.perfilId, matriz: clonarMatriz(item.matriz) }))
-  persistir()
 }

@@ -1,23 +1,34 @@
-import { usePerfil } from '../../../context/PerfilContext'
 import SelectorOrganizacion from './SelectorOrganizacion'
+import { usePerfil } from '../../../context/PerfilContext'
 import './Bienvenida.css'
 
-/** Cabecera del panel de inicio: saludo dinámico y selector de periodo. */
-export default function Bienvenida() {
-  const { perfil } = usePerfil()
+interface Opcion {
+  id: string
+  nombre: string
+}
 
+interface Props {
+  organizaciones: Opcion[]
+  periodos: Opcion[]
+  organizacionId: string
+  periodoId: string
+  onOrganizacion: (id: string) => void
+  onPeriodo: (id: string) => void
+}
+
+export default function Bienvenida(props: Props) {
+  const { perfil } = usePerfil()
   const nombre = perfil.nombre.trim() || 'de nuevo'
 
   return (
     <section className="ini-bienvenida" aria-label="Bienvenida">
       <div className="ini-bienvenida-texto">
-        <h1 className="ini-bienvenida-saludo">¡Hola, {nombre}!</h1>
-        <p className="ini-bienvenida-subtitulo">
-          Aquí tienes un resumen del estado ambiental de tu organización.
-        </p>
+        <h1 className="ini-bienvenida-saludo">
+          Hola, <span className="ini-bienvenida-nombre">{nombre}</span>
+        </h1>
+        <p className="ini-bienvenida-subtitulo">Aquí tienes un resumen de tu impacto ambiental.</p>
       </div>
-
-      <SelectorOrganizacion />
+      <SelectorOrganizacion {...props} />
     </section>
   )
 }

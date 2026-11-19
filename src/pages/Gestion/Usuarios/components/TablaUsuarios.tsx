@@ -3,6 +3,7 @@ import type { Usuario } from '../../../../services/tipos'
 
 interface TablaUsuariosProps {
   usuarios: Usuario[]
+  puedeEditar?: boolean
   onEditar: (usuario: Usuario) => void
   onAlternarEstado: (usuario: Usuario) => void
   onEliminar: (usuario: Usuario) => void
@@ -26,6 +27,7 @@ function tono(id: string): string {
  */
 export default function TablaUsuarios({
   usuarios,
+  puedeEditar = false,
   onEditar,
   onAlternarEstado,
   onEliminar,
@@ -39,9 +41,8 @@ export default function TablaUsuarios({
             <th scope="col">Usuario</th>
             <th scope="col">Correo</th>
             <th scope="col">Perfil</th>
-            <th scope="col">Centro</th>
             <th scope="col">Estado</th>
-            <th scope="col">Acciones</th>
+            {puedeEditar ? <th scope="col">Acciones</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -54,21 +55,12 @@ export default function TablaUsuarios({
                   </span>
                   <span className="gst-usuario-texto">
                     <b>{usuario.nombres} {usuario.apellidos}</b>
-                    <small>
-                      {usuario.tipoDocumento} {usuario.numeroDocumento}
-                    </small>
                   </span>
                 </div>
               </td>
               <td className="gst-correo">{usuario.correo}</td>
               <td>
                 <span className="gst-etiqueta-perfil">{usuario.perfil}</span>
-              </td>
-              <td>
-                <span className="gst-centro">
-                  <b>{usuario.centro}</b>
-                  <small>{usuario.regional}</small>
-                </span>
               </td>
               <td>
                 <span
@@ -78,6 +70,7 @@ export default function TablaUsuarios({
                   {usuario.estado === 'activo' ? 'Activo' : 'Inactivo'}
                 </span>
               </td>
+              {puedeEditar ? (
               <td>
                 <span className="gst-acciones">
                   <button
@@ -113,6 +106,7 @@ export default function TablaUsuarios({
                   </button>
                 </span>
               </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

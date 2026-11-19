@@ -1,14 +1,6 @@
-/* ============================================================
-   HuellaVerde — Pantalla de inicio de sesión (rediseño dark blue)
-   Panel de marca (fondo negro azulado + planeta Tierra) +
-   tarjeta de acceso en glassmorphism oscuro.
-   Paleta: #080E19 #101C30 #172943 #34445C #DCE3ED
-           #1685F8 #35A4FF #35A66B
-   ============================================================ */
+/* HuellaVerde — acceso
+   Paleta: #071713 #0B3025 #20D878 #83F45B #08C9D4 #EAFBF2 */
 
-/* La plantilla (index.css) fija #root a un ancho concreto, con
-   bordes y texto centrado. Se neutraliza sólo cuando el login
-   está montado, sin tocar los estilos globales. */
 #root:has(.hv-login) {
   width: 100%;
   max-width: none;
@@ -19,32 +11,25 @@
   min-height: 100%;
 }
 
-/* ------------------------- Fondo ------------------------- */
 .hv-login {
+  --bg: #071713;
+  --surface: #0b3025;
+  --green: #20d878;
+  --lime: #83f45b;
+  --cyan: #08c9d4;
+  --mist: #eafbf2;
+
   position: relative;
   width: 100%;
   min-height: 100vh;
-  min-height: 100dvh;
-  overflow-x: hidden;
+  min-height: 100svh;
+  height: 100svh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: var(--mist);
   font-family: var(--hv-font);
-  color: #fff;
-  background-color: #080e19;
-  /* Degradado negro profundo → azul noche, con leve brillo azul
-     en la zona superior derecha (luz del planeta). */
-  background-image:
-    radial-gradient(120% 90% at 82% 12%, rgba(53, 164, 255, 0.14), rgba(53, 164, 255, 0) 55%),
-    linear-gradient(158deg, #080e19 0%, #101c30 52%, #0b1424 100%);
-}
-
-/* Vignette sutil: profundidad sin restar contraste a los paneles */
-.hv-login::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(115% 95% at 50% 50%, rgba(8, 14, 25, 0) 45%, rgba(4, 8, 16, 0.5) 100%);
+  background: var(--bg);
 }
 
 .hv-login *,
@@ -55,7 +40,6 @@
 
 .hv-login h1,
 .hv-login h2,
-.hv-login h3,
 .hv-login p {
   font-family: var(--hv-font);
 }
@@ -65,388 +49,277 @@
   font-family: inherit;
 }
 
-.hv-sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  padding: 0;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
-}
-
-/* ------------------------- Distribución ------------------------- */
-.hv-login__shell {
-  position: relative;
-  z-index: 1;
-  /* Altura de referencia de la tarjeta: el panel izquierdo va 20px
-     más corto (ver .hv-panel--brand). */
-  --hv-panel-h: clamp(470px, 55dvh, 540px);
-  width: min(1160px, 88vw);
-  min-height: 100vh;
-  min-height: 100dvh;
-  margin: 0 auto;
-  padding: 32px 0;
-  display: grid;
-  grid-template-columns: 1.06fr 0.94fr; /* ≈53% / 47% */
-  gap: 14px;
-  align-content: center;
-}
-
-.hv-panel {
-  position: relative;
-  border-radius: 28px;
-}
-
-/* ============ PANEL IZQUIERDO — MARCA (negro azulado) ============ */
-.hv-panel--brand {
-  display: flex;
-  flex-direction: column;
-  /* un poco menos alto que la tarjeta, centrado respecto a ella */
-  min-height: calc(var(--hv-panel-h) - 20px);
-  margin-block: 10px;
-  padding: clamp(26px, 2.3vw, 34px) clamp(24px, 2.1vw, 32px) clamp(24px, 2.2vw, 32px);
-  overflow: hidden; /* recorta el resplandor del planeta contra el radio */
-  background: linear-gradient(
-    155deg,
-    rgba(8, 14, 25, 0.96) 0%,
-    rgba(16, 28, 48, 0.92) 55%,
-    rgba(23, 41, 67, 0.9) 100%
-  );
-  border: 1px solid rgba(140, 160, 190, 0.22);
-  box-shadow:
-    0 26px 60px rgba(2, 6, 14, 0.5),
-    inset 0 1px 0 rgba(220, 227, 237, 0.1);
-}
-
-/* ---------- Planeta Tierra (elemento exclusivamente visual) ----------
-   Recurso: globe.png (245×195). Se muestra a resolución NATIVA
-   (máx. 195px de diámetro) para no ampliarlo artificialmente y
-   perder calidad. Cuando exista src/assets/images/login-planet.png
-   (alta resolución), sustituir el import en Login.tsx y ampliar
-   --hv-planet-size en este bloque. */
-.hv-panel--brand {
-  --hv-planet-size: clamp(158px, 16vw, 195px);
-}
-
-.brand__planet {
-  position: absolute;
-  right: clamp(-24px, -1.5vw, -8px);
-  top: 47%;
-  transform: translateY(-50%);
-  width: var(--hv-planet-size);
-  aspect-ratio: 1;
+.hv-login__bg {
+  position: fixed;
+  inset: 0;
   z-index: 0;
-  pointer-events: none;
-}
-
-.brand__planet-glow {
-  position: absolute;
-  inset: -42%;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(53, 164, 255, 0.42) 0%,
-    rgba(22, 133, 248, 0.16) 42%,
-    rgba(22, 133, 248, 0) 70%
-  );
-  filter: blur(6px);
-}
-
-.brand__planet img {
-  position: relative;
-  z-index: 1;
-  display: block;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
+  height: 100svh;
+  max-width: none;
   object-fit: cover;
   object-position: center;
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 1px rgba(120, 170, 255, 0.28),
-    0 0 34px rgba(53, 164, 255, 0.4),
-    0 0 80px rgba(22, 133, 248, 0.26);
+  pointer-events: none;
 }
 
-/* Luz azul superior + viñeta interior: integra el recorte con
-   el fondo oscuro y aporta la "iluminación azul". */
-.brand__planet::after {
+/* Sombra del planeta: lado oscuro abajo a la izquierda,
+   como si la luz viniera del cielo, más una viñeta de foto. */
+.hv-login::before {
   content: '';
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 2;
-  border-radius: 50%;
+  z-index: 1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 32% 26%, rgba(140, 200, 255, 0.32), rgba(140, 200, 255, 0) 52%),
-    radial-gradient(circle at 50% 50%, rgba(8, 14, 25, 0) 58%, rgba(8, 14, 25, 0.62) 100%);
+    linear-gradient(180deg, rgba(0, 0, 0, 0.34), rgba(0, 0, 0, 0.28)),
+    linear-gradient(90deg, rgba(2, 8, 6, 0.5) 0%, rgba(2, 8, 6, 0.18) 26%, transparent 48%),
+    radial-gradient(ellipse at center, transparent 52%, rgba(0, 0, 0, 0.4) 100%);
 }
 
-/* ---------- Cabecera (logo original + nombre) ---------- */
-.brand__head {
+/* ---------------- Barra superior ---------------- */
+.hv-top {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   display: flex;
   align-items: center;
-  gap: clamp(11px, 1vw, 15px);
+  justify-content: space-between;
+  gap: 16px;
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 16px 0 0;
 }
 
-.brand__mark {
-  width: clamp(48px, 4.4vw, 66px);
-  height: clamp(48px, 4.4vw, 66px);
+.hv-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.hv-wordmark {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: #fff;
+  line-height: 1;
+}
+
+.hv-wordmark span,
+.hv-card__brand span {
+  color: var(--lime);
+}
+
+.hv-brand__fabrica {
+  height: 76px;
+  width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.4));
   flex-shrink: 0;
 }
 
-.brand__wordmark {
+.hv-brand__rule {
+  width: 1px;
+  height: 22px;
+  background: rgba(234, 251, 242, 0.35);
+}
+
+.hv-brand__tag {
   margin: 0;
-  font-size: clamp(27px, 2.9vw, 42px);
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(234, 251, 242, 0.78);
+  white-space: nowrap;
+}
+
+.hv-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--mist);
+  white-space: nowrap;
+  background: rgba(7, 23, 19, 0.55);
+  border: 1px solid rgba(32, 216, 120, 0.45);
+  box-shadow: 0 0 18px rgba(32, 216, 120, 0.18);
+  backdrop-filter: blur(10px);
+}
+
+/* ---------------- Cuerpo ---------------- */
+.hv-login__main {
+  position: relative;
+  z-index: 2;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 392px;
+  gap: 28px;
+  align-items: center;
+  width: min(1180px, calc(100% - 48px));
+  margin: 0 auto;
+  padding: 0;
+}
+
+.hv-hero__title {
+  margin: 0;
+  max-width: 11em;
+  font-size: clamp(30px, 2.6vw, 42px);
   font-weight: 700;
   line-height: 1.05;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.8px;
   color: #fff;
+  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.35);
 }
 
-/* Verde del logo: sólo el nombre lo retoma como detalle ambiental;
-   el azul manda en lo interactivo. */
-.brand__wordmark-accent {
-  color: #35a4ff;
-}
-
-.brand__tagline {
-  margin-top: 4px;
-  font-size: clamp(11px, 0.9vw, 13.5px);
-  font-weight: 500;
-  letter-spacing: 0.4px;
-  color: rgba(220, 227, 237, 0.72);
-}
-
-/* ---------- Mensaje principal ---------- */
-.brand__mid {
-  position: relative;
-  z-index: 1;
-  margin-top: auto;
-  margin-bottom: 0;
-  max-width: 62%;
-}
-
-.brand__slogan {
-  margin-top: clamp(16px, 2.4vh, 24px);
-  font-size: clamp(25px, 2.7vw, 39px);
-  font-weight: 700;
-  line-height: 1.24;
-  letter-spacing: -0.4px;
-  color: #fff;
-  text-shadow: 0 2px 18px rgba(4, 8, 16, 0.6);
-}
-
-.brand__slogan-accent {
-  color: #35a4ff;
-  text-shadow: 0 0 26px rgba(53, 164, 255, 0.45);
-}
-
-.brand__desc {
-  margin-top: clamp(14px, 2vh, 20px);
-  max-width: 34ch;
-  font-size: clamp(14px, 1.4vw, 19px);
-  font-weight: 500;
-  line-height: 1.6;
-  color: rgba(220, 227, 237, 0.86);
-  text-shadow: 0 1px 14px rgba(4, 8, 16, 0.65);
-}
-
-.brand__rule {
+.hv-hero__title span {
   display: block;
-  width: 52px;
-  height: 4px;
-  margin-top: clamp(16px, 2.2vh, 24px);
-  border-radius: 4px;
-  background: linear-gradient(90deg, #1685f8 0%, rgba(22, 133, 248, 0.25) 100%);
-  box-shadow: 0 0 16px rgba(22, 133, 248, 0.5);
+  white-space: nowrap;
 }
 
-/* ---------- Indicadores inferiores ---------- */
-.brand__icons {
-  position: relative;
-  z-index: 1;
+.hv-hero__accent {
+  color: var(--lime);
+  text-shadow: 0 0 28px rgba(131, 244, 91, 0.35);
+}
+
+.hv-hero__desc {
+  margin: 12px 0 0;
+  max-width: 36ch;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(234, 251, 242, 0.82);
+}
+
+.hv-feats {
   display: flex;
-  align-items: flex-start;
-  gap: clamp(14px, 1.8vw, 26px);
-  margin-top: auto;
-  padding-top: clamp(16px, 2.4vh, 26px);
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
 }
 
-.brand__icon {
+.hv-feat {
+  width: 138px;
+  min-height: 108px;
+  padding: 12px 12px 10px;
+  border-radius: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--lime);
+  background: rgba(7, 23, 19, 0.42);
+  border: 1px solid rgba(234, 251, 242, 0.16);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.hv-feat strong {
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: #fff;
+}
+
+.hv-feat span {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: rgba(234, 251, 242, 0.68);
+}
+
+/* ---------------- Tarjeta ---------------- */
+.hv-card {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 9px;
-  text-align: center;
+  max-height: 100%;
+  width: 392px;
+  justify-self: end;
+  padding: 22px 22px 14px;
+  border-radius: 26px;
+  background: linear-gradient(180deg, rgba(11, 48, 37, 0.72) 0%, rgba(7, 23, 19, 0.82) 100%);
+  border: 1px solid rgba(32, 216, 120, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(131, 244, 91, 0.12),
+    0 0 42px rgba(32, 216, 120, 0.28),
+    0 28px 60px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
 }
 
-.brand__icon-bubble {
-  width: clamp(46px, 3.8vw, 58px);
-  height: clamp(46px, 3.8vw, 58px);
-  border-radius: 50%;
+.hv-card__mark {
+  width: 58px;
+  height: 58px;
+  border-radius: 16px;
   display: grid;
   place-items: center;
-  color: #35a4ff;
-  background: rgba(16, 28, 48, 0.72);
-  border: 1px solid rgba(53, 164, 255, 0.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: radial-gradient(circle at 40% 30%, #134838, #071713 72%);
+  border: 1px solid rgba(131, 244, 91, 0.55);
   box-shadow:
-    0 0 18px rgba(22, 133, 248, 0.22),
-    inset 0 1px 0 rgba(220, 227, 237, 0.12);
-  transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    0 0 24px rgba(32, 216, 120, 0.45),
+    inset 0 0 18px rgba(32, 216, 120, 0.2);
 }
 
-.brand__icon-bubble--green {
-  color: #35a66b;
-  border-color: rgba(53, 166, 107, 0.55);
-  box-shadow:
-    0 0 18px rgba(53, 166, 107, 0.24),
-    inset 0 1px 0 rgba(220, 227, 237, 0.12);
-}
-
-.brand__icon:hover .brand__icon-bubble {
-  background: rgba(23, 41, 67, 0.9);
-  transform: translateY(-2px);
-  box-shadow:
-    0 0 24px rgba(22, 133, 248, 0.34),
-    inset 0 1px 0 rgba(220, 227, 237, 0.16);
-}
-
-.brand__icon-label {
-  font-size: clamp(11px, 0.85vw, 13px);
-  font-weight: 500;
-  line-height: 1.3;
-  color: rgba(220, 227, 237, 0.88);
-  max-width: 13ch;
-}
-
-/* ============ PANEL DERECHO — TARJETA DE ACCESO (glass oscuro) ============
-   El cristal vive en ::before: así el panel no necesita backdrop-filter
-   y los logos del pie pueden fundirse con el fondo (mix-blend-mode),
-   que Chrome aísla si el ancestro tiene backdrop-filter. Las hojas
-   decorativas viven en ::after, muy discretas, tras el contenido. */
-.hv-panel--card {
-  display: flex;
-  flex-direction: column;
-  min-height: var(--hv-panel-h);
-  padding: clamp(20px, 1.8vw, 28px) clamp(22px, 2vw, 30px) clamp(14px, 1.2vw, 18px);
-  isolation: isolate;
-}
-
-.hv-panel--card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  border: 1px solid rgba(140, 160, 190, 0.32);
-  background: linear-gradient(
-    155deg,
-    rgba(16, 28, 48, 0.78) 0%,
-    rgba(23, 41, 67, 0.6) 52%,
-    rgba(52, 68, 92, 0.5) 100%
-  );
-  backdrop-filter: blur(22px) saturate(120%);
-  -webkit-backdrop-filter: blur(22px) saturate(120%);
-  box-shadow:
-    0 30px 70px rgba(2, 6, 14, 0.55),
-    inset 0 1px 0 rgba(220, 227, 237, 0.16);
-  pointer-events: none;
-}
-
-/* Hojas translúcidas en las esquinas: decoración muy discreta */
-.hv-panel--card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  overflow: hidden;
-  pointer-events: none;
-  opacity: 0.13;
-  background:
-    url('../../assets/images/leaf-tr.png') no-repeat right -18px top -14px / 46% auto,
-    url('../../assets/images/leaf-bl.png') no-repeat left -20px bottom -16px / 42% auto;
-}
-
-.card__title {
-  position: relative;
-  z-index: 1;
-  margin: clamp(0px, 0.6vh, 6px) 0 0;
-  text-align: center;
-  font-size: clamp(25px, 2.3vw, 33px);
+.hv-card__title {
+  margin: 10px 0 0;
+  font-size: 26px;
   font-weight: 700;
-  letter-spacing: -0.4px;
-  color: #ffffff;
+  letter-spacing: -0.6px;
+  color: #fff;
 }
 
-.card__subtitle {
-  position: relative;
-  z-index: 1;
-  margin-top: 5px;
-  text-align: center;
-  font-size: clamp(12px, 0.9vw, 13.5px);
+.hv-card__subtitle {
+  margin: 4px 0 0;
+  font-size: 14.5px;
   font-weight: 500;
-  color: rgba(220, 227, 237, 0.75);
+  color: rgba(234, 251, 242, 0.62);
 }
 
-.card__form {
-  position: relative;
-  z-index: 1;
-  margin-top: clamp(16px, 2.2vh, 24px);
-  flex: 1;
+.hv-card__form {
+  width: 100%;
+  margin-top: 16px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  gap: 10px;
 }
 
-.hv-field-login {
+.hv-field {
   display: flex;
   flex-direction: column;
 }
 
-.hv-field-login + .hv-field-login {
-  margin-top: 13px;
-}
-
-/* ------------------------- Campos ------------------------- */
 .login-input {
   display: flex;
   align-items: center;
   gap: 10px;
-  height: 48px;
-  padding: 0 14px;
+  height: 44px;
+  padding: 0 16px;
   border-radius: 14px;
-  background: rgba(8, 14, 25, 0.58);
-  border: 1px solid rgba(140, 160, 190, 0.3);
-  box-shadow: inset 0 1px 2px rgba(2, 6, 14, 0.4);
-  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  background: rgba(7, 23, 19, 0.55);
+  border: 1px solid rgba(234, 251, 242, 0.16);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .login-input:focus-within {
-  background: rgba(8, 14, 25, 0.78);
-  border-color: #1685f8;
-  box-shadow:
-    0 0 0 3px rgba(22, 133, 248, 0.26),
-    inset 0 1px 2px rgba(2, 6, 14, 0.4);
+  border-color: rgba(32, 216, 120, 0.75);
+  box-shadow: 0 0 0 3px rgba(32, 216, 120, 0.16);
 }
 
 .login-input--error {
-  border-color: rgba(255, 122, 112, 0.8);
+  border-color: rgba(255, 122, 112, 0.85);
   box-shadow: 0 0 0 3px rgba(255, 122, 112, 0.16);
 }
 
-.login-input__lead {
-  color: rgba(220, 227, 237, 0.72);
+.login-input__lead,
+.login-input__trail {
   flex-shrink: 0;
+  color: rgba(234, 251, 242, 0.55);
 }
 
 .login-input input {
@@ -457,287 +330,274 @@
   outline: none;
   background: transparent;
   font-size: 14.5px;
-  color: #ffffff;
+  color: #fff;
 }
 
 .login-input input::placeholder {
-  color: rgba(220, 227, 237, 0.52);
+  color: rgba(234, 251, 242, 0.45);
   opacity: 1;
 }
 
 .login-input input:-webkit-autofill {
-  -webkit-text-fill-color: #ffffff;
-  box-shadow: 0 0 0 1000px rgba(16, 28, 48, 0.96) inset;
-  transition: background-color 1000s ease-in-out 0s;
+  -webkit-text-fill-color: #fff;
+  box-shadow: 0 0 0 1000px #0b3025 inset;
 }
 
 .login-input__eye {
   flex-shrink: 0;
   display: grid;
   place-items: center;
-  padding: 5px;
+  padding: 4px;
   border: none;
-  border-radius: 9px;
+  border-radius: 8px;
   background: transparent;
-  color: rgba(220, 227, 237, 0.68);
-  transition: color 0.16s ease, background 0.16s ease;
+  color: rgba(234, 251, 242, 0.62);
+  cursor: pointer;
 }
 
 .login-input__eye:hover {
-  color: #35a4ff;
-  background: rgba(53, 164, 255, 0.14);
+  color: var(--lime);
 }
 
-.login-input__eye:focus-visible {
-  outline: 2px solid rgba(53, 164, 255, 0.6);
-  outline-offset: 1px;
+.login-input__eye:focus-visible,
+.hv-forgot:focus-visible,
+.login-btn:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 2px;
 }
 
 .login-field-error {
-  margin-top: 7px;
+  margin: 6px 0 0;
   font-size: 12.5px;
   font-weight: 500;
-  color: #ff8b81;
+  color: #ff9b92;
 }
 
-/* ------------------- Recordarme / recuperar ------------------- */
-.card__options {
+.hv-card__options {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 14px;
 }
 
-.card__remember {
+.hv-check {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   font-size: 13.5px;
   font-weight: 500;
-  color: rgba(220, 227, 237, 0.9);
+  color: rgba(234, 251, 242, 0.88);
   cursor: pointer;
   user-select: none;
 }
 
-.card__remember input {
+.hv-check input {
   appearance: none;
-  -webkit-appearance: none;
   width: 18px;
   height: 18px;
   margin: 0;
   border-radius: 5px;
-  border: 1.5px solid rgba(140, 160, 190, 0.55);
-  background: rgba(8, 14, 25, 0.6);
+  border: 1.5px solid rgba(234, 251, 242, 0.35);
+  background: transparent;
   cursor: pointer;
   position: relative;
-  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.card__remember input:checked {
-  background: #1685f8;
-  border-color: #1685f8;
-  box-shadow: 0 0 12px rgba(22, 133, 248, 0.4);
+.hv-check input:checked {
+  background: var(--green);
+  border-color: var(--green);
 }
 
-.card__remember input:checked::after {
+.hv-check input:checked::after {
   content: '';
   position: absolute;
-  left: 5.5px;
+  left: 5px;
   top: 1.5px;
   width: 4px;
   height: 8px;
-  border: solid #fff;
+  border: solid #071713;
   border-width: 0 2px 2px 0;
   transform: rotate(45deg);
 }
 
-.card__remember input:focus-visible {
-  outline: 2px solid rgba(53, 164, 255, 0.6);
-  outline-offset: 2px;
-}
-
-.card__forgot {
+.hv-forgot {
   border: none;
   background: none;
   padding: 0;
-  font-size: 13.5px;
+  font-size: 12.5px;
   font-weight: 600;
-  color: #35a4ff;
+  color: var(--green);
+  white-space: nowrap;
   cursor: pointer;
-  transition: color 0.16s ease;
 }
 
-.card__forgot:hover {
-  color: #7cc4ff;
-  text-decoration: underline;
+.hv-forgot:hover {
+  color: var(--lime);
 }
 
-.card__forgot:focus-visible {
-  outline: 2px solid rgba(53, 164, 255, 0.6);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-/* ------------------------- Botones ------------------------- */
 .login-btn {
   width: 100%;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 9px;
+  gap: 8px;
   border-radius: 14px;
   font-weight: 700;
   cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease,
-    transform 0.18s ease, box-shadow 0.2s ease;
-}
-
-.login-btn:focus-visible {
-  outline: 3px solid rgba(53, 164, 255, 0.6);
-  outline-offset: 2px;
+  transition: filter 0.18s ease, transform 0.18s ease;
 }
 
 .login-btn--primary {
-  margin-top: 16px;
-  height: 47px;
+  position: relative;
+  height: 46px;
+  margin-top: 4px;
   border: none;
-  font-size: 15px;
-  letter-spacing: 0.2px;
-  color: #fff;
-  background: linear-gradient(135deg, #0866d9 0%, #269bff 100%);
-  box-shadow: 0 14px 30px rgba(8, 102, 217, 0.38);
+  border-radius: 999px;
+  font-size: 16px;
+  color: #000;
+  background: linear-gradient(90deg, #6ee86a 0%, #20d878 52%, #08c9d4 100%);
+  box-shadow: 0 12px 28px rgba(32, 216, 120, 0.32);
 }
 
-.login-btn--primary:hover {
-  background: linear-gradient(135deg, #0a74ec 0%, #3aa9ff 100%);
+.login-btn--primary:hover:not(:disabled) {
+  filter: brightness(1.06);
   transform: translateY(-1px);
-  box-shadow: 0 18px 36px rgba(8, 102, 217, 0.48);
 }
 
-.login-btn--primary:active {
-  transform: translateY(0);
-  box-shadow: 0 10px 22px rgba(8, 102, 217, 0.4);
+.login-btn--primary:disabled {
+  opacity: 0.7;
+  cursor: progress;
 }
 
-.login-btn--home {
-  height: 44px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #ffffff;
-  background: rgba(52, 68, 92, 0.55);
-  border: 1px solid rgba(140, 160, 190, 0.38);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  box-shadow: 0 6px 16px rgba(2, 6, 14, 0.3);
+.login-btn__arrow {
+  position: absolute;
+  right: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--surface);
+  background: #eafbf2;
 }
 
-.login-btn--home:hover {
-  background: rgba(52, 68, 92, 0.8);
-  border-color: rgba(53, 164, 255, 0.55);
-  color: #ffffff;
-}
-
-/* ------------------- Aviso de demostración ------------------- */
-.card__demo {
-  margin-top: 14px;
-  padding: 11px 13px;
-  border-radius: 13px;
+.hv-card__aviso {
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 12px;
   font-size: 12.5px;
-  line-height: 1.55;
-  color: rgba(220, 227, 237, 0.92);
-  background: rgba(22, 133, 248, 0.12);
-  border: 1px dashed rgba(53, 164, 255, 0.5);
+  line-height: 1.45;
+  color: #fff;
+  background: rgba(255, 120, 100, 0.12);
+  border: 1px solid rgba(255, 150, 130, 0.35);
 }
 
-.card__demo strong {
-  color: #35a4ff;
-}
-
-/* ------------------------- Separador ------------------------- */
-.card__separator {
+.hv-sep {
   display: flex;
   align-items: center;
-  gap: 14px;
-  margin: 12px 0;
-  color: rgba(220, 227, 237, 0.55);
+  gap: 12px;
+  color: rgba(234, 251, 242, 0.45);
   font-size: 13px;
 }
 
-.card__separator span {
+.hv-sep span {
   flex: 1;
   height: 1px;
-  background: rgba(140, 160, 190, 0.3);
+  background: rgba(234, 251, 242, 0.16);
 }
 
-.card__separator i {
+.hv-sep i {
   font-style: normal;
-  font-weight: 600;
 }
 
-/* ------------------- Pie de la tarjeta ------------------- */
-.card__footer {
-  position: relative;
-  z-index: 1;
+.login-btn--google {
+  height: 50px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #fff;
+  background: rgba(7, 23, 19, 0.35);
+  border: 1px solid rgba(234, 251, 242, 0.18);
+  border-radius: 14px;
+}
+
+.login-btn--google:hover {
+  background: rgba(234, 251, 242, 0.06);
+}
+
+.hv-card__footer {
+  width: 100%;
   margin-top: auto;
-  padding-top: clamp(12px, 1.8vh, 18px);
+  padding-top: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 14px;
+  gap: 6px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: rgba(234, 251, 242, 0.7);
+  white-space: nowrap;
 }
 
-.card__footer-brand {
-  font-size: 16px;
+.hv-card__brand {
   font-weight: 700;
-  letter-spacing: -0.2px;
-  color: rgba(220, 227, 237, 0.9);
+  color: #fff;
 }
 
-/* Detalle ambiental en verde */
-.card__footer-brand span {
-  color: #35a66b;
+/* ---------------- Pie decorativo ---------------- */
+.hv-scroll {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  width: min(1180px, calc(100% - 48px));
+  height: 42px;
+  margin: 0 auto 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: rgba(234, 251, 242, 0.8);
+  font-size: 13.5px;
+  font-weight: 500;
+  pointer-events: none;
 }
 
-.card__footer-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(140, 160, 190, 0.6);
+.hv-scroll__mouse {
+  width: 22px;
+  height: 34px;
+  border-radius: 12px;
+  border: 1.6px solid rgba(234, 251, 242, 0.75);
+  display: flex;
+  justify-content: center;
+  padding-top: 6px;
+  flex-shrink: 0;
 }
 
-.card__footer-sena {
-  height: 32px;
-  width: auto;
+.hv-scroll__mouse i {
+  width: 3px;
+  height: 7px;
+  border-radius: 3px;
+  background: var(--lime);
 }
 
-/* ------------------- Modal de recuperación -------------------
-   Ajustes puntuales del modal sólo cuando se monta dentro del
-   login (.hv-panel--card), para no afectar a otros modales. */
-.hv-panel--card .modal-overlay {
-  background: rgba(8, 14, 25, 0.74);
-  backdrop-filter: blur(5px);
-  -webkit-backdrop-filter: blur(5px);
+/* ---------------- Recuperación ---------------- */
+.hv-login .modal-overlay {
+  background: rgba(7, 23, 19, 0.72);
+  backdrop-filter: blur(6px);
 }
 
-.hv-panel--card .modal-panel {
-  background: linear-gradient(155deg, rgba(16, 28, 48, 0.97), rgba(23, 41, 67, 0.95));
-  border: 1px solid rgba(140, 160, 190, 0.34);
-  box-shadow: 0 30px 70px rgba(2, 6, 14, 0.6);
+.hv-login .modal-panel {
+  background: linear-gradient(180deg, rgba(11, 48, 37, 0.98), rgba(7, 23, 19, 0.98));
+  border: 1px solid rgba(32, 216, 120, 0.35);
+  color: var(--mist);
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.5);
 }
 
-.hv-panel--card .modal-head h3 {
-  color: #ffffff;
+.hv-login .modal-head h3 {
+  color: #fff;
 }
 
-.hv-panel--card .modal-close {
-  background: rgba(52, 68, 92, 0.6);
-  color: rgba(220, 227, 237, 0.85);
-}
-
-.hv-panel--card .modal-close:hover {
-  background: rgba(52, 68, 92, 0.9);
-  color: #ffffff;
+.hv-login .modal-close {
+  background: rgba(234, 251, 242, 0.08);
+  color: var(--mist);
 }
 
 .recovery {
@@ -748,7 +608,7 @@
 .recovery__text {
   font-size: 13.5px;
   line-height: 1.6;
-  color: rgba(220, 227, 237, 0.85);
+  color: rgba(234, 251, 242, 0.82);
 }
 
 .recovery .login-input {
@@ -757,15 +617,12 @@
 
 .recovery .login-btn--primary {
   margin-top: 16px;
-  height: 46px;
-  font-size: 14.5px;
 }
 
 .recovery__note {
-  margin-top: 12px;
+  margin: 12px 0 0;
   font-size: 12.5px;
-  line-height: 1.55;
-  color: rgba(220, 227, 237, 0.6);
+  color: rgba(234, 251, 242, 0.55);
 }
 
 .recovery__done {
@@ -782,179 +639,91 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: #35a4ff;
-  background: rgba(22, 133, 248, 0.16);
-  border: 1px solid rgba(53, 164, 255, 0.45);
+  color: var(--lime);
+  background: rgba(32, 216, 120, 0.14);
+  border: 1px solid rgba(32, 216, 120, 0.4);
 }
 
 .recovery__done-title {
+  margin: 0;
   font-size: 15.5px;
   font-weight: 700;
-  color: #ffffff;
+  color: #fff;
 }
 
-.recovery__done .login-btn--home {
-  margin-top: 6px;
-  padding-inline: 24px;
+.recovery__done .login-btn--google {
   width: auto;
+  margin-top: 6px;
+  padding-inline: 22px;
 }
 
-/* ========================== RESPONSIVE ==========================
-   Rango de escritorio: el conjunto se mantiene horizontal y la
-   tarjeta nunca queda cuadrada. Por debajo de 1120px se apila. */
-@media (max-width: 1240px) {
-  .hv-login__shell {
-    grid-template-columns: 1fr 1fr; /* 50 / 50 */
-  }
-
-  .hv-panel--brand {
-    padding: 24px;
-    --hv-planet-size: clamp(150px, 15vw, 185px);
-  }
-
-  .hv-panel--card {
-    padding: 18px 22px 14px;
-  }
-
-  .brand__mid {
-    max-width: 68%;
-  }
-}
-
-@media (max-width: 1120px) {
-  .hv-login__shell {
+/* ---------------- Responsive ---------------- */
+@media (max-width: 1100px) {
+  .hv-login__main {
     grid-template-columns: 1fr;
-    width: min(620px, 100%);
-    padding: 28px 18px 44px;
     align-content: start;
-    gap: 18px;
-  }
-
-  .hv-panel--brand,
-  .hv-panel--card {
-    min-height: auto;
-  }
-
-  .hv-panel--brand {
-    margin-block: 0;
-    padding: 30px 28px;
+    width: min(560px, calc(100% - 32px));
+    padding: 20px 0 28px;
     gap: 22px;
-    /* Planeta reposicionado: centro-derecha, detrás del texto */
-    --hv-planet-size: clamp(150px, 24vw, 200px);
   }
 
-  .brand__planet {
-    right: -18px;
-    top: 46%;
-    opacity: 0.92;
+  .hv-card {
+    width: 100%;
+    max-width: none;
+    justify-self: stretch;
   }
 
-  .brand__mid {
-    margin-block: 0;
-    padding-top: 6px;
-    max-width: 64%;
+  .hv-top,
+  .hv-scroll {
+    width: min(560px, calc(100% - 32px));
   }
 
-  .brand__icons {
-    padding-top: 18px;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .hv-panel--card {
-    padding: 32px 26px 26px;
-  }
-
-  .card__footer {
-    padding-top: 26px;
+  .hv-scroll {
+    display: none;
   }
 }
 
-@media (max-width: 640px) {
-  .hv-panel--brand {
-    --hv-planet-size: clamp(132px, 34vw, 170px);
-  }
-
-  .brand__planet {
-    right: -14px;
-    top: 44%;
-    opacity: 0.85;
-  }
-
-  .brand__mid {
-    max-width: 66%;
-  }
-
-  .brand__icon-label {
-    font-size: 11px;
-    max-width: 11ch;
-  }
-}
-
-@media (max-width: 480px) {
-  .hv-login__shell {
-    padding: 18px 12px 32px;
-  }
-
-  .hv-panel {
-    border-radius: 22px;
-  }
-
-  .hv-panel--brand,
-  .hv-panel--card {
-    padding: 26px 20px;
-  }
-
-  .hv-panel--brand {
-    --hv-planet-size: clamp(124px, 36vw, 150px);
-  }
-
-  .brand__planet {
-    right: -16px;
-    top: 42%;
-    opacity: 0.8;
-  }
-
-  .brand__slogan {
-    font-size: 24px;
-    max-width: 14ch;
-  }
-
-  .brand__mid {
-    max-width: 70%;
-  }
-
-  .brand__desc {
-    font-size: 14px;
-  }
-
-  .brand__icons {
-    gap: 8px;
-  }
-
-  .brand__icon {
-    gap: 7px;
-  }
-
-  .login-input {
-    height: 46px;
-  }
-
-  .card__options {
+@media (max-width: 720px) {
+  .hv-top {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .hv-brand__tag,
+  .hv-brand__rule {
+    display: none;
+  }
+
+  .hv-pill {
+    white-space: normal;
+  }
+
+  .hv-hero__title {
+    font-size: 32px;
+  }
+
+  .hv-feats {
+    flex-direction: column;
+  }
+
+  .hv-feat {
+    width: 100%;
+    min-height: 0;
+    flex-direction: row;
+    align-items: center;
     gap: 12px;
   }
 
-  .card__footer {
-    gap: 10px;
+  .hv-feat strong {
+    margin-top: 0;
   }
 
-  .card__footer-brand {
-    font-size: 15.5px;
+  .hv-card {
+    padding: 26px 18px 16px;
   }
 
-  .card__footer-sena {
-    height: 32px;
+  .hv-card__options {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
