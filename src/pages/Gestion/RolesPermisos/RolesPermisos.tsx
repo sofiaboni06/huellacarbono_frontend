@@ -5,11 +5,15 @@ import PageHeader from '../../../components/common/PageHeader'
 import Button from '../../../components/common/Button'
 import PestanasGestion from '../components/PestanasGestion'
 import TablaPermisos from './components/TablaPermisos'
+import { usePerfil } from '../../../context/PerfilContext'
 import { listarPerfiles } from '../../../services/perfilesService'
 import {
+  accionGuardable,
   cargarPermisos,
+  cambiarMatriz,
   contarPermisos,
   guardarPermisos,
+  marcarMatriz,
   permisosGuardados,
 } from '../../../services/permisosService'
 import { MODULOS } from '../../../services/datosDemo'
@@ -60,6 +64,8 @@ function iguales(a: MatrizPermisos, b: MatrizPermisos): boolean {
  */
 export default function RolesPermisos() {
   const avisar = useAviso()
+  const { puede } = usePerfil()
+  const puedeEditar = puede('rol.editar')
 
   const [perfiles, setPerfiles] = useState<Perfil[]>([])
   const [perfilId, setPerfilId] = useState('')
@@ -73,19 +79,23 @@ export default function RolesPermisos() {
   useEffect(() => {
     let vivo = true
     void (async () => {
-      const lista = await listarPerfiles()
-      if (!vivo) return
-      setPerfiles(lista)
-      setCargandoPerfiles(false)
-      // Recupera el último perfil visitado si sigue existiendo.
-      const recordado = leerPerfilSesion()
-      const valido = recordado && lista.some((perfil) => perfil.id === recordado)
-      setPerfilId((actual) => actual || (valido ? recordado : '') || lista[0]?.id || '')
+      try {
+        const lista = await listarPerfiles()
+        if (!vivo) return
+        setPerfiles(lista)
+        const recordado = leerPerfilSesion()
+        const valido = recordado && lista.some((perfil) => perfil.id === recordado)
+        setPerfilId((actual) => actual || (valido ? recordado : '') || lista[0]?.id || '')
+      } catch (error) {
+        if (vivo) avisar(error instanceof Error ? error.message : 'No fue posible cargar los perfiles.')
+      } finally {
+        if (vivo) setCargandoPerfiles(false)
+      }
     })()
     return () => {
       vivo = false
     }
-  }, [])
+  }, [avisar])
 
   /** Carga la matriz guardada del perfil seleccionado. */
   useEffect(() => {
@@ -93,16 +103,21 @@ export default function RolesPermisos() {
     let vivo = true
     setCargandoPermisos(true)
     void (async () => {
-      const matrizServidor = await cargarPermisos(perfilId)
-      if (!vivo) return
-      setMatriz(matrizServidor)
-      setGuardado(matrizServidor)
-      setCargandoPermisos(false)
+      try {
+        const matrizServidor = await cargarPermisos(perfilId)
+        if (!vivo) return
+        setMatriz(matrizServidor)
+        setGuardado(matrizServidor)
+      } catch (error) {
+        if (vivo) avisar(error instanceof Error ? error.message : 'No fue posible cargar los permisos.')
+      } finally {
+        if (vivo) setCargandoPermisos(false)
+      }
     })()
     return () => {
       vivo = false
     }
-  }, [perfilId])
+  }, [perfilId, avisar])
 
   const perfilActual = useMemo(
     () => perfiles.find((perfil) => perfil.id === perfilId) ?? null,
@@ -112,28 +127,14 @@ export default function RolesPermisos() {
   const hayCambios = !iguales(matriz, guardado)
   const marcados = contarPermisos(matriz)
 
-  /** Marca o desmarca una casilla concreta. */
+  /** Marca o desmarca una casilla y las que comparten su código. */
   const cambiar = useCallback((moduloId: string, accion: Accion, valor: boolean) => {
-    setMatriz((prev) => ({
-      ...prev,
-      [moduloId]: { ...prev[moduloId], [accion]: valor },
-    }))
+    setMatriz((prev) => cambiarMatriz(prev, moduloId, accion, valor))
   }, [])
 
-  /** Marca o desmarca todas las casillas del perfil de una vez. */
+  /** Marca o desmarca las casillas que el servidor puede guardar. */
   function marcarTodo(valor: boolean) {
-    setMatriz((prev) => {
-      const siguiente: MatrizPermisos = { ...prev }
-      for (const modulo of MODULOS) {
-        siguiente[modulo.id] = {
-          consultar: valor,
-          crear: valor,
-          editar: valor,
-          eliminar: valor,
-        }
-      }
-      return siguiente
-    })
+    setMatriz((prev) => marcarMatriz(prev, valor))
   }
 
   /** Descarta los cambios vuelve a la última matriz guardada. */
@@ -148,14 +149,19 @@ export default function RolesPermisos() {
   async function guardar() {
     if (!perfilId) return
     setGuardando(true)
-    const resultado = await guardarPermisos(perfilId, matriz)
-    setGuardado(resultado)
-    setMatriz(resultado)
-    setGuardando(false)
-    avisar(`Permisos de «${perfilActual?.nombre ?? 'perfil'}» guardados correctamente.`)
+    try {
+      const resultado = await guardarPermisos(perfilId, matriz)
+      setGuardado(resultado)
+      setMatriz(resultado)
+      avisar(`Permisos de «${perfilActual?.nombre ?? 'perfil'}» guardados correctamente.`)
+    } catch (error) {
+      avisar(error instanceof Error ? error.message : 'No fue posible guardar los permisos.')
+    } finally {
+      setGuardando(false)
+    }
   }
 
-  const bloqueado = cargandoPermisos || guardando || !perfilId
+  const bloqueado = cargandoPermisos || guardando || !perfilId || !puedeEditar
 
   return (
     <PlantillaVista titulo="Roles y Permisos" className="gst gst-roles">
@@ -219,15 +225,17 @@ export default function RolesPermisos() {
       <section className="vst-tarjeta gst-tabla-tarjeta" aria-label="Matriz de permisos">
         <div className="gst-barra gst-barra--acciones">
           <p className="gst-ayuda">
-            Marca las casillas que cada perfil necesita dentro de HuellaVerde. Puedes marcar todo el
-            módulo o limpiarlo con los accesos rápidos.
+            Consultar usuarios abre la vista Usuarios. Consultar roles abre Perfiles y Roles y
+            permisos, que comparten el mismo permiso. Crear y editar muestran los botones de esas
+            vistas. Inicio, Cálculo e Informe siguen visibles al entrar: el servidor todavía no
+            tiene un permiso para ocultarlos. Eliminar tampoco se puede asignar.
           </p>
           <div className="gst-accesos-rapidos">
             <button
               type="button"
               className="gst-acceso"
               onClick={() => marcarTodo(true)}
-              disabled={guardando || bloqueado}
+              disabled={bloqueado}
             >
               Marcar todo
             </button>
@@ -235,7 +243,7 @@ export default function RolesPermisos() {
               type="button"
               className="gst-acceso"
               onClick={() => marcarTodo(false)}
-              disabled={guardando || bloqueado}
+              disabled={bloqueado}
             >
               Limpiar todo
             </button>
@@ -256,7 +264,12 @@ export default function RolesPermisos() {
           </div>
         ) : (
           <>
-            <TablaPermisos matriz={matriz} onCambiar={cambiar} deshabilitado={guardando} />
+            <TablaPermisos
+              matriz={matriz}
+              onCambiar={cambiar}
+              deshabilitado={bloqueado}
+              puedeMarcar={accionGuardable}
+            />
 
             <div className="gst-resumen">
               <div className="gst-resumen-datos">
@@ -281,10 +294,8 @@ export default function RolesPermisos() {
         <p className="gst-demo">
           <TriangleAlert size={14} aria-hidden="true" />
           <span>
-            Estructura de datos local (<code>src/services/permisosService.ts</code>): los permisos
-            se guardan en este navegador y <b>no se aplican en el servidor</b>, porque la API aún no
-            expone ese almacenamiento. La lógica queda desacoplada para conectarla al backend
-            cambiando únicamente el servicio.
+            Los cambios se guardan en el servidor. Tiene que quedar un usuario activo que pueda
+            administrar usuarios y roles.
           </span>
         </p>
       </section>

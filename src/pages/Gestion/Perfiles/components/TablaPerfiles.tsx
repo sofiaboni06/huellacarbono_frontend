@@ -3,6 +3,7 @@ import type { Perfil } from '../../../../services/tipos'
 
 interface TablaPerfilesProps {
   perfiles: Perfil[]
+  puedeEditar?: boolean
   onEditar: (perfil: Perfil) => void
   onAlternarEstado: (perfil: Perfil) => void
   onEliminar: (perfil: Perfil) => void
@@ -14,6 +15,7 @@ interface TablaPerfilesProps {
  */
 export default function TablaPerfiles({
   perfiles,
+  puedeEditar = false,
   onEditar,
   onAlternarEstado,
   onEliminar,
@@ -27,7 +29,7 @@ export default function TablaPerfiles({
             <th scope="col">Perfil</th>
             <th scope="col">Descripción</th>
             <th scope="col">Estado</th>
-            <th scope="col">Acciones</th>
+            {puedeEditar ? <th scope="col">Acciones</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -50,6 +52,7 @@ export default function TablaPerfiles({
                   {perfil.estado === 'activo' ? 'Activo' : 'Inactivo'}
                 </span>
               </td>
+              {puedeEditar ? (
               <td>
                 <span className="gst-acciones">
                   <button
@@ -85,6 +88,7 @@ export default function TablaPerfiles({
                   </button>
                 </span>
               </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

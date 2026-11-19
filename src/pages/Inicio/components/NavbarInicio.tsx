@@ -26,6 +26,7 @@ interface EnlaceNav {
   to: string
   etiqueta: string
   Icono: typeof Home
+  codigo?: string
 }
 
 /** Enlaces independientes de la navegación principal. */
@@ -35,17 +36,17 @@ const ENLACES: EnlaceNav[] = [
   { to: '/reportes', etiqueta: 'Informe', Icono: FileText },
 ]
 
-/** Secciones del desplegable «Gestión». */
+/** Secciones del desplegable «Gestión». Cada una exige el permiso de consulta. */
 const GESTION: EnlaceNav[] = [
-  { to: '/gestion/usuarios', etiqueta: 'Usuarios', Icono: UserRound },
-  { to: '/gestion/perfiles', etiqueta: 'Perfiles', Icono: Contact },
-  { to: '/gestion/roles-permisos', etiqueta: 'Roles y permisos', Icono: ShieldCheck },
+  { to: '/gestion/usuarios', etiqueta: 'Usuarios', Icono: UserRound, codigo: 'usuario.ver' },
+  { to: '/gestion/perfiles', etiqueta: 'Perfiles', Icono: Contact, codigo: 'rol.ver' },
+  { to: '/gestion/roles-permisos', etiqueta: 'Roles y permisos', Icono: ShieldCheck, codigo: 'rol.ver' },
 ]
 
 /** Barra de navegación global: marca, enlaces, desplegable, campana y perfil. */
 export default function NavbarInicio() {
   const { noLeidas } = useNotificaciones()
-  const { perfil } = usePerfil()
+  const { perfil, permisos, permisosListos } = usePerfil()
   const { pathname } = useLocation()
 
   const [menuMovil, setMenuMovil] = useState(false)
@@ -89,6 +90,9 @@ export default function NavbarInicio() {
   }
 
   const nombreCompleto = `${perfil.nombre} ${perfil.apellidos}`.trim()
+  const gestionVisible = permisosListos
+    ? GESTION.filter((enlace) => (enlace.codigo ? permisos.includes(enlace.codigo) : true))
+    : []
 
   return (
     <header className="ini-nav">
@@ -128,41 +132,43 @@ export default function NavbarInicio() {
             </NavLink>
           ))}
 
-          <div className="ini-desplegable ini-gestion" ref={refGestion}>
-            <button
-              type="button"
-              className={`ini-nav-enlace ini-nav-gestion ${enGestion ? 'activo' : ''}`}
-              onClick={alternarGestion}
-              aria-haspopup="menu"
-              aria-expanded={gestionAbierta}
-            >
-              <Users size={16} strokeWidth={2.2} aria-hidden="true" />
-              <span>Gestión</span>
-              <ChevronDown
-                size={14}
-                strokeWidth={2.6}
-                aria-hidden="true"
-                className={`ini-gestion-flecha ${gestionAbierta ? 'girada' : ''}`}
-              />
-            </button>
+          {gestionVisible.length > 0 ? (
+            <div className="ini-desplegable ini-gestion" ref={refGestion}>
+              <button
+                type="button"
+                className={`ini-nav-enlace ini-nav-gestion ${enGestion ? 'activo' : ''}`}
+                onClick={alternarGestion}
+                aria-haspopup="menu"
+                aria-expanded={gestionAbierta}
+              >
+                <Users size={16} strokeWidth={2.2} aria-hidden="true" />
+                <span>Gestión</span>
+                <ChevronDown
+                  size={14}
+                  strokeWidth={2.6}
+                  aria-hidden="true"
+                  className={`ini-gestion-flecha ${gestionAbierta ? 'girada' : ''}`}
+                />
+              </button>
 
-            {gestionAbierta ? (
-              <div className="ini-menu ini-menu--gestion" role="menu" aria-label="Gestión">
-                {GESTION.map(({ to, etiqueta, Icono }) => (
-                  <NavLink
-                    key={to}
-                    to={to}
-                    role="menuitem"
-                    className={({ isActive }) => `ini-menu-item ${isActive ? 'activo' : ''}`}
-                    onClick={cerrarTodo}
-                  >
-                    <Icono size={16} strokeWidth={2.2} aria-hidden="true" />
-                    <span>{etiqueta}</span>
-                  </NavLink>
-                ))}
-              </div>
-            ) : null}
-          </div>
+              {gestionAbierta ? (
+                <div className="ini-menu ini-menu--gestion" role="menu" aria-label="Gestión">
+                  {gestionVisible.map(({ to, etiqueta, Icono }) => (
+                    <NavLink
+                      key={to}
+                      to={to}
+                      role="menuitem"
+                      className={({ isActive }) => `ini-menu-item ${isActive ? 'activo' : ''}`}
+                      onClick={cerrarTodo}
+                    >
+                      <Icono size={16} strokeWidth={2.2} aria-hidden="true" />
+                      <span>{etiqueta}</span>
+                    </NavLink>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ) : null}
         </nav>
 
         <div className="ini-nav-acciones">

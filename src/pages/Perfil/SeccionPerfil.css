@@ -81,7 +81,7 @@
   border: 1px solid var(--hv-line);
   border-radius: 14px;
   /* Celda de dato: superficie oscura translúcida sobre la tarjeta glass */
-  background: rgba(27, 44, 67, 0.5);
+  background: #f4faf7;
 }
 
 .prf-sistema-icono {

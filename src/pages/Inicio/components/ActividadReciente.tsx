@@ -21,14 +21,14 @@ export default function ActividadReciente({ onAviso }: ActividadRecienteProps) {
     >
       <header className="ini-actividad-cabecera">
         <h2 className="ini-titulo-seccion" id="ini-actividad-titulo">
-          Actividad reciente
+          Actividad Reciente
         </h2>
         <button
           type="button"
           className="ini-actividad-ver"
           onClick={() => onAviso('«Ver todo» está pendiente: se habilitará en una fase futura.')}
         >
-          Ver todo
+          Ver todas
           <ArrowRight size={14} strokeWidth={2.4} aria-hidden="true" />
         </button>
       </header>

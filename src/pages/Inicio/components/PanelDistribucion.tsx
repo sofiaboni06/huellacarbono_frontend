@@ -1,102 +1,113 @@
 import { useState } from 'react'
+import { ArrowUpRight, Leaf, PieChart as PieIcon } from 'lucide-react'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
-import { DISTRIBUCION_FUENTES } from '../../../data/demo'
 import './Paneles.css'
 
-/** Paleta del Dashboard para las fuentes (los datos provienen de demo.ts). */
-const COLORES: Record<string, string> = {
-  Energía: '#3b82f6',
-  Transporte: '#42d879',
-  Procesos: '#a855f7',
+const PALETA = ['#22b573', '#3b82f6', '#a855f7', '#14b8a6', '#f59e0b', '#ef4444']
+
+export interface FuentePanel {
+  nombre: string
+  valor: number
+  color: string
 }
 
-const colorDe = (nombre: string, respaldo: string) => COLORES[nombre] ?? respaldo
+interface Props {
+  datos: FuentePanel[]
+  total?: string
+  unidad?: string
+  nota?: string
+}
 
-/**
- * Panel «Distribución por fuente»: donut con el porcentaje central
- * y leyenda lateral interactiva sobre los datos reales de la plataforma.
- */
-export default function PanelDistribucion() {
+export default function PanelDistribucion({ datos, total, unidad, nota }: Props) {
   const [activo, setActivo] = useState(0)
-
-  const seleccionado = DISTRIBUCION_FUENTES[activo] ?? DISTRIBUCION_FUENTES[0]
+  const seleccionado = datos[activo] ?? datos[0]
 
   return (
-    <section
-      className="ini-tarjeta ini-panel ini-panel--distribucion"
-      aria-labelledby="ini-distribucion-titulo"
-    >
+    <section className="ini-tarjeta ini-panel ini-panel--distribucion" aria-labelledby="ini-distribucion-titulo">
       <header className="ini-panel-cabecera">
         <h2 className="ini-titulo-seccion" id="ini-distribucion-titulo">
-          Distribución por fuente
+          <PieIcon size={16} strokeWidth={2.3} aria-hidden="true" />
+          Resumen General
         </h2>
       </header>
 
-      <div className="ini-panel-cuerpo">
-        <div className="ini-panel-donut">
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={DISTRIBUCION_FUENTES}
-                dataKey="valor"
-                nameKey="nombre"
-                innerRadius="62%"
-                outerRadius="92%"
-                paddingAngle={3}
-                stroke="none"
-                onMouseEnter={(_, indice) => setActivo(indice)}
-              >
-                {DISTRIBUCION_FUENTES.map((fuente) => (
-                  <Cell
-                    key={fuente.nombre}
-                    fill={colorDe(fuente.nombre, fuente.color)}
-                    fillOpacity={activo === DISTRIBUCION_FUENTES.indexOf(fuente) ? 1 : 0.55}
-                  />
-                ))}
-              </Pie>
-              <Tooltip
-                contentStyle={{
-                  background: '#101d31',
-                  border: '1px solid rgba(148, 166, 196, 0.22)',
-                  borderRadius: 12,
-                  boxShadow: '0 18px 40px rgba(2, 8, 18, 0.5)',
-                  fontSize: 12,
-                  color: '#f5f7fb',
-                }}
-                labelStyle={{ color: '#f5f7fb', fontWeight: 600 }}
-                formatter={(valor, nombre) => `${nombre}: ${valor}%`}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-
-          <div className="ini-donut-centro" aria-hidden="true">
-            <b>{seleccionado.valor}%</b>
-            <span>{seleccionado.nombre}</span>
-          </div>
-        </div>
-
-        <ul className="ini-panel-fuentes">
-          {DISTRIBUCION_FUENTES.map((fuente, indice) => (
-            <li key={fuente.nombre}>
-              <button
-                type="button"
-                className={`ini-panel-fuente ${activo === indice ? 'activa' : ''}`}
-                onMouseEnter={() => setActivo(indice)}
-                onFocus={() => setActivo(indice)}
-                onClick={() => setActivo(indice)}
-              >
-                <span
-                  className="ini-panel-muestra"
-                  style={{ background: colorDe(fuente.nombre, fuente.color) }}
-                  aria-hidden="true"
+      {datos.length && seleccionado ? (
+        <div className="ini-panel-cuerpo">
+          <div className="ini-panel-donut">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={datos}
+                  dataKey="valor"
+                  nameKey="nombre"
+                  innerRadius="62%"
+                  outerRadius="92%"
+                  paddingAngle={3}
+                  cornerRadius={6}
+                  stroke="none"
+                  onMouseEnter={(_, indice) => setActivo(indice)}
+                >
+                  {datos.map((fuente, indice) => (
+                    <Cell
+                      key={fuente.nombre}
+                      fill={fuente.color || PALETA[indice % PALETA.length]}
+                      fillOpacity={1}
+                    />
+                  ))}
+                </Pie>
+                <Tooltip
+                  contentStyle={{
+                    background: '#ffffff',
+                    border: '1px solid rgba(31, 173, 106, 0.18)',
+                    borderRadius: 12,
+                    boxShadow: '0 12px 28px rgba(20, 50, 40, 0.12)',
+                    fontSize: 12,
+                    color: '#163044',
+                  }}
+                  formatter={(valor, nombre) => `${nombre}: ${valor}%`}
                 />
-                <span className="ini-panel-fuente-nombre">{fuente.nombre}</span>
-                <b>{fuente.valor}%</b>
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="ini-donut-centro" aria-hidden="true">
+              <b>{total || `${seleccionado.valor}%`}</b>
+              <span>{unidad || seleccionado.nombre}</span>
+            </div>
+          </div>
+          <ul className="ini-panel-fuentes">
+            {datos.map((fuente, indice) => (
+              <li key={fuente.nombre}>
+                <button
+                  type="button"
+                  className={`ini-panel-fuente ${activo === indice ? 'activa' : ''}`}
+                  onMouseEnter={() => setActivo(indice)}
+                  onFocus={() => setActivo(indice)}
+                  onClick={() => setActivo(indice)}
+                >
+                  <span
+                    className="ini-panel-muestra"
+                    style={{ background: fuente.color || PALETA[indice % PALETA.length] }}
+                    aria-hidden="true"
+                  />
+                  <span className="ini-panel-fuente-nombre">{fuente.nombre}</span>
+                  <b>{fuente.valor}%</b>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {datos.length && nota ? (
+        <p className="ini-resumen-nota">
+          <Leaf size={16} strokeWidth={2.4} aria-hidden="true" />
+          <span>{nota}</span>
+          <ArrowUpRight className="ini-resumen-nota-flecha" size={16} strokeWidth={2.3} aria-hidden="true" />
+        </p>
+      ) : null}
+
+      {datos.length ? null : (
+        <p className="ini-panel-vacio">Todavía no hay un cálculo de carbono para esta organización.</p>
+      )}
     </section>
   )
 }

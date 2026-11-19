@@ -7,9 +7,9 @@ import Button from '../../../components/common/Button'
 import Modal from '../../../components/common/Modal'
 import TablaUnidadesMedida from './components/TablaUnidadesMedida'
 import ModalUnidadMedida from './components/ModalUnidadMedida'
+import { usePerfil } from '../../../context/PerfilContext'
 import { erroresDeApi, type ErroresUnidad } from './erroresApi'
-import { ErrorApi } from '../../../services/apiCliente'
-import { tienePermiso } from '../../../services/sesionService'
+import { ErrorApi } from '../../../services/api'
 import {
   actualizarUnidad,
   cambiarEstadoUnidad,
@@ -58,6 +58,7 @@ interface EstadoConsulta {
 export default function UnidadesMedida() {
   const avisar = useAviso()
   const navigate = useNavigate()
+  const { puede } = usePerfil()
 
   const [unidades, setUnidades] = useState<UnidadMedida[]>([])
   const [cargando, setCargando] = useState(true)
@@ -76,10 +77,9 @@ export default function UnidadesMedida() {
   const [estadoConfirmacion, setEstadoConfirmacion] = useState<UnidadMedida | null>(null)
   const [cambiandoEstado, setCambiandoEstado] = useState(false)
 
-  // Permisos devueltos por el login (`unidad_medida.*`).
-  const puedeVer = tienePermiso('unidad_medida.ver')
-  const puedeCrear = tienePermiso('unidad_medida.crear')
-  const puedeEditar = tienePermiso('unidad_medida.editar')
+  const puedeVer = puede('unidad_medida.ver')
+  const puedeCrear = puede('unidad_medida.crear')
+  const puedeEditar = puede('unidad_medida.editar')
 
   /** Recarga el listado completo (incluidas las inactivas). */
   const recargar = useCallback(async () => {

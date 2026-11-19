@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Bell, Menu as MenuIcon, Search, X } from 'lucide-react'
@@ -31,6 +31,7 @@ const SECCIONES: SeccionBuscable[] = [
   { titulo: 'Gestión de usuarios', to: '/gestion/usuarios', claves: 'gestion usuarios administrar' },
   { titulo: 'Gestión de perfiles', to: '/gestion/perfiles', claves: 'gestion perfiles administrar' },
   { titulo: 'Roles y permisos', to: '/gestion/roles-permisos', claves: 'roles permisos gestion seguridad' },
+  { titulo: 'Organizaciones', to: '/gestion/organizaciones', claves: 'organizaciones sedes departamentos municipios empresas' },
 ]
 
 /** Quita acentos y pasa a minúsculas para comparar búsquedas. */
@@ -44,17 +45,22 @@ function normalizar(texto: string): string {
 interface BarraSuperiorProps {
   /** Abre o cierra el cajón lateral en pantallas pequeñas. */
   onAlternarLateral: () => void
+  placeholder?: string
 }
 
 /**
  * Barra superior del Dashboard: buscador de secciones, notificaciones
  * con contador de pendientes y acceso al menú de perfil.
  */
-export default function BarraSuperior({ onAlternarLateral }: BarraSuperiorProps) {
+export default function BarraSuperior({
+  onAlternarLateral,
+  placeholder = 'Buscar en la plataforma...',
+}: BarraSuperiorProps) {
   const navigate = useNavigate()
   const { noLeidas } = useNotificaciones()
   const { perfil } = usePerfil()
 
+  const buscadorRef = useRef<HTMLInputElement>(null)
   const [consulta, setConsulta] = useState('')
   const [foco, setFoco] = useState(false)
   const [notifAbierta, setNotifAbierta] = useState(false)
@@ -104,6 +110,17 @@ export default function BarraSuperior({ onAlternarLateral }: BarraSuperiorProps)
     }
   }
 
+  useEffect(() => {
+    const alTeclado = (evento: KeyboardEvent) => {
+      if ((evento.ctrlKey || evento.metaKey) && evento.key.toLowerCase() === 'k') {
+        evento.preventDefault()
+        buscadorRef.current?.focus()
+      }
+    }
+    window.addEventListener('keydown', alTeclado)
+    return () => window.removeEventListener('keydown', alTeclado)
+  }, [])
+
   const nombreCompleto = `${perfil.nombre} ${perfil.apellidos}`.trim()
   const panelVisible = foco && consulta.trim().length > 0
 
@@ -121,19 +138,21 @@ export default function BarraSuperior({ onAlternarLateral }: BarraSuperiorProps)
       <div className="ini-busca" ref={refBuscador}>
         <Search className="ini-busca-icono" size={16} strokeWidth={2.2} aria-hidden="true" />
         <input
+          ref={buscadorRef}
           className="ini-busca-input"
           type="search"
           value={consulta}
           onChange={(evento) => setConsulta(evento.target.value)}
           onFocus={() => setFoco(true)}
           onKeyDown={manejarTeclas}
-          placeholder="Buscar en la plataforma..."
-          aria-label="Buscar en la plataforma"
+          placeholder={placeholder}
+          aria-label={placeholder}
           aria-expanded={panelVisible}
           role="combobox"
           aria-controls="ini-busca-resultados"
           autoComplete="off"
         />
+        <kbd className="ini-busca-atajo">Ctrl + K</kbd>
         {consulta ? (
           <button
             type="button"

@@ -14,6 +14,8 @@ interface TarjetaIndicadorProps {
   unidad?: string
   /** Variación porcentual tipo «12%». */
   variacion?: string
+  /** La variación es una reducción (flecha hacia abajo). */
+  baja?: boolean
   /** Texto de comparación (p. ej. «vs periodo anterior»). */
   comparacion?: string
   tonoIcono: TonoIcono
@@ -62,14 +64,15 @@ function Barras({ data, color }: { data: number[]; color: string }) {
 }
 
 /**
- * Tarjeta de indicador del panel: icono, título, valor con unidad,
- * variación respecto al periodo anterior y gráfica de tendencia.
+ * Tarjeta de indicador del panel: icono circular con halo, título, valor
+ * con unidad, variación respecto al periodo anterior y gráfica de tendencia.
  */
 export default function TarjetaIndicador({
   titulo,
   valor,
   unidad,
   variacion,
+  baja = false,
   comparacion,
   tonoIcono,
   colorGrafica,
@@ -79,51 +82,45 @@ export default function TarjetaIndicador({
 }: TarjetaIndicadorProps) {
   return (
     <article className="ini-tarjeta ini-indicador">
-      <header className="ini-indicador-cabecera">
+      <div className="ini-indicador-principal">
         <span className={`ini-indicador-icono tono-${tonoIcono}`} aria-hidden="true">
           {icono}
         </span>
-        <h3 className="ini-indicador-titulo">{titulo}</h3>
-      </header>
 
-      <p className="ini-indicador-valor">
-        {valor}
-        {unidad ? (
-          <span
-            className={`ini-indicador-unidad ${unidad === '%' ? 'ini-indicador-unidad--apretada' : ''}`}
-          >
-            {unidad}
-          </span>
-        ) : null}
-      </p>
+        <div className="ini-indicador-datos">
+          <h3 className="ini-indicador-titulo">{titulo}</h3>
 
-      <footer className="ini-indicador-pie">
-        {variacion || comparacion ? (
-          <span className="ini-indicador-comparacion">
-            {variacion ? (
-              <b className="ini-indicador-variacion">
-                <span aria-hidden="true">↑</span> {variacion}
-              </b>
+          <p className="ini-indicador-valor">
+            {valor}
+            {unidad ? (
+              <span
+                className={`ini-indicador-unidad ${unidad === '%' ? 'ini-indicador-unidad--apretada' : ''}`}
+              >
+                {unidad}
+              </span>
             ) : null}
-            {comparacion ? (
-              <span className="ini-indicador-vs">{comparacion}</span>
-            ) : null}
-          </span>
-        ) : (
-          <span aria-hidden="true" />
-        )}
+          </p>
 
+          {variacion || comparacion ? (
+            <p className="ini-indicador-comparacion">
+              {variacion ? (
+                <b className={`ini-indicador-variacion ${baja ? 'baja' : 'sube'}`}>
+                  <span aria-hidden="true">{baja ? '↓' : '↑'}</span> {variacion}
+                </b>
+              ) : null}
+              {comparacion ? <span className="ini-indicador-vs">{comparacion}</span> : null}
+            </p>
+          ) : null}
+        </div>
+      </div>
+
+      <div className="ini-indicador-tendencia">
         {grafica === 'barras' ? (
           <Barras data={serie} color={colorGrafica} />
         ) : (
-          <Sparkline
-            data={serie}
-            color={colorGrafica}
-            height={44}
-            className="ini-indicador-grafica"
-          />
+          <Sparkline data={serie} color={colorGrafica} height={52} className="ini-indicador-grafica" />
         )}
-      </footer>
+      </div>
     </article>
   )
 }

@@ -23,10 +23,11 @@
 
 .modal-panel {
   width: 100%;
-  background: linear-gradient(180deg, rgba(25, 43, 66, 0.97) 0%, rgba(16, 28, 46, 0.97) 100%);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(148, 177, 210, 0.22);
+  max-height: calc(100dvh - 48px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border: 1px solid rgba(22, 48, 68, 0.08);
   border-radius: 20px;
   box-shadow: var(--hv-shadow-lg);
   animation: modal-up 0.24s ease;
@@ -59,7 +60,7 @@
 
 .modal-close {
   border: none;
-  background: rgba(166, 190, 220, 0.12);
+  background: #e7f3ec;
   color: var(--hv-muted);
   width: 32px;
   height: 32px;
@@ -71,10 +72,12 @@
 }
 
 .modal-close:hover {
-  background: rgba(166, 190, 220, 0.22);
+  background: #d7f0e4;
   color: var(--hv-ink);
 }
 
 .modal-body {
+  min-height: 0;
+  overflow: auto;
   padding: 16px 22px 22px;
 }

@@ -1,0 +1,283 @@
+.gui-aviso {
+  margin: 0 0 18px;
+  padding: 12px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  background: rgba(245, 158, 11, 0.12);
+  color: #f6e7c4;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.gui-docs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.gui-doc {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px 14px;
+  padding: 18px;
+}
+
+.gui-doc h2,
+.gui-bloque h2,
+.gui-chequeo h2,
+.gui-paso h3 {
+  margin: 0;
+  color: var(--hv-ink);
+  letter-spacing: -0.02em;
+}
+
+.gui-doc h2 {
+  font-size: 1.05rem;
+}
+
+.gui-doc p,
+.gui-bloque p,
+.gui-chequeo p,
+.gui-paso p,
+.gui-intro p {
+  margin: 8px 0 0;
+  color: var(--hv-muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.gui-doc-origen {
+  margin-top: 4px !important;
+  color: var(--hv-verde) !important;
+  font-size: 12.5px !important;
+  font-weight: 600;
+}
+
+.gui-doc-icono {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--hv-blue-soft);
+  color: var(--hv-blue-2);
+}
+
+.gui-descarga,
+.gui-ir {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-top: 4px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--hv-line);
+  color: var(--hv-ink);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.gui-descarga {
+  grid-column: 2;
+}
+
+.gui-descarga:hover,
+.gui-ir:hover {
+  border-color: var(--hv-blue-2);
+  color: var(--hv-blue-2);
+}
+
+.gui-pestanas {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.gui-pestanas button {
+  border: 1px solid var(--hv-line);
+  background: transparent;
+  color: var(--hv-muted);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gui-pestanas button.activa {
+  background: var(--hv-blue-soft);
+  border-color: transparent;
+  color: var(--hv-ink);
+}
+
+.gui-intro {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  margin-bottom: 14px;
+}
+
+.gui-intro svg {
+  color: var(--hv-verde);
+}
+
+.gui-intro p {
+  margin: 0;
+}
+
+.gui-ir {
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+.gui-cruce {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gui-paso {
+  padding: 16px 18px 14px;
+}
+
+.gui-paso header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gui-paso h3 {
+  flex: 1;
+  font-size: 1.02rem;
+}
+
+.gui-paso-num {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hv-verde);
+}
+
+.gui-estado {
+  flex-shrink: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.gui-estado--cubierto {
+  background: rgba(66, 216, 121, 0.16);
+  color: #8ef0b0;
+}
+
+.gui-estado--parcial {
+  background: rgba(245, 158, 11, 0.16);
+  color: #f6d48a;
+}
+
+.gui-paso-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.gui-paso h4 {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--hv-text);
+}
+
+.gui-paso small,
+.gui-chequeo small,
+.gui-bloque li span {
+  display: block;
+  margin-top: 4px;
+  color: var(--hv-muted);
+  font-size: 12.5px;
+}
+
+.gui-pendiente {
+  margin-top: 12px !important;
+  padding-top: 10px;
+  border-top: 1px solid var(--hv-line);
+}
+
+.gui-pendiente strong {
+  color: var(--hv-text);
+}
+
+.gui-chequeo {
+  margin-top: 14px;
+  padding: 18px;
+}
+
+.gui-chequeo ul,
+.gui-bloque ul {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gui-chequeo li,
+.gui-bloque li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(8, 19, 33, 0.35);
+}
+
+.gui-chequeo b,
+.gui-bloque b {
+  color: var(--hv-ink);
+  font-size: 14px;
+}
+
+.gui-contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gui-bloque {
+  padding: 18px;
+}
+
+.gui-bloque h2 {
+  font-size: 1.15rem;
+}
+
+.gui-bloque li {
+  flex-direction: column;
+  gap: 2px;
+}
+
+@media (max-width: 860px) {
+  .gui-docs,
+  .gui-paso-cols,
+  .gui-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .gui-descarga {
+    grid-column: 1;
+  }
+}

@@ -1,12 +1,19 @@
 import { useCallback, useState } from 'react'
-import { NavLink, useLocation } from 'react-router-dom'
+import { Link, NavLink, useLocation } from 'react-router-dom'
 import {
+  BarChart3,
+  BookOpen,
+  Building2,
   Calculator,
   ChevronDown,
+  Cloud,
   Contact,
-  FileText,
+  Droplets,
   HelpCircle,
+  History,
   Home,
+  Leaf,
+  Library,
   Ruler,
   Settings,
   ShieldCheck,
@@ -16,34 +23,25 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { usePerfil } from '../../../context/PerfilContext'
+import { PERMISOS_CATALOGO } from '../../../services/acceso'
 import { useClickOutside } from '../../../hooks/useClickOutside'
-import { tienePermiso } from '../../../services/sesionService'
 import MenuPerfil from './MenuPerfil'
-import hvLeaf from '../../../assets/images/hv-leaf.png'
 import fotoPerfil from '../../../assets/images/profile.png'
+import plantula from '../../../assets/images/plantula-dashboard.jpg'
 import './SidebarInicio.css'
 
 interface EnlaceLateral {
   to: string
   etiqueta: string
   Icono: LucideIcon
-  /** Código de permiso requerido para ver la opción (si falta, se oculta). */
   permiso?: string
 }
 
-/** Secciones con ruta propia en la aplicación. */
-const ENLACES: EnlaceLateral[] = [
-  { to: '/inicio', etiqueta: 'Inicio', Icono: Home },
-  { to: '/calculos', etiqueta: 'Cálculos', Icono: Calculator },
-  { to: '/reportes', etiqueta: 'Reportes', Icono: FileText },
-  { to: '/configuracion', etiqueta: 'Configuración', Icono: Settings },
-  { to: '/ayuda', etiqueta: 'Ayuda', Icono: HelpCircle },
-  {
-    to: '/gestion/unidades-medida',
-    etiqueta: 'Unidades de Medida',
-    Icono: Ruler,
-    permiso: 'unidad_medida.ver',
-  },
+/** Opciones del desplegable «Cálculo». */
+const CALCULOS: { id: 'carbono' | 'hidrica' | 'historial'; to: string; etiqueta: string; Icono: LucideIcon }[] = [
+  { id: 'carbono', to: '/calculos?tipo=carbono', etiqueta: 'Huella de Carbono', Icono: Cloud },
+  { id: 'hidrica', to: '/calculos?tipo=hidrica', etiqueta: 'Huella Hídrica', Icono: Droplets },
+  { id: 'historial', to: '/calculos?tipo=historial', etiqueta: 'Historial', Icono: History },
 ]
 
 /** Secciones del desplegable «Gestión» (rutas existentes). */
@@ -51,15 +49,10 @@ const GESTION: EnlaceLateral[] = [
   { to: '/gestion/usuarios', etiqueta: 'Usuarios', Icono: UserRound },
   { to: '/gestion/perfiles', etiqueta: 'Perfiles', Icono: Contact },
   { to: '/gestion/roles-permisos', etiqueta: 'Roles y permisos', Icono: ShieldCheck },
+  { to: '/gestion/organizaciones', etiqueta: 'Organizaciones', Icono: Building2 },
+  { to: '/gestion/catalogos', etiqueta: 'Catálogos', Icono: Library },
+  { to: '/gestion/unidades-medida', etiqueta: 'Unidades de medida', Icono: Ruler, permiso: 'unidad_medida.ver' },
 ]
-
-/**
- * «Unidades de Medida» vive fuera del desplegable, así que sus rutas no
- * cuentan como parte del grupo «Gestión» para abrirlo o resaltarlo.
- */
-function esRutaGestion(pathname: string): boolean {
-  return pathname.startsWith('/gestion') && !pathname.startsWith('/gestion/unidades-medida')
-}
 
 interface SidebarInicioProps {
   /** Estado del cajón en pantallas pequeñas. */
@@ -69,42 +62,58 @@ interface SidebarInicioProps {
 }
 
 /**
- * Barra lateral fija del Dashboard: marca, módulos, desplegable de Gestión
- * y bloque de usuario con el menú de perfil. En móvil se convierte en cajón.
+ * Barra lateral fija del Dashboard y de las vistas principales: marca, módulos,
+ * desplegables de Cálculo y Gestión, tarjeta ambiental y bloque de usuario.
  */
 export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps) {
-  const { perfil, rol } = usePerfil()
-  const { pathname } = useLocation()
+  const { perfil, rol, puede } = usePerfil()
+  const verCatalogos = PERMISOS_CATALOGO.some((codigo) => puede(codigo))
+  const gestion = GESTION.filter((enlace) => {
+    if (enlace.to === '/gestion/catalogos') return verCatalogos
+    if (enlace.permiso) return puede(enlace.permiso)
+    return true
+  })
+  const { pathname, search } = useLocation()
 
-  const [gestionAbierta, setGestionAbierta] = useState(() => esRutaGestion(pathname))
+  const [calculoAbierto, setCalculoAbierto] = useState(() => pathname.startsWith('/calculos'))
+  const [gestionAbierta, setGestionAbierta] = useState(() => pathname.startsWith('/gestion'))
   const [perfilAbierto, setPerfilAbierto] = useState(false)
 
-  const cerrarGestion = useCallback(() => setGestionAbierta(false), [])
+  const enCalculos = pathname.startsWith('/calculos')
+  const enGestion = pathname.startsWith('/gestion')
+
+  const cerrarCalculo = useCallback(() => {
+    if (!enCalculos) setCalculoAbierto(false)
+  }, [enCalculos])
+  const cerrarGestion = useCallback(() => {
+    if (!enGestion) setGestionAbierta(false)
+  }, [enGestion])
   const cerrarPerfil = useCallback(() => setPerfilAbierto(false), [])
+  const refCalculo = useClickOutside<HTMLLIElement>(cerrarCalculo, calculoAbierto)
   const refGestion = useClickOutside<HTMLLIElement>(cerrarGestion, gestionAbierta)
   const refPerfil = useClickOutside<HTMLDivElement>(cerrarPerfil, perfilAbierto)
 
-  // Al cambiar de ruta se cierran los desplegables del lateral; el grupo
-  // «Gestión» queda abierto cuando la ruta corresponde a ese módulo, para que
-  // el elemento activo sea visible según la sección actual.
-  const [rutaPrevia, setRutaPrevia] = useState(pathname)
-  if (rutaPrevia !== pathname) {
-    setRutaPrevia(pathname)
-    setGestionAbierta(esRutaGestion(pathname))
+  const rutaActual = `${pathname}${search}`
+  const [rutaPrevia, setRutaPrevia] = useState(rutaActual)
+  if (rutaPrevia !== rutaActual) {
+    setRutaPrevia(rutaActual)
+    setCalculoAbierto(pathname.startsWith('/calculos'))
+    setGestionAbierta(pathname.startsWith('/gestion'))
     setPerfilAbierto(false)
   }
 
   const nombreCompleto = `${perfil.nombre} ${perfil.apellidos}`.trim()
-  const enGestion = esRutaGestion(pathname)
-
-  // Solo se muestran las opciones cuyo permiso conceda la sesión actual.
-  const enlacesVisibles = ENLACES.filter(({ permiso }) => !permiso || tienePermiso(permiso))
+  const tipoCalculo = new URLSearchParams(search).get('tipo')
+  const tipoActivo: 'carbono' | 'hidrica' | 'historial' =
+    tipoCalculo === 'hidrica' || tipoCalculo === 'historial' ? tipoCalculo : 'carbono'
 
   return (
     <aside className={`ini-lateral ${abierto ? 'abierto' : ''}`} aria-label="Menú lateral">
       <div className="ini-lateral-top">
         <NavLink to="/inicio" className="ini-lateral-marca" onClick={onCerrar}>
-          <img className="ini-lateral-marca-icono" src={hvLeaf} alt="" aria-hidden="true" />
+          <span className="ini-lateral-hoja" aria-hidden="true">
+            <Leaf size={16} strokeWidth={2.4} />
+          </span>
           <span className="ini-lateral-marca-texto">
             <b>Huella</b>
             <i>Verde</i>
@@ -123,25 +132,112 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
 
       <nav className="ini-lateral-nav" aria-label="Módulos">
         <ul className="ini-lateral-lista">
-          {enlacesVisibles.map(({ to, etiqueta, Icono }) => (
-            <li key={to}>
-              <NavLink
-                to={to}
-                end={to === '/inicio'}
-                className={({ isActive }) => `ini-lateral-enlace ${isActive ? 'activo' : ''}`}
-                onClick={onCerrar}
-              >
-                <Icono size={17} strokeWidth={2.1} aria-hidden="true" />
-                <span>{etiqueta}</span>
-              </NavLink>
-            </li>
-          ))}
+          <li>
+            <NavLink
+              to="/inicio"
+              end
+              className={({ isActive }) => `ini-lateral-enlace ${isActive ? 'activo' : ''}`}
+              onClick={onCerrar}
+            >
+              <Home size={17} strokeWidth={2.1} aria-hidden="true" />
+              <span>Inicio</span>
+            </NavLink>
+          </li>
+
+          <li className="ini-lateral-grupo" ref={refCalculo}>
+            <button
+              type="button"
+              className={`ini-lateral-enlace ini-lateral-gestion ${enCalculos ? 'activo' : ''}`}
+              onClick={() => {
+                setGestionAbierta(false)
+                setCalculoAbierto((v) => !v)
+              }}
+              aria-haspopup="menu"
+              aria-expanded={calculoAbierto}
+            >
+              <Calculator size={17} strokeWidth={2.1} aria-hidden="true" />
+              <span>Cálculo</span>
+              <ChevronDown
+                size={14}
+                strokeWidth={2.4}
+                aria-hidden="true"
+                className={`ini-lateral-flecha ${calculoAbierto ? 'girada' : ''}`}
+              />
+            </button>
+
+            {calculoAbierto ? (
+              <div className="ini-lateral-submenu" role="menu" aria-label="Opciones de cálculo">
+                {CALCULOS.map(({ id, to, etiqueta, Icono }) => (
+                  <NavLink
+                    key={id}
+                    to={to}
+                    role="menuitem"
+                    className={`ini-lateral-subenlace ${enCalculos && tipoActivo === id ? 'activo' : ''}`}
+                    onClick={() => {
+                      setCalculoAbierto(false)
+                      onCerrar()
+                    }}
+                  >
+                    <Icono size={15} strokeWidth={2.1} aria-hidden="true" />
+                    <span>{etiqueta}</span>
+                  </NavLink>
+                ))}
+              </div>
+            ) : null}
+          </li>
+
+          <li>
+            <NavLink
+              to="/reportes"
+              className={({ isActive }) => `ini-lateral-enlace ${isActive ? 'activo' : ''}`}
+              onClick={onCerrar}
+            >
+              <BarChart3 size={17} strokeWidth={2.1} aria-hidden="true" />
+              <span>Reportes</span>
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink
+              to="/guias"
+              className={({ isActive }) => `ini-lateral-enlace ${isActive ? 'activo' : ''}`}
+              onClick={onCerrar}
+            >
+              <BookOpen size={17} strokeWidth={2.1} aria-hidden="true" />
+              <span>Guías</span>
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink
+              to="/configuracion"
+              className={({ isActive }) => `ini-lateral-enlace ${isActive ? 'activo' : ''}`}
+              onClick={onCerrar}
+            >
+              <Settings size={17} strokeWidth={2.1} aria-hidden="true" />
+              <span>Configuración</span>
+            </NavLink>
+          </li>
+
+          <li>
+            <NavLink
+              to="/ayuda"
+              className={({ isActive }) => `ini-lateral-enlace ${isActive ? 'activo' : ''}`}
+              onClick={onCerrar}
+            >
+              <HelpCircle size={17} strokeWidth={2.1} aria-hidden="true" />
+              <span>Ayuda</span>
+            </NavLink>
+          </li>
 
           <li className="ini-lateral-grupo" ref={refGestion}>
             <button
               type="button"
               className={`ini-lateral-enlace ini-lateral-gestion ${enGestion ? 'activo' : ''}`}
-              onClick={() => setGestionAbierta((v) => !v)}
+              onClick={() => {
+                setCalculoAbierto(false)
+                setGestionAbierta((v) => !v)
+              }}
               aria-haspopup="menu"
               aria-expanded={gestionAbierta}
             >
@@ -157,13 +253,16 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
 
             {gestionAbierta ? (
               <div className="ini-lateral-submenu" role="menu" aria-label="Gestión">
-                {GESTION.map(({ to, etiqueta, Icono }) => (
+                {gestion.map(({ to, etiqueta, Icono }) => (
                   <NavLink
                     key={to}
                     to={to}
                     role="menuitem"
                     className={({ isActive }) => `ini-lateral-subenlace ${isActive ? 'activo' : ''}`}
-                    onClick={onCerrar}
+                    onClick={() => {
+                      setGestionAbierta(false)
+                      onCerrar()
+                    }}
                   >
                     <Icono size={15} strokeWidth={2.1} aria-hidden="true" />
                     <span>{etiqueta}</span>
@@ -174,6 +273,14 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
           </li>
         </ul>
       </nav>
+
+      <Link to="/calculos?tipo=carbono" className="ini-lateral-planta" onClick={onCerrar}>
+        <img src={plantula} alt="" />
+        <span>
+          <strong>Pequeñas acciones, grandes cambios.</strong>
+          <em>Cuidemos el planeta →</em>
+        </span>
+      </Link>
 
       <div className="ini-lateral-usuario" ref={refPerfil}>
         <button

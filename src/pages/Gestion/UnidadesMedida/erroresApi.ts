@@ -3,7 +3,7 @@
  * unidades de medida.
  *
  * El backend responde 422 con `errors: [{ field, message, rule }]`;
- * `apiCliente.ts` lo normaliza en `ErrorApi.campos` y aquí se traduce al
+ * `api.ts` lo normaliza en `ErrorApi.campos` y aquí se traduce al
  * vocabulario del formulario (`codigo`, `nombre`, `simbolo`, …).
  */
 import type { UnidadMedidaFormulario } from '../../../services/tipos'

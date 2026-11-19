@@ -1,39 +1,40 @@
 import { useState } from 'react'
 import { CalendarDays, ChevronDown } from 'lucide-react'
-import { PERIODOS } from '../../../data/demo'
 import { useClickOutside } from '../../../hooks/useClickOutside'
 import './SelectorOrganizacion.css'
 
-/** Organizaciones de demostración. */
-const ORGANIZACIONES = ['SENA', 'Corporación Verde', 'Fundación Ríos Vivos']
+interface Opcion {
+  id: string
+  nombre: string
+}
 
-/**
- * Cápsula interactiva para elegir organización y periodo.
- * Los datos son de demostración: no hay un servidor detrás.
- */
-export default function SelectorOrganizacion() {
-  const [organizacion, setOrganizacion] = useState(ORGANIZACIONES[0])
-  const [periodo, setPeriodo] = useState(PERIODOS[0])
+interface Props {
+  organizaciones: Opcion[]
+  periodos: Opcion[]
+  organizacionId: string
+  periodoId: string
+  onOrganizacion: (id: string) => void
+  onPeriodo: (id: string) => void
+}
+
+export default function SelectorOrganizacion({
+  organizaciones,
+  periodos,
+  organizacionId,
+  periodoId,
+  onOrganizacion,
+  onPeriodo,
+}: Props) {
   const [abierto, setAbierto] = useState(false)
-
   const ref = useClickOutside<HTMLDivElement>(() => setAbierto(false), abierto)
-
-  const elegirOrganizacion = (valor: string) => {
-    setOrganizacion(valor)
-    setAbierto(false)
-  }
-
-  const elegirPeriodo = (valor: string) => {
-    setPeriodo(valor)
-    setAbierto(false)
-  }
+  const periodo = periodos.find((item) => item.id === periodoId)?.nombre ?? 'Sin cálculo'
 
   return (
     <div className="ini-selector" ref={ref}>
       <button
         type="button"
         className="ini-selector-pastilla"
-        onClick={() => setAbierto((v) => !v)}
+        onClick={() => setAbierto((valor) => !valor)}
         aria-haspopup="listbox"
         aria-expanded={abierto}
       >
@@ -42,43 +43,48 @@ export default function SelectorOrganizacion() {
           <span className="ini-selector-etiqueta">Periodo:</span>
           <b>{periodo}</b>
         </span>
-        <ChevronDown
-          size={17}
-          strokeWidth={2.4}
-          aria-hidden="true"
-          className={`ini-selector-flecha ${abierto ? 'girada' : ''}`}
-        />
+        <ChevronDown size={17} strokeWidth={2.4} aria-hidden="true" className={`ini-selector-flecha ${abierto ? 'girada' : ''}`} />
       </button>
 
       {abierto ? (
         <div className="ini-selector-menu" role="listbox" aria-label="Seleccionar organización y periodo">
           <p className="ini-selector-grupo">Organización</p>
-          {ORGANIZACIONES.map((item) => (
+          {organizaciones.map((item) => (
             <button
-              key={item}
+              key={item.id}
               type="button"
               role="option"
-              aria-selected={item === organizacion}
-              className={`ini-selector-opcion ${item === organizacion ? 'activa' : ''}`}
-              onClick={() => elegirOrganizacion(item)}
+              aria-selected={item.id === organizacionId}
+              className={`ini-selector-opcion ${item.id === organizacionId ? 'activa' : ''}`}
+              onClick={() => {
+                onOrganizacion(item.id)
+                setAbierto(false)
+              }}
             >
-              {item}
+              {item.nombre}
             </button>
           ))}
 
           <p className="ini-selector-grupo">Periodo</p>
-          {PERIODOS.map((item) => (
-            <button
-              key={item}
-              type="button"
-              role="option"
-              aria-selected={item === periodo}
-              className={`ini-selector-opcion ${item === periodo ? 'activa' : ''}`}
-              onClick={() => elegirPeriodo(item)}
-            >
-              {item}
-            </button>
-          ))}
+          {periodos.length ? (
+            periodos.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="option"
+                aria-selected={item.id === periodoId}
+                className={`ini-selector-opcion ${item.id === periodoId ? 'activa' : ''}`}
+                onClick={() => {
+                  onPeriodo(item.id)
+                  setAbierto(false)
+                }}
+              >
+                {item.nombre}
+              </button>
+            ))
+          ) : (
+            <p className="ini-selector-grupo">Sin cálculos</p>
+          )}
         </div>
       ) : null}
     </div>
