@@ -8,19 +8,20 @@
      ========================================================================== */
 
   /* ------------------------------- Fondos --------------------------------- */
-  --hv-bg: #07111f; /* fondo general */
-  --hv-bg-soft: #081321; /* fondo del menú lateral */
-  --hv-cream: #0e1b2e; /* superficie suave */
-  --hv-card: rgba(20, 36, 58, 0.72); /* tarjeta translúcida */
-  --hv-card-solid: #14243a; /* tarjeta opaca */
-  --hv-sage: #1b2c43; /* superficie secundaria */
-  --hv-line: rgba(148, 177, 210, 0.18); /* bordes translúcidos */
+  /* Lienzo claro del dashboard. El menú lateral usa la paleta noche más abajo. */
+  --hv-bg: #eaf2fc;
+  --hv-bg-soft: #eef5fd;
+  --hv-cream: #f4f9fe;
+  --hv-card: rgba(244, 249, 254, 0.82);
+  --hv-card-solid: #f4f9fe;
+  --hv-sage: #e6f2fc;
+  --hv-line: rgba(22, 48, 68, 0.1);
 
-  /* Superficies de tarjeta (glass) reutilizables */
-  --hv-surface: #192b42;
-  --hv-surface-2: #20344d;
-  --hv-glass: linear-gradient(180deg, rgba(27, 44, 67, 0.82) 0%, rgba(18, 32, 52, 0.92) 100%);
-  --hv-glass-brd: rgba(148, 166, 196, 0.14);
+  /* Superficies de tarjeta (vidrio claro) reutilizables */
+  --hv-surface: #f4f9fe;
+  --hv-surface-2: #e6f2fc;
+  --hv-glass: linear-gradient(180deg, rgba(244, 249, 254, 0.86) 0%, rgba(220, 234, 248, 0.72) 100%);
+  --hv-glass-brd: rgba(255, 255, 255, 0.75);
 
   /* ------------------------------ Verdes ---------------------------------- */
   /* Verdes institucionales (semánticos: éxito, ambiental) */
@@ -51,10 +52,10 @@
   --hv-red: #e2574c;
 
   /* -------------------------------- Texto --------------------------------- */
-  --hv-ink: #f5f7fb; /* texto principal */
-  --hv-text: #dfe7f2; /* texto corrido */
-  --hv-muted: #a9b7c9; /* texto secundario */
-  --hv-on-dark: #f5f7fb; /* texto sobre acentos */
+  --hv-ink: #071b2b; /* texto principal */
+  --hv-text: #263b53; /* texto corrido */
+  --hv-muted: #5d7288; /* texto secundario */
+  --hv-on-dark: #f5f7fb; /* texto sobre acentos y sobre el menú */
 
   /* ------------------------------- Sombras -------------------------------- */
   --hv-shadow-sm: 0 2px 8px rgba(2, 8, 18, 0.34);
@@ -75,6 +76,60 @@
 
   /* ------------------------------ Transiciones ---------------------------- */
   --hv-trans: 0.18s ease;
+  --hv-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --hv-ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 
   --hv-font: 'Poppins', ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+
+  /* ==========================================================================
+     Paleta oficial HuellaVerde — única fuente de color del dashboard.
+     ========================================================================== */
+
+  /* Azules oscuros — navbar */
+  --hv-noche: #071b2b;
+  --hv-petroleo: #0d1f31;
+  --hv-profundo: #0b2c39;
+  --hv-marino: #113445;
+  --hv-petroleo-verde: #0f4b50;
+  --hv-pizarra: #1a3a46;
+
+  /* Azules turquesa — auroras y luces */
+  --hv-turquesa: #00c9d8;
+  --hv-cian: #12b8cc;
+  --hv-agua-luz: #27d5c5;
+  --hv-turquesa-azul: #39afc5;
+  --hv-turquesa-suave: #7eb0af;
+  --hv-sombra-verde: #23515c;
+
+  /* Azules claros — lienzo */
+  --hv-hielo: #eaf2fc;
+  --hv-nube: #eef5fd;
+  --hv-blanco-azul: #f4f9fe;
+  --hv-cristal: #dceaf8;
+  --hv-neblina: #cbe2f1;
+  --hv-gris-azul: #bfd2e5;
+  --hv-celeste: #dff1f9;
+  --hv-celeste-brillo: #b1e2ee;
+
+  /* Azules de datos */
+  --hv-grafica: #008fd5;
+  --hv-azul-agua: #00a8e8;
+  --hv-azul-intenso: #0875c9;
+  --hv-azul-dato: #145aa0;
+  --hv-titulo-azul: #1769aa;
+  --hv-contraste: #064b86;
+
+  /* Zona: activo, header, indicadores */
+  --hv-activo: #087f83;
+  --hv-borde-activo: #39d5ce;
+  --hv-carbono: #20b99a;
+  --hv-linea-carbono: #12b886;
+  --hv-impacto: #9551f5;
+  --hv-eje: #102b46;
+  --hv-texto-secundario: #263b53;
+  --hv-header-izq: #e6f2fc;
+  --hv-header-centro: #d3e7f5;
+  --hv-header-claro: #ebf4fd;
+  --hv-sombra-vegetal: #0d3132;
+  --hv-vidrio: #ffffff;
 }

@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import {
   BarChart3,
@@ -12,6 +13,7 @@ import {
   HelpCircle,
   History,
   Home,
+  Landmark,
   Leaf,
   Library,
   Ruler,
@@ -27,7 +29,8 @@ import { PERMISOS_CATALOGO } from '../../../services/acceso'
 import { useClickOutside } from '../../../hooks/useClickOutside'
 import MenuPerfil from './MenuPerfil'
 import fotoPerfil from '../../../assets/images/profile.png'
-import plantula from '../../../assets/images/plantula-dashboard.jpg'
+import navbarFoto from '../../../assets/images/navbar-aurora.jpg'
+import plantaNavbar from '../../../assets/images/planta-navbar.png'
 import './SidebarInicio.css'
 
 interface EnlaceLateral {
@@ -46,10 +49,11 @@ const CALCULOS: { id: 'carbono' | 'hidrica' | 'historial'; to: string; etiqueta:
 
 /** Secciones del desplegable «Gestión» (rutas existentes). */
 const GESTION: EnlaceLateral[] = [
-  { to: '/gestion/usuarios', etiqueta: 'Usuarios', Icono: UserRound },
-  { to: '/gestion/perfiles', etiqueta: 'Perfiles', Icono: Contact },
-  { to: '/gestion/roles-permisos', etiqueta: 'Roles y permisos', Icono: ShieldCheck },
-  { to: '/gestion/organizaciones', etiqueta: 'Organizaciones', Icono: Building2 },
+  { to: '/gestion/centros', etiqueta: 'Centros', Icono: Landmark, permiso: 'centro.ver' },
+  { to: '/gestion/usuarios', etiqueta: 'Usuarios', Icono: UserRound, permiso: 'usuario.ver' },
+  { to: '/gestion/perfiles', etiqueta: 'Perfiles', Icono: Contact, permiso: 'rol.ver' },
+  { to: '/gestion/roles-permisos', etiqueta: 'Roles y permisos', Icono: ShieldCheck, permiso: 'rol.ver' },
+  { to: '/gestion/organizaciones', etiqueta: 'Organizaciones', Icono: Building2, permiso: 'organizacion.ver' },
   { to: '/gestion/catalogos', etiqueta: 'Catálogos', Icono: Library },
   { to: '/gestion/unidades-medida', etiqueta: 'Unidades de medida', Icono: Ruler, permiso: 'unidad_medida.ver' },
 ]
@@ -71,7 +75,7 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
   const gestion = GESTION.filter((enlace) => {
     if (enlace.to === '/gestion/catalogos') return verCatalogos
     if (enlace.permiso) return puede(enlace.permiso)
-    return true
+    return false
   })
   const { pathname, search } = useLocation()
 
@@ -108,7 +112,20 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
     tipoCalculo === 'hidrica' || tipoCalculo === 'historial' ? tipoCalculo : 'carbono'
 
   return (
-    <aside className={`ini-lateral ${abierto ? 'abierto' : ''}`} aria-label="Menú lateral">
+    <aside
+      className={`ini-lateral ${abierto ? 'abierto' : ''}`}
+      aria-label="Menú lateral"
+      style={{ '--ini-navbar': `url("${navbarFoto}")` } as CSSProperties}
+    >
+      <div className="ini-lateral-atmosfera" aria-hidden="true">
+        <span className="ini-lateral-velo" />
+        <span className="ini-aurora ini-aurora--1" />
+        <span className="ini-aurora ini-aurora--2" />
+        <span className="ini-aurora ini-aurora--3" />
+        <span className="ini-aurora-luz ini-aurora-luz--a" />
+        <span className="ini-aurora-luz ini-aurora-luz--b" />
+      </div>
+
       <div className="ini-lateral-top">
         <NavLink to="/inicio" className="ini-lateral-marca" onClick={onCerrar}>
           <span className="ini-lateral-hoja" aria-hidden="true">
@@ -156,7 +173,7 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
               aria-expanded={calculoAbierto}
             >
               <Calculator size={17} strokeWidth={2.1} aria-hidden="true" />
-              <span>Cálculo</span>
+              <span>Calculadora</span>
               <ChevronDown
                 size={14}
                 strokeWidth={2.4}
@@ -230,6 +247,7 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
             </NavLink>
           </li>
 
+          {gestion.length > 0 ? (
           <li className="ini-lateral-grupo" ref={refGestion}>
             <button
               type="button"
@@ -271,16 +289,17 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
               </div>
             ) : null}
           </li>
+          ) : null}
         </ul>
       </nav>
 
-      <Link to="/calculos?tipo=carbono" className="ini-lateral-planta" onClick={onCerrar}>
-        <img src={plantula} alt="" />
-        <span>
+      <div className="ini-lateral-planta">
+        <img src={plantaNavbar} alt="" />
+        <Link to="/calculos?tipo=carbono" className="ini-lateral-lema" onClick={onCerrar}>
           <strong>Pequeñas acciones, grandes cambios.</strong>
-          <em>Cuidemos el planeta →</em>
-        </span>
-      </Link>
+          <span>Cuidemos el planeta →</span>
+        </Link>
+      </div>
 
       <div className="ini-lateral-usuario" ref={refPerfil}>
         <button

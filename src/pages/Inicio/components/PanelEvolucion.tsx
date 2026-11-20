@@ -11,8 +11,8 @@ import {
 } from 'recharts'
 import './Paneles.css'
 
-const COLOR_CARBONO = '#22b573'
-const COLOR_AGUA = '#3b82f6'
+const COLOR_CARBONO = 'var(--hv-linea-carbono)'
+const COLOR_AGUA = 'var(--hv-grafica)'
 
 const RANGOS = [
   { id: 'anio', etiqueta: '1 año', dias: 365 },
@@ -113,10 +113,10 @@ export default function PanelEvolucion({ datos }: { datos: PuntoCarbono[] }) {
                   <stop offset="100%" stopColor={COLOR_AGUA} stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <CartesianGrid stroke="rgba(90, 122, 110, 0.14)" vertical={false} />
+              <CartesianGrid stroke="var(--hv-rejilla)" vertical={false} />
               <XAxis
                 dataKey="mes"
-                tick={{ fill: '#6d8494', fontSize: 12 }}
+                tick={{ fill: 'var(--hv-eje)', fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}
                 interval={0}
@@ -129,19 +129,19 @@ export default function PanelEvolucion({ datos }: { datos: PuntoCarbono[] }) {
                 tickFormatter={(valor) =>
                   Number(valor).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 })
                 }
-                tick={{ fill: '#6d8494', fontSize: 12 }}
+                tick={{ fill: 'var(--hv-eje)', fontSize: 12 }}
                 tickLine={false}
                 axisLine={false}
                 width={42}
               />
               <Tooltip
                 contentStyle={{
-                  background: '#ffffff',
-                  border: '1px solid rgba(31, 173, 106, 0.18)',
+                  background: 'var(--hv-blanco-azul)',
+                  border: '1px solid var(--hv-neblina)',
                   borderRadius: 12,
                   fontSize: 12,
-                  color: '#163044',
-                  boxShadow: '0 12px 28px rgba(20, 50, 40, 0.12)',
+                  color: 'var(--hv-eje)',
+                  boxShadow: '0 12px 28px color-mix(in srgb, var(--hv-noche) 12%, transparent)',
                 }}
                 formatter={(valor, nombre) => [
                   `${Number(valor).toLocaleString('es-CO', { maximumFractionDigits: 2 })}`,
@@ -155,7 +155,7 @@ export default function PanelEvolucion({ datos }: { datos: PuntoCarbono[] }) {
                 stroke={COLOR_AGUA}
                 strokeWidth={2.4}
                 fill="url(#ini-area-agua)"
-                dot={{ r: 3, fill: '#fff', stroke: COLOR_AGUA, strokeWidth: 2 }}
+                dot={false}
                 activeDot={{ r: 5, strokeWidth: 0, fill: COLOR_AGUA }}
               />
               <Area
@@ -165,7 +165,7 @@ export default function PanelEvolucion({ datos }: { datos: PuntoCarbono[] }) {
                 stroke={COLOR_CARBONO}
                 strokeWidth={2.6}
                 fill="url(#ini-area-carbono)"
-                dot={{ r: 3.2, fill: '#fff', stroke: COLOR_CARBONO, strokeWidth: 2 }}
+                dot={false}
                 activeDot={{ r: 5, strokeWidth: 0, fill: COLOR_CARBONO }}
               />
             </AreaChart>

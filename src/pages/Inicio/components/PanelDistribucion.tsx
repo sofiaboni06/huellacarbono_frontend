@@ -3,7 +3,14 @@ import { ArrowUpRight, Leaf, PieChart as PieIcon } from 'lucide-react'
 import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from 'recharts'
 import './Paneles.css'
 
-const PALETA = ['#22b573', '#3b82f6', '#a855f7', '#14b8a6', '#f59e0b', '#ef4444']
+const PALETA = [
+  'var(--hv-linea-carbono)',
+  'var(--hv-grafica)',
+  'var(--hv-impacto)',
+  'var(--hv-turquesa)',
+  'var(--hv-azul-intenso)',
+  'var(--hv-carbono)',
+]
 
 export interface FuentePanel {
   nombre: string
@@ -57,12 +64,12 @@ export default function PanelDistribucion({ datos, total, unidad, nota }: Props)
                 </Pie>
                 <Tooltip
                   contentStyle={{
-                    background: '#ffffff',
-                    border: '1px solid rgba(31, 173, 106, 0.18)',
+                    background: 'var(--hv-blanco-azul)',
+                    border: '1px solid var(--hv-neblina)',
                     borderRadius: 12,
-                    boxShadow: '0 12px 28px rgba(20, 50, 40, 0.12)',
+                    boxShadow: '0 12px 28px color-mix(in srgb, var(--hv-noche) 12%, transparent)',
                     fontSize: 12,
-                    color: '#163044',
+                    color: 'var(--hv-eje)',
                   }}
                   formatter={(valor, nombre) => `${nombre}: ${valor}%`}
                 />

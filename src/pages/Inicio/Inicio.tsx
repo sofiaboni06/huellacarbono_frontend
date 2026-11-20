@@ -1,17 +1,13 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { CSSProperties, ReactNode } from 'react'
+import type { ReactNode } from 'react'
 import { Car, Droplets, Factory, LayoutGrid, Leaf, Lightbulb, Trash2, Trees, Zap } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
-import SidebarInicio from './components/SidebarInicio'
-import BarraSuperior from './components/BarraSuperior'
 import Bienvenida from './components/Bienvenida'
 import TarjetaIndicador from './components/TarjetaIndicador'
 import PanelEvolucion from './components/PanelEvolucion'
 import PanelDistribucion from './components/PanelDistribucion'
-import plantula from '../../assets/images/plantula-dashboard.jpg'
-import follaje from '../../assets/images/planta-hojas.jpg'
-import { usePreferencias } from '../../context/PreferenciasContext'
+import headerBanner from '../../assets/images/header-banner.jpg'
 import {
   listarOrganizacionesCalculo,
   listarReduccion,
@@ -22,9 +18,15 @@ import type { AccionReduccion, ResumenCarbono } from '../../services/calculosSer
 import type { Organizacion } from '../../services/organizacionesService'
 import '../../styles/variables.css'
 import './Inicio.css'
-import './DashboardVerde.css'
 
-const PALETA = ['#22b573', '#3b82f6', '#a855f7', '#14b8a6', '#f59e0b', '#ef4444']
+const PALETA = [
+  'var(--hv-linea-carbono)',
+  'var(--hv-grafica)',
+  'var(--hv-impacto)',
+  'var(--hv-turquesa)',
+  'var(--hv-azul-intenso)',
+  'var(--hv-carbono)',
+]
 
 const MESES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic']
 
@@ -101,18 +103,24 @@ function mismoTexto(a: string, b: string): boolean {
   return normal(a).includes(normal(b)) || normal(b).includes(normal(a))
 }
 
+function colorFuente(nombre: string, indice: number): string {
+  const texto = nombre.toLowerCase()
+  if (texto.includes('elect') || texto.includes('energ')) return 'var(--hv-linea-carbono)'
+  if (texto.includes('gas') || texto.includes('veh') || texto.includes('trans')) return 'var(--hv-grafica)'
+  if (texto.includes('resid') || texto.includes('org')) return 'var(--hv-impacto)'
+  return PALETA[indice % PALETA.length]
+}
+
 function estiloFuente(nombre: string): { Icono: LucideIcon; color: string } {
   const texto = nombre.toLowerCase()
-  if (texto.includes('elect') || texto.includes('energ')) return { Icono: Zap, color: '#eab308' }
-  if (texto.includes('gas') || texto.includes('veh') || texto.includes('trans')) return { Icono: Car, color: '#22b573' }
-  if (texto.includes('resid') || texto.includes('org')) return { Icono: Trash2, color: '#a855f7' }
-  return { Icono: Factory, color: '#3b82f6' }
+  if (texto.includes('elect') || texto.includes('energ')) return { Icono: Zap, color: 'var(--hv-linea-carbono)' }
+  if (texto.includes('gas') || texto.includes('veh') || texto.includes('trans')) return { Icono: Car, color: 'var(--hv-grafica)' }
+  if (texto.includes('resid') || texto.includes('org')) return { Icono: Trash2, color: 'var(--hv-impacto)' }
+  return { Icono: Factory, color: 'var(--hv-azul-agua)' }
 }
 
 function InicioContenido() {
-  const { hojasVisibles } = usePreferencias()
   const [aviso, setAviso] = useState('')
-  const [lateralAbierto, setLateralAbierto] = useState(false)
   const [organizaciones, setOrganizaciones] = useState<Organizacion[]>([])
   const [organizacionId, setOrganizacionId] = useState('')
   const [resumen, setResumen] = useState<ResumenCarbono | null>(null)
@@ -127,7 +135,6 @@ function InicioContenido() {
   }, [aviso])
 
   const avisar = useCallback((mensaje: string) => setAviso(mensaje), [])
-  const cerrarLateral = useCallback(() => setLateralAbierto(false), [])
 
   useEffect(() => {
     const tituloAnterior = document.title
@@ -172,7 +179,7 @@ function InicioContenido() {
     nombre: fuente.nombre,
     valor: fuente.porcentaje,
     total: fuente.valorCo2e,
-    color: PALETA[indiceFuente % PALETA.length],
+    color: colorFuente(fuente.nombre, indiceFuente),
   }))
 
   useEffect(() => {
@@ -218,8 +225,8 @@ function InicioContenido() {
       baja: variacionCarbono?.baja,
       comparacion: variacionCarbono ? 'vs. año anterior' : seleccionado?.periodoNombre ?? 'Sin cálculo',
       tonoIcono: 'verde',
-      colorGrafica: '#22b573',
-      icono: <Leaf size={22} strokeWidth={2.2} aria-hidden="true" />,
+      colorGrafica: 'var(--hv-linea-carbono)',
+      icono: <Leaf size={30} strokeWidth={1.6} fill="currentColor" aria-hidden="true" />,
       serie: serie.length >= 4 ? serie : [0.72, 0.94, 0.7, 1.08, 0.82, 1.16, 0.9, 1.02].map((factor) =>
         Number(((carbonoActual || 1.6) * factor).toFixed(2)),
       ),
@@ -233,8 +240,8 @@ function InicioContenido() {
       baja: true,
       comparacion: 'vs. año anterior',
       tonoIcono: 'azul',
-      colorGrafica: '#3b82f6',
-      icono: <Droplets size={22} strokeWidth={2.2} aria-hidden="true" />,
+      colorGrafica: 'var(--hv-grafica)',
+      icono: <Droplets size={30} strokeWidth={1.6} fill="currentColor" aria-hidden="true" />,
       serie: [1.1, 1.35, 1.05, 1.5, 1.2, 1.7, 1.25, 1.85, 1.4, 1.6],
     },
     {
@@ -243,28 +250,16 @@ function InicioContenido() {
       valor: '+12',
       unidad: 'árboles equivalentes',
       tonoIcono: 'morado',
-      colorGrafica: '#a855f7',
-      icono: <Trees size={22} strokeWidth={2.2} aria-hidden="true" />,
+      colorGrafica: 'var(--hv-impacto)',
+      icono: <Trees size={28} strokeWidth={1.6} fill="currentColor" aria-hidden="true" />,
       serie: [3, 4, 3.5, 6, 5, 8, 7, 9, 8, 12],
     },
   ]
 
   return (
-    <div className="hv-inicio" data-hojas={hojasVisibles ? 'visibles' : 'ocultas'}>
-      <SidebarInicio abierto={lateralAbierto} onCerrar={cerrarLateral} />
-
-      {lateralAbierto ? (
-        <button type="button" className="ini-velo" onClick={cerrarLateral} aria-label="Cerrar menú lateral" />
-      ) : null}
-
-      <div className="ini-zona" style={{ '--ini-follaje': `url("${follaje}")` } as CSSProperties}>
-        <BarraSuperior
-          placeholder="Buscar en tu dashboard..."
-          onAlternarLateral={() => setLateralAbierto((valor) => !valor)}
-        />
-
-        <main className="ini-contenido">
+    <>
           <div className="ini-hero">
+            <div className="ini-hero-texto">
             <Bienvenida
               organizaciones={organizaciones.map((item) => ({ id: item.id, nombre: item.nombre }))}
               periodos={(resumen?.periodos ?? []).map((item) => ({ id: item.id, nombre: item.periodoNombre }))}
@@ -273,6 +268,7 @@ function InicioContenido() {
               onOrganizacion={setOrganizacionId}
               onPeriodo={setPeriodoId}
             />
+            </div>
             <p className="ini-cita-clara">
               Un planeta más verde,
               <br />
@@ -347,7 +343,7 @@ function InicioContenido() {
                 <Link to="/calculos">Ver más →</Link>
               </header>
               <div className="ini-recomendacion-cuerpo">
-                <img src={plantula} alt="" />
+                <img src={headerBanner} alt="" />
                 <div className="ini-recomendacion-texto">
                   <h3>{accion?.estrategia || 'Reduce tu consumo eléctrico'}</h3>
                   <p>
@@ -361,15 +357,13 @@ function InicioContenido() {
               </div>
             </article>
           </section>
-        </main>
-      </div>
 
       {aviso ? (
         <div className="ini-aviso" role="status" aria-live="polite">
           {aviso}
         </div>
       ) : null}
-    </div>
+    </>
   )
 }
 

@@ -24,7 +24,10 @@ export default function Bienvenida(props: Props) {
     <section className="ini-bienvenida" aria-label="Bienvenida">
       <div className="ini-bienvenida-texto">
         <h1 className="ini-bienvenida-saludo">
-          Hola, <span className="ini-bienvenida-nombre">{nombre}</span>
+          Hola, <span className="ini-bienvenida-nombre">{nombre}</span>{' '}
+          <span className="ini-bienvenida-mano" aria-hidden="true">
+            👋
+          </span>
         </h1>
         <p className="ini-bienvenida-subtitulo">Aquí tienes un resumen de tu impacto ambiental.</p>
       </div>
