@@ -597,3 +597,9 @@
     transform: scale(0.82);
   }
 }
+
+/* Ajuste para el captcha dentro de la tarjeta */
+.hv-captcha-container > div {
+  transform: scale(0.9);
+  transform-origin: center;
+}
