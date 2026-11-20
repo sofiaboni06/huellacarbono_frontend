@@ -13,12 +13,10 @@ import {
   Mail,
   User,
 } from 'lucide-react'
+import ReCAPTCHA from 'react-google-recaptcha'
 import Modal from '../../components/common/Modal'
 import hvLeaf from '../../assets/images/hv-leaf.png'
 import senaLogo from '../../assets/images/sena-logo.png'
-// Planeta del panel izquierdo. Hoy se usa globe.png (recurso disponible);
-// cuando exista src/assets/images/login-planet.png (alta resolución)
-// basta con sustituir esta importación: la maquetación ya está preparada.
 import planetaTierra from '../../assets/images/globe.png'
 import '../../styles/variables.css'
 import './Login.css'
@@ -30,6 +28,10 @@ interface ErroresLogin {
 
 const CORREO_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const CLAVE_USUARIO_RECORDADO = 'hv:usuario-recordado'
+
+// Variables de entorno del captcha
+const CAPTCHA_HABILITADO = import.meta.env.VITE_ENABLE_CAPTCHA === 'true'
+const CAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || ''
 
 export default function Login() {
   const navigate = useNavigate()
@@ -48,19 +50,26 @@ export default function Login() {
   const [errores, setErrores] = useState<ErroresLogin>({})
   const [avisoDemo, setAvisoDemo] = useState('')
 
+  // Estados del captcha
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [errorCaptcha, setErrorCaptcha] = useState('')
+  const captchaRef = useRef<ReCAPTCHA>(null)
+
+  // Estado para simular envío al backend
+  const [enviando, setEnviando] = useState(false)
+
   const [modalRecuperacion, setModalRecuperacion] = useState(false)
   const [correo, setCorreo] = useState('')
   const [errorCorreo, setErrorCorreo] = useState('')
   const [solicitudEnviada, setSolicitudEnviada] = useState(false)
 
-  /** Evita navegar tras desmontar la vista. */
   const accesoDemo = useRef<number | null>(null)
   useEffect(() => () => {
     if (accesoDemo.current !== null) window.clearTimeout(accesoDemo.current)
   }, [])
 
-  /* ---------------- Validación de demostración del formulario ---------------- */
-  const enviarLogin = (e: FormEvent<HTMLFormElement>) => {
+  /* ---------------- Envío del login ---------------- */
+  const enviarLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const nuevos: ErroresLogin = {}
@@ -71,14 +80,23 @@ export default function Login() {
       nuevos.password = 'Ingresa tu contraseña.'
     }
 
+    // Validación del captcha
+    if (CAPTCHA_HABILITADO && !captchaToken) {
+      setErrorCaptcha('Por favor, completa el captcha para continuar.')
+    } else {
+      setErrorCaptcha('')
+    }
+
     setErrores(nuevos)
 
-    if (Object.keys(nuevos).length > 0) {
+    const hayErrorFormulario = Object.keys(nuevos).length > 0
+    const hayErrorCaptcha = CAPTCHA_HABILITADO && !captchaToken
+
+    if (hayErrorFormulario || hayErrorCaptcha) {
       setAvisoDemo('')
       return
     }
 
-    // No hay backend en esta fase: la validación ocurre íntegramente en el navegador.
     try {
       if (recordarme) {
         localStorage.setItem(CLAVE_USUARIO_RECORDADO, usuario.trim())
@@ -89,19 +107,53 @@ export default function Login() {
       /* almacenamiento no disponible */
     }
 
+    // ============================================================
+    // MODO DEMO (sin backend): solo navega al panel
+    // ============================================================
+    // Cuando tengas backend, comenta este bloque y descomenta el fetch de abajo.
     setAvisoDemo(
       'Acceso de demostración: la validación ocurrió solo en tu navegador. No hay backend ' +
         'ni autenticación real; entrando a Inicio…',
     )
-
-    // Acceso demostrativo: no existe autenticación, únicamente navegación al panel.
     accesoDemo.current = window.setTimeout(() => {
       accesoDemo.current = null
       navigate('/inicio')
     }, 900)
+
+    // ============================================================
+    // MODO CON BACKEND (descomenta cuando el back esté listo)
+    // ============================================================
+    /*
+    setEnviando(true)
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+  email: usuario.trim(), // Adonis espera 'email'
+  password,
+  recaptchaToken: captchaToken,
+}),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        navigate('/inicio')
+      } else {
+        setErrorCaptcha('Verificación de seguridad fallida. Intenta de nuevo.')
+        captchaRef.current?.reset()
+        setCaptchaToken(null)
+      }
+    } catch {
+      setAvisoDemo('Error de conexión con el servidor. Intenta más tarde.')
+    } finally {
+      setEnviando(false)
+    }
+    */
   }
 
-  /* ---------------- Recuperación de contraseña (sin backend) ---------------- */
+  /* ---------------- Recuperación de contraseña ---------------- */
   const abrirRecuperacion = () => {
     setCorreo('')
     setErrorCorreo('')
@@ -133,8 +185,6 @@ export default function Login() {
       <div className="hv-login__shell">
         {/* ============ PANEL IZQUIERDO ============ */}
         <section className="hv-panel hv-panel--brand" aria-label="Presentación de HuellaVerde">
-          {/* Contenedor exclusivamente visual: planeta Tierra como
-              protagonista del panel de marca. */}
           <div className="brand__planet" aria-hidden="true">
             <span className="brand__planet-glow" />
             <img src={planetaTierra} alt="" />
@@ -263,8 +313,32 @@ export default function Login() {
               </button>
             </div>
 
-            <button type="submit" className="login-btn login-btn--primary">
-              Ingresar <ArrowRight size={17} aria-hidden="true" />
+            {/* ====== CAPTCHA (condicional) ====== */}
+            {CAPTCHA_HABILITADO && (
+              <div className="hv-captcha-container">
+                <ReCAPTCHA
+                  ref={captchaRef}
+                  sitekey={CAPTCHA_SITE_KEY}
+                  onChange={(token) => {
+                    setCaptchaToken(token)
+                    if (token) setErrorCaptcha('')
+                  }}
+                  onExpired={() => setCaptchaToken(null)}
+                />
+                {errorCaptcha && (
+                  <p className="login-field-error" role="alert">
+                    {errorCaptcha}
+                  </p>
+                )}
+              </div>
+            )}
+
+            <button
+  type="submit"
+  className="login-btn login-btn--primary"
+  disabled={enviando} // Aquí podrías añadir: || hayErrorFormulario
+>
+              {enviando ? 'Ingresando…' : <>Ingresar <ArrowRight size={17} aria-hidden="true" /></>}
             </button>
 
             {avisoDemo && (
@@ -289,8 +363,6 @@ export default function Login() {
               Huella<span>Verde</span>
             </span>
             <span className="card__footer-dot" aria-hidden="true" />
-            {/* Filtro SVG: convierte el fondo blanco del logo SENA en
-                transparencia (luminancia → alfa) sin modificar el recurso. */}
             <svg
               aria-hidden="true"
               focusable="false"
@@ -307,9 +379,6 @@ export default function Login() {
                   height="100%"
                   colorInterpolationFilters="sRGB"
                 >
-                  {/* Alfa = alfa_entrada − luminancia: el fondo blanco
-                      (lum 1) queda transparente y el logo (lum baja)
-                      opaco; los píxeles fuera del área también caen a 0. */}
                   <feColorMatrix
                     type="matrix"
                     values="1 0 0 0 0
