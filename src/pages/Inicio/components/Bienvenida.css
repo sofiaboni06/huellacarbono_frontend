@@ -31,3 +31,455 @@
     align-items: stretch;
   }
 }
+
+/* =========================================
+   BIENVENIDA - HERO (TEMA OSCURO HUELLA VERDE)
+========================================= */
+
+.welcome-hero {
+  --welcome-bg: #1e293b; /* Azul pizarra oscuro similar a las tarjetas */
+  --welcome-card-bg: rgba(15, 23, 42, 0.6);
+  --welcome-accent: #10b981; /* Verde esmeralda Huella Verde */
+  --welcome-accent-light: #34d399;
+  --welcome-text: #f8fafc;
+  --welcome-text-muted: #94a3b8;
+  --welcome-border: rgba(255, 255, 255, 0.05);
+
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 54% 46%;
+  width: 100%;
+  min-height: 420px;
+  overflow: hidden;
+  border-radius: 24px; /* Igualado a las tarjetas de abajo */
+  
+  /* Fondo oscuro con destellos sutiles verdes/azules */
+  background: 
+    radial-gradient(circle at 0% 100%, rgba(16, 185, 129, 0.15), transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1), transparent 50%),
+    linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+
+  border: 1px solid var(--welcome-border);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  margin-bottom: 24px;
+}
+
+/* Decoraciones del fondo (Puntos y cuadrados) */
+.welcome-hero__decoration {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  mask-image: linear-gradient(90deg, black 0%, black 50%, transparent 80%);
+}
+
+.welcome-dot {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(52, 211, 153, 0.2);
+  animation: welcomePulse 5s ease-in-out infinite;
+}
+
+.welcome-dot--one { width: 10px; height: 10px; top: 18%; left: 45%; }
+.welcome-dot--two { width: 7px; height: 7px; top: 38%; left: 50%; animation-delay: -2s; }
+.welcome-dot--three { width: 12px; height: 12px; bottom: 12%; left: 41%; animation-delay: -3s; }
+
+.welcome-square {
+  position: absolute;
+  border-radius: 9px;
+  background: rgba(52, 211, 153, 0.1);
+  animation: welcomeFloat 7s ease-in-out infinite;
+}
+
+.welcome-square--one { width: 28px; height: 28px; top: 17%; right: 45%; transform: rotate(8deg); }
+.welcome-square--two { width: 34px; height: 34px; bottom: 17%; right: 43%; animation-delay: -3s; }
+.welcome-square--three { width: 19px; height: 19px; top: 68%; left: 54%; animation-delay: -1s; }
+
+.welcome-circle {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(52, 211, 153, 0.2);
+  border-radius: 50%;
+  bottom: 11%;
+  left: 46%;
+}
+
+/* Contenido izquierdo */
+.welcome-hero__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  min-width: 0;
+  padding: 38px 35px 35px 45px;
+}
+
+/* Etiqueta institucional (Badge) */
+.welcome-hero__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 0 16px;
+  border: 1px solid rgba(52, 211, 153, 0.2);
+  border-radius: 50px;
+  background: rgba(15, 23, 42, 0.5);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(12px);
+  color: var(--welcome-accent-light);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .15em;
+}
+
+.welcome-hero__status {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--welcome-accent-light);
+}
+
+.welcome-hero__status::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 1px solid rgba(52, 211, 153, 0.4);
+  border-radius: 50%;
+  animation: welcomePing 2s infinite;
+}
+
+.welcome-hero__separator {
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.welcome-hero__badge-subtitle {
+  color: var(--welcome-text-muted);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* Título */
+.welcome-hero__heading {
+  margin-top: 30px;
+  animation: welcomeAppear .8s ease both;
+}
+
+.welcome-hero__eyebrow {
+  margin: 0 0 10px;
+  color: var(--welcome-text-muted);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.welcome-hero__heading h1 {
+  margin: 0;
+  color: var(--welcome-text);
+  font-size: clamp(35px, 3.2vw, 56px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+}
+
+.welcome-hero__username {
+  position: relative;
+  display: table;
+  margin-top: 4px;
+  padding-bottom: 6px;
+  background: linear-gradient(100deg, #34d399 0%, #3b82f6 100%); /* Degradado verde a azul */
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.welcome-hero__username::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: -12px;
+  bottom: 2px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(52, 211, 153, 0.15);
+  transform: rotate(-1.5deg);
+}
+
+.welcome-hero__description {
+  max-width: 600px;
+  margin: 18px 0 0;
+  color: var(--welcome-text-muted);
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+
+/* Tarjetas de Información (Rol y Organización) */
+.welcome-hero__info {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.welcome-info-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 72px;
+  padding: 12px 18px;
+  border: 1px solid var(--welcome-border);
+  border-radius: 16px;
+  background: var(--welcome-card-bg);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(12px);
+  transition: transform .3s ease, border-color .3s ease, background .3s ease;
+}
+
+.welcome-info-card:hover {
+  transform: translateY(-3px);
+  background: rgba(30, 41, 59, 0.8);
+  border-color: rgba(52, 211, 153, 0.3);
+}
+
+.welcome-info-card__icon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: rgba(52, 211, 153, 0.1);
+  color: var(--welcome-accent);
+}
+
+.welcome-info-card__icon svg {
+  width: 22px;
+  height: 22px;
+}
+
+.welcome-info-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.welcome-info-card__label {
+  color: var(--welcome-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+.welcome-info-card__text strong {
+  color: var(--welcome-text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* Pie inferior */
+.welcome-hero__footer {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-top: 40px;
+}
+
+.welcome-hero__icon-group {
+  display: flex;
+  align-items: center;
+}
+
+.welcome-footer-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  margin-left: -10px;
+  border: 2px solid #1e293b; /* Color del fondo del hero para el efecto de corte */
+  border-radius: 50%;
+  transition: transform .3s ease;
+}
+
+.welcome-footer-icon:first-child { margin-left: 0; }
+.welcome-footer-icon:hover { transform: translateY(-4px); }
+.welcome-footer-icon svg { width: 20px; height: 20px; }
+
+.welcome-footer-icon--dark { color: white; background: #334155; }
+.welcome-footer-icon--green { color: white; background: var(--welcome-accent); }
+.welcome-footer-icon--light { color: #0f172a; background: #e2e8f0; }
+
+.welcome-hero__footer-divider {
+  width: 1px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.welcome-hero__footer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.welcome-hero__footer-text strong { color: var(--welcome-accent-light); font-size: 14px; font-weight: 600; }
+.welcome-hero__footer-text span { color: var(--welcome-text-muted); font-size: 13px; }
+
+/* Fotografía derecha */
+.welcome-hero__visual {
+  position: relative;
+  min-width: 0;
+  min-height: 420px;
+  overflow: hidden;
+  background: #0f172a;
+}
+
+.welcome-hero__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 30%;
+  animation: welcomeImageReveal 1.2s ease both;
+  transition: transform 1s ease;
+}
+
+.welcome-hero__visual:hover .welcome-hero__image { transform: scale(1.02); }
+
+/* Degradado de la fotografía para fundirse con el fondo oscuro */
+.welcome-hero__image-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, #1e293b 0%, transparent 30%),
+    linear-gradient(0deg, #0f172a 0%, rgba(15, 23, 42, 0.6) 20%, transparent 60%);
+}
+
+/* Texto inferior de la foto */
+.welcome-hero__photo-caption {
+  position: absolute;
+  z-index: 3;
+  right: 35px;
+  bottom: 40px;
+  left: 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  color: white;
+  animation: welcomeAppear 1s .3s both;
+}
+
+.welcome-hero__caption-line {
+  width: 5px;
+  min-height: 70px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--welcome-accent);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
+}
+
+.welcome-hero__photo-caption p {
+  margin: 0 0 8px;
+  color: var(--welcome-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .15em;
+}
+
+.welcome-hero__photo-caption h2 {
+  margin: 0;
+  color: white;
+  font-size: clamp(20px, 1.8vw, 28px);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.welcome-hero__photo-caption div > span {
+  display: block;
+  margin-top: 6px;
+  color: var(--welcome-text-muted);
+  font-size: 14px;
+}
+
+/* =========================================
+   ANIMACIONES
+========================================= */
+@keyframes welcomeAppear {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes welcomeFloat {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -13px; }
+}
+
+@keyframes welcomePulse {
+  0%, 100% { opacity: .4; scale: 1; }
+  50% { opacity: 1; scale: 1.3; }
+}
+
+@keyframes welcomePing {
+  0% { transform: scale(.8); opacity: .8; }
+  100% { transform: scale(1.8); opacity: 0; }
+}
+
+@keyframes welcomeImageReveal {
+  from { opacity: .6; scale: 1.05; }
+  to { opacity: 1; scale: 1; }
+}
+
+/* =========================================
+   RESPONSIVE
+========================================= */
+@media (max-width: 1100px) {
+  .welcome-hero { grid-template-columns: 53% 47%; min-height: 390px; }
+  .welcome-hero__content { padding: 30px; }
+  .welcome-hero__heading h1 { font-size: clamp(32px, 4vw, 44px); }
+  .welcome-hero__footer { gap: 14px; margin-top: 32px; }
+  .welcome-info-card { padding: 10px 14px; gap: 10px; }
+  .welcome-info-card__text strong { font-size: 13px; }
+  .welcome-hero__photo-caption { left: 25px; right: 20px; bottom: 30px; gap: 14px; }
+}
+
+@media (max-width: 760px) {
+  .welcome-hero { grid-template-columns: 1fr; border-radius: 20px; }
+  .welcome-hero__content { padding: 28px 22px 30px; }
+  .welcome-hero__badge { padding: 0 12px; font-size: 9px; }
+  .welcome-hero__heading { margin-top: 24px; }
+  .welcome-hero__heading h1 { font-size: clamp(36px, 9vw, 48px); }
+  .welcome-hero__info { width: 100%; flex-direction: column; gap: 10px; }
+  .welcome-info-card { width: 100%; }
+  .welcome-hero__footer { flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+  .welcome-footer-icon { width: 38px; height: 38px; }
+  .welcome-footer-icon svg { width: 18px; height: 18px; }
+  .welcome-hero__visual { min-height: 320px; }
+  .welcome-hero__image-overlay {
+    background:
+      linear-gradient(0deg, #1e293b 0%, rgba(15, 23, 42, 0.7) 20%, transparent 60%);
+  }
+  .welcome-hero__photo-caption { left: 22px; bottom: 24px; right: 18px; }
+  .welcome-hero__photo-caption h2 { font-size: 20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .welcome-hero *, .welcome-hero *::before, .welcome-hero *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,263 @@
+/* --- VARIABLES Y ANIMACIONES (SUAVIZADAS) --- */
+@keyframes wl-overlay-in { 
+  from { opacity: 0; } 
+  to { opacity: 1; } 
+}
+
+@keyframes wl-overlay-out { 
+  from { opacity: 1; transform: scale(1); } 
+  to { opacity: 0; transform: scale(1.04); } 
+}
+
+@keyframes wl-stage-out { 
+  to { opacity: 0; transform: translateY(-24px) scale(0.97); } 
+}
+
+@keyframes wl-rise { 
+  from { opacity: 0; transform: translateY(15px); } 
+  to { opacity: 1; transform: none; } 
+}
+
+@keyframes wl-pop { 
+  0% { opacity: 0; transform: scale(0.85); } 
+  100% { opacity: 1; transform: scale(1); } 
+}
+
+@keyframes wl-letter { 
+  from { opacity: 0; transform: translateY(0.3em); filter: blur(4px); } 
+  to { opacity: 1; transform: none; filter: blur(0); } 
+}
+
+@keyframes wl-orb { 
+  0%, 100% { transform: translate(0, 0) scale(1); } 
+  50% { transform: translate(20px, -15px) scale(1.08); } 
+}
+
+@keyframes wl-spin { 
+  to { transform: rotate(360deg); } 
+}
+
+@keyframes wl-pulse { 
+  0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.55); } 
+  70% { box-shadow: 0 0 0 22px rgba(52, 211, 153, 0); } 
+  100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); } 
+}
+
+@keyframes wl-glow { 
+  0%, 100% { text-shadow: 0 0 15px rgba(52, 211, 153, 0.15); } 
+  50% { text-shadow: 0 0 30px rgba(52, 211, 153, 0.4); } 
+}
+
+@keyframes wl-bob { 
+  0%, 100% { transform: translate(-50%, 0); } 
+  50% { transform: translate(-50%, -4px); } 
+}
+
+@keyframes wl-mote { 
+  0% { transform: translateY(0) scale(0.6); opacity: 0; } 
+  15% { opacity: 0.9; } 
+  100% { transform: translateY(-105vh) scale(1.1); opacity: 0; } 
+}
+
+/* --- CONTENEDOR PRINCIPAL (FULLSCREEN) --- */
+.wl-overlay {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow-y: auto !important;
+  background-color: #0f172a !important;
+  font-family: inherit;
+}
+
+.wl-overlay.is-closing { 
+  animation: wl-overlay-out 0.7s cubic-bezier(0.4, 0, 0.2, 1) forwards; 
+  pointer-events: none; 
+}
+
+.wl-overlay * { 
+  box-sizing: border-box; 
+  color-scheme: dark; 
+}
+
+/* --- FONDO (IMAGEN Y CAPA) --- */
+.wl-bg-wrap { 
+  position: absolute; 
+  inset: 0; 
+  z-index: 0; 
+}
+
+.wl-bg-img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: cover; 
+  opacity: 0.4; 
+  filter: blur(3px); 
+}
+
+.wl-bg-overlay { 
+  position: absolute; 
+  inset: 0; 
+  background: linear-gradient(to bottom right, rgba(15,23,42,0.95), rgba(30,41,59,0.9), rgba(15,23,42,0.8)); 
+}
+
+/* --- CONTENIDO CENTRAL --- */
+.wl-content-wrap {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 48rem;
+  padding: 3rem 1.5rem;
+  min-height: 100vh;
+}
+
+/* --- TEXTOS Y BOTONES (ANIMACIONES SUAVES) --- */
+.wl-rise { 
+  animation: wl-rise 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; 
+  animation-delay: var(--wl-delay, 0ms); 
+}
+
+.wl-pop { 
+  animation: wl-pop 0.9s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; 
+  animation-delay: var(--wl-delay, 0ms); 
+}
+
+.wl-letter { 
+  display: inline-block; 
+  animation: wl-letter 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; 
+  animation-delay: calc(400ms + var(--i, 0) * 40ms); 
+}
+
+.wl-glow { 
+  animation: wl-glow 4.5s ease-in-out infinite; 
+}
+
+.wl-orb { 
+  animation: wl-orb 20s ease-in-out infinite; 
+}
+
+/* --- FOTO DE PERFIL --- */
+.wl-photo-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.wl-photo-btn {
+  position: relative;
+  display: block;
+  width: 8rem;
+  height: 8rem;
+  border-radius: 50%;
+  border: 4px solid rgba(255,255,255,0.85);
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+  background: transparent;
+  padding: 0;
+}
+
+.wl-photo-btn:disabled { cursor: wait; }
+
+.wl-photo-initials {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom right, #059669, #115e59);
+  font-size: 2.25rem;
+  font-weight: 900;
+  color: #fff;
+}
+
+.wl-photo-overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(15,23,42,0.55);
+  color: #fff;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.wl-photo-btn:hover .wl-photo-overlay { opacity: 1; }
+
+.wl-ring {
+  position: absolute;
+  top: -12px; 
+  left: -12px; 
+  right: -12px; 
+  bottom: -12px;
+  border-radius: 50%;
+  border: 2px dashed rgba(52, 211, 153, 0.85);
+  pointer-events: none;
+}
+
+.wl-photo-pill {
+  position: absolute;
+  bottom: -14px;
+  left: 50%;
+  transform: translate(-50%, 0);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.wl-photo-pill:hover {
+  transform: translate(-50%, -2px);
+  filter: brightness(1.1);
+}
+
+/* --- PUNTOS / LUCIÉRNAGAS --- */
+.wl-motes-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.wl-mote {
+  position: absolute;
+  bottom: -12px;
+  left: var(--x);
+  width: var(--s);
+  height: var(--s);
+  border-radius: 999px;
+  background: rgba(52, 211, 153, 0.85);
+  box-shadow: 0 0 12px rgba(52, 211, 153, 0.8);
+  opacity: 0;
+  animation: wl-mote var(--d) linear infinite;
+  animation-delay: var(--delay);
+}
+
+/* --- CLASES DE UTILIDAD MANUALES --- */
+.wl-flex { display: flex; }
+.wl-flex-col { flex-direction: column; }
+.wl-items-center { align-items: center; }
+.wl-justify-center { justify-content: center; }
+.wl-gap-4 { gap: 1rem; }
+.wl-mt-8 { margin-top: 2rem; }
+.wl-mt-10 { margin-top: 2.5rem; }
+.wl-text-center { text-align: center; }
