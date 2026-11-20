@@ -1,107 +1,140 @@
-/**
- * Servicio de usuarios (demostración local).
- *
- * Expone una API asíncrona con la misma forma que tendría el endpoint real,
- * de modo que sustituir estas funciones por `fetch` no obliga a tocar las
- * vistas. Los datos viven en memoria + `localStorage` (ver `persistencia.ts`).
- */
+import { api } from './api'
+import type { Estado, Perfil, Usuario, UsuarioFormulario } from './tipos'
 
-import { guardarColeccion, leerColeccion } from './persistencia'
-import { USUARIOS_DEMO } from './datosDemo'
-import type { Estado, Usuario, UsuarioFormulario } from './tipos'
-
-const CLAVE = 'usuarios'
-
-let almacen: Usuario[] = leerColeccion<Usuario>(CLAVE, USUARIOS_DEMO)
-
-/** Simula la latencia de una petición de red. */
-function red(ms = 160): Promise<void> {
-  return new Promise((resolver) => setTimeout(resolver, ms))
+interface RolApi {
+  id: number
+  name: string
+  active: boolean
 }
 
-function persistir(): void {
-  guardarColeccion(CLAVE, almacen)
+interface UsuarioApi {
+  id: number
+  nombres: string
+  apellidos: string
+  email: string
+  active: boolean
+  lastAccessAt: string | null
+  roles: RolApi[]
 }
 
-function clonarLista(): Usuario[] {
-  return almacen.map((usuario) => ({ ...usuario }))
+interface Pagina<T> {
+  data: T
+  meta?: { lastPage?: number }
 }
 
-function clonar(usuario: Usuario): Usuario {
-  return { ...usuario }
+let correos: { id: string; correo: string }[] = []
+
+function aUsuario(apiUsuario: UsuarioApi): Usuario {
+  const rol = apiUsuario.roles[0]
+  return {
+    id: String(apiUsuario.id),
+    nombres: apiUsuario.nombres,
+    apellidos: apiUsuario.apellidos,
+    correo: apiUsuario.email,
+    perfil: rol?.name ?? 'Sin rol',
+    perfilId: rol ? String(rol.id) : '',
+    estado: apiUsuario.active ? 'activo' : 'inactivo',
+    ultimoAcceso: apiUsuario.lastAccessAt,
+  }
 }
 
-/** Genera un identificador nuevo para un usuario recién creado. */
-function siguienteId(): string {
-  const numeros = almacen
-    .map((usuario) => Number.parseInt(usuario.id.replace(/\D/g, ''), 10))
-    .filter((valor) => Number.isFinite(valor))
-  const maximo = numeros.length ? Math.max(...numeros) : 0
-  return `usu-${String(maximo + 1).padStart(3, '0')}`
+async function pedirPagina(pagina: number): Promise<Pagina<UsuarioApi[]>> {
+  return api<Pagina<UsuarioApi[]>>(
+    `/users?includeInactive=true&perPage=100&page=${pagina}`,
+  )
 }
 
-/** Lista completa de usuarios. */
+/** Perfiles activos para asignar un usuario. Solo exige permiso de ver usuarios. */
+export async function listarOpcionesPerfil(): Promise<Perfil[]> {
+  const respuesta = await api<{
+    data: { roles: { id: number; name: string; description: string }[] }
+  }>('/users/options')
+  return respuesta.data.roles.map((rol) => ({
+    id: String(rol.id),
+    nombre: rol.name,
+    descripcion: rol.description,
+    estado: 'activo',
+    sistema: false,
+    permisos: [],
+  }))
+}
+
 export async function listarUsuarios(): Promise<Usuario[]> {
-  await red()
-  return clonarLista()
+  const primera = await pedirPagina(1)
+  const crudos = [...primera.data]
+  const ultima = primera.meta?.lastPage ?? 1
+  for (let pagina = 2; pagina <= ultima; pagina += 1) {
+    const siguiente = await pedirPagina(pagina)
+    crudos.push(...siguiente.data)
+  }
+  const usuarios = crudos.map(aUsuario)
+  correos = usuarios.map((usuario) => ({ id: usuario.id, correo: usuario.correo }))
+  return usuarios
 }
 
-/** Crea un usuario a partir de los datos del formulario. */
+export function correoDuplicado(correo: string, idExcluido?: string): boolean {
+  const normalizado = correo.trim().toLowerCase()
+  return correos.some(
+    (usuario) => usuario.id !== idExcluido && usuario.correo.trim().toLowerCase() === normalizado,
+  )
+}
+
 export async function crearUsuario(datos: UsuarioFormulario): Promise<Usuario> {
-  await red()
-  const usuario: Usuario = { ...datos, id: siguienteId() }
-  almacen = [...almacen, usuario]
-  persistir()
-  return clonar(usuario)
+  const creado = await api<Pagina<UsuarioApi>>('/users', {
+    method: 'POST',
+    body: JSON.stringify({
+      nombres: datos.nombres,
+      apellidos: datos.apellidos,
+      email: datos.correo,
+      password: datos.password,
+      passwordConfirmation: datos.passwordConfirmation,
+      roleIds: [Number(datos.perfilId)],
+    }),
+  })
+  return aUsuario(creado.data)
 }
 
-/** Actualiza un usuario existente. Devuelve `null` si no existe. */
 export async function actualizarUsuario(
   id: string,
   datos: UsuarioFormulario,
 ): Promise<Usuario | null> {
-  await red()
-  const indice = almacen.findIndex((usuario) => usuario.id === id)
-  if (indice < 0) return null
-  const actualizado: Usuario = { ...almacen[indice], ...datos, id }
-  almacen = almacen.map((usuario, i) => (i === indice ? actualizado : usuario))
-  persistir()
-  return clonar(actualizado)
+  const cuerpo: Record<string, unknown> = {
+    nombres: datos.nombres,
+    apellidos: datos.apellidos,
+    email: datos.correo,
+    active: datos.estado === 'activo',
+  }
+  if (datos.password) {
+    cuerpo.password = datos.password
+    cuerpo.passwordConfirmation = datos.passwordConfirmation
+  }
+
+  const actualizado = await api<Pagina<UsuarioApi>>(`/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(cuerpo),
+  })
+
+  if (datos.perfilId) {
+    const conRol = await api<Pagina<UsuarioApi>>(`/users/${id}/roles`, {
+      method: 'PUT',
+      body: JSON.stringify({ roleIds: [Number(datos.perfilId)] }),
+    })
+    return aUsuario(conRol.data)
+  }
+
+  return aUsuario(actualizado.data)
 }
 
-/** Activa o desactiva un usuario. */
 export async function cambiarEstadoUsuario(id: string, estado: Estado): Promise<Usuario | null> {
-  await red(120)
-  const indice = almacen.findIndex((usuario) => usuario.id === id)
-  if (indice < 0) return null
-  const actualizado: Usuario = { ...almacen[indice], estado }
-  almacen = almacen.map((usuario, i) => (i === indice ? actualizado : usuario))
-  persistir()
-  return clonar(actualizado)
+  const actualizado = await api<Pagina<UsuarioApi>>(`/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ active: estado === 'activo' }),
+  })
+  return aUsuario(actualizado.data)
 }
 
-/** Elimina un usuario. Devuelve `false` si no existía. */
+/** La API no borra usuarios: desactivarlos conserva el historial. */
 export async function eliminarUsuario(id: string): Promise<boolean> {
-  await red(120)
-  const antes = almacen.length
-  almacen = almacen.filter((usuario) => usuario.id !== id)
-  const elimino = almacen.length < antes
-  if (elimino) persistir()
-  return elimino
-}
-
-/** Restaura los datos de demostración originales. */
-export async function reiniciarUsuarios(): Promise<Usuario[]> {
-  await red(80)
-  almacen = USUARIOS_DEMO.map((usuario) => ({ ...usuario }))
-  persistir()
-  return clonarLista()
-}
-
-/** Comprueba si un correo ya está registrado por otro usuario. */
-export function correoDuplicado(correo: string, idExcluido?: string): boolean {
-  const normalizado = correo.trim().toLowerCase()
-  return almacen.some(
-    (usuario) => usuario.id !== idExcluido && usuario.correo.trim().toLowerCase() === normalizado,
-  )
+  await cambiarEstadoUsuario(id, 'inactivo')
+  return true
 }

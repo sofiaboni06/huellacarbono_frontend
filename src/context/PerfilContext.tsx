@@ -1,12 +1,8 @@
-import { createContext, useCallback, useContext, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
-import { PERFIL_USUARIO } from '../data/demo'
+import { tienePermiso } from '../services/acceso'
+import { alCambiarSesion, leerToken, leerUsuario, sincronizarPermisos } from '../services/sesion'
 
-/**
- * Estado compartido del perfil del usuario.
- * Vive en la raíz de la aplicación para que el navbar, la vista de perfil y
- * cualquier otra sección lean y escriban los mismos datos (sin backend).
- */
 export interface PerfilEditable {
   nombre: string
   apellidos: string
@@ -17,35 +13,110 @@ export interface PerfilEditable {
 
 interface PerfilContextValue {
   perfil: PerfilEditable
-  /** Rol y último acceso son de solo lectura (los administra la organización). */
   rol: string
   ultimoAcceso: string
+  permisos: string[]
+  permisosListos: boolean
+  puede: (codigo: string) => boolean
   guardarPerfil: (datos: PerfilEditable) => void
+}
+
+const VACIO: PerfilEditable = {
+  nombre: '',
+  apellidos: '',
+  correo: '',
+  cargo: '',
+  organizacion: 'HuellaVerde',
+}
+
+function fechaLegible(iso: string): string {
+  if (!iso) return 'Sin registros'
+  const fecha = new Date(iso)
+  if (Number.isNaN(fecha.getTime())) return iso
+  return fecha.toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' })
+}
+
+function desdeSesion(): {
+  perfil: PerfilEditable
+  rol: string
+  ultimoAcceso: string
+  permisos: string[]
+  permisosListos: boolean
+  usuarioId: string
+} {
+  const usuario = leerUsuario()
+  if (!usuario) {
+    return {
+      perfil: VACIO,
+      rol: '',
+      ultimoAcceso: 'Sin registros',
+      permisos: [],
+      permisosListos: false,
+      usuarioId: '',
+    }
+  }
+  return {
+    perfil: {
+      nombre: usuario.nombres,
+      apellidos: usuario.apellidos,
+      correo: usuario.correo,
+      cargo: usuario.rol,
+      organizacion: 'HuellaVerde',
+    },
+    rol: usuario.rol,
+    ultimoAcceso: fechaLegible(usuario.ultimoAcceso),
+    permisos: usuario.permisos ?? [],
+    permisosListos: Array.isArray(usuario.permisos),
+    usuarioId: usuario.id,
+  }
 }
 
 const PerfilContext = createContext<PerfilContextValue | null>(null)
 
-const PERFIL_INICIAL: PerfilEditable = {
-  nombre: 'Sofía',
-  apellidos: 'Gallego',
-  correo: PERFIL_USUARIO.correo,
-  cargo: PERFIL_USUARIO.cargo,
-  organizacion: PERFIL_USUARIO.organizacion,
-}
-
 export function PerfilProvider({ children }: { children: ReactNode }) {
-  const [perfil, setPerfil] = useState<PerfilEditable>(PERFIL_INICIAL)
+  const inicial = desdeSesion()
+  const [perfil, setPerfil] = useState<PerfilEditable>(inicial.perfil)
+  const [rol, setRol] = useState(inicial.rol)
+  const [ultimoAcceso, setUltimoAcceso] = useState(inicial.ultimoAcceso)
+  const [permisos, setPermisos] = useState<string[]>(inicial.permisos)
+  const [permisosListos, setPermisosListos] = useState(inicial.permisosListos)
+  const [usuarioId, setUsuarioId] = useState(inicial.usuarioId)
+
+  const aplicar = useCallback(() => {
+    const siguiente = desdeSesion()
+    setPerfil(siguiente.perfil)
+    setRol(siguiente.rol)
+    setUltimoAcceso(siguiente.ultimoAcceso)
+    setPermisos(siguiente.permisos)
+    setUsuarioId(siguiente.usuarioId)
+    if (siguiente.permisosListos) setPermisosListos(true)
+    if (!leerToken()) setPermisosListos(false)
+  }, [])
+
+  useEffect(() => {
+    return alCambiarSesion(aplicar)
+  }, [aplicar])
+
+  useEffect(() => {
+    if (!usuarioId || !leerToken()) return
+    let vivo = true
+    void sincronizarPermisos()
+      .catch(() => undefined)
+      .finally(() => {
+        if (vivo) setPermisosListos(true)
+      })
+    return () => {
+      vivo = false
+    }
+  }, [usuarioId])
 
   const guardarPerfil = useCallback((datos: PerfilEditable) => setPerfil(datos), [])
 
+  const puede = useCallback((codigo: string) => tienePermiso(permisos, codigo), [permisos])
+
   const value = useMemo<PerfilContextValue>(
-    () => ({
-      perfil,
-      rol: PERFIL_USUARIO.rol,
-      ultimoAcceso: PERFIL_USUARIO.ultimoAcceso,
-      guardarPerfil,
-    }),
-    [perfil, guardarPerfil],
+    () => ({ perfil, rol, ultimoAcceso, permisos, permisosListos, puede, guardarPerfil }),
+    [perfil, rol, ultimoAcceso, permisos, permisosListos, puede, guardarPerfil],
   )
 
   return <PerfilContext.Provider value={value}>{children}</PerfilContext.Provider>

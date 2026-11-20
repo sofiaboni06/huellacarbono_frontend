@@ -45,8 +45,11 @@ export default function ModalPerfil({ abierto, perfil, onCerrar, onGuardar }: Mo
   useEffect(() => {
     if (!abierto) return
     if (perfil) {
-      const { id: _id, ...resto } = perfil
-      setDatos({ ...resto })
+      setDatos({
+        nombre: perfil.nombre,
+        descripcion: perfil.descripcion,
+        estado: perfil.estado,
+      })
     } else {
       setDatos({ ...VACIO })
     }
@@ -93,6 +96,7 @@ export default function ModalPerfil({ abierto, perfil, onCerrar, onGuardar }: Mo
             placeholder="Analista Ambiental"
             value={datos.nombre}
             onChange={(e) => cambiar('nombre', e.target.value)}
+            disabled={perfil?.sistema}
             aria-invalid={errores.nombre ? 'true' : undefined}
           />
           {errores.nombre && <span className="vst-error">{errores.nombre}</span>}
@@ -118,6 +122,7 @@ export default function ModalPerfil({ abierto, perfil, onCerrar, onGuardar }: Mo
             className="vst-select"
             value={datos.estado}
             onChange={(e) => cambiar('estado', e.target.value as Estado)}
+            disabled={perfil?.sistema}
           >
             <option value="activo">Activo</option>
             <option value="inactivo">Inactivo</option>

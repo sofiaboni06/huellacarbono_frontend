@@ -1,12 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import SidebarInicio from '../../pages/Inicio/components/SidebarInicio'
 import BarraSuperior from '../../pages/Inicio/components/BarraSuperior'
-import hojaIzquierda from '../../assets/images/leaf-bl.png'
-import hojaDerecha from '../../assets/images/leaf-tr.png'
+import follaje from '../../assets/images/planta-hojas.jpg'
 import { usePreferencias } from '../../context/PreferenciasContext'
 import '../../styles/variables.css'
 import './PlantillaVista.css'
+import '../../pages/Inicio/DashboardVerde.css'
 
 type AvisoFn = (mensaje: string) => void
 
@@ -64,9 +64,8 @@ interface PlantillaVistaProps {
 
 /**
  * Armazón común de todas las vistas fuera del Login y del Dashboard:
- * comparte el mismo menú lateral y la misma barra superior que el Dashboard
- * (`SidebarInicio` + `BarraSuperior`), con fondo oscuro, hojas decorativas y
- * aviso flotante. Ningún módulo mantiene una navegación propia.
+ * el mismo menú, la misma barra y el mismo follaje que Inicio.
+ * Ningún módulo mantiene una navegación propia.
  */
 export default function PlantillaVista({ titulo, className = '', children }: PlantillaVistaProps) {
   const { tema, hojasVisibles, animacionesActivas } = usePreferencias()
@@ -85,16 +84,11 @@ export default function PlantillaVista({ titulo, className = '', children }: Pla
 
   return (
     <div
-      className={`hv-vista ${className}`.trim()}
+      className={`hv-vista hv-inicio ${className}`.trim()}
       data-tema={tema}
       data-hojas={hojasVisibles ? 'visibles' : 'ocultas'}
       data-animaciones={animacionesActivas ? 'activas' : 'reducidas'}
     >
-      <div className="vst-hojas" aria-hidden="true">
-        <img className="vst-hoja vst-hoja--izq" src={hojaIzquierda} alt="" />
-        <img className="vst-hoja vst-hoja--der" src={hojaDerecha} alt="" />
-      </div>
-
       <SidebarInicio abierto={lateralAbierto} onCerrar={cerrarLateral} />
 
       {lateralAbierto ? (
@@ -106,8 +100,11 @@ export default function PlantillaVista({ titulo, className = '', children }: Pla
         />
       ) : null}
 
-      <div className="vst-zona">
-        <BarraSuperior onAlternarLateral={() => setLateralAbierto((v) => !v)} />
+      <div className="vst-zona ini-zona" style={{ '--ini-follaje': `url("${follaje}")` } as CSSProperties}>
+        <BarraSuperior
+          placeholder="Buscar en tu dashboard..."
+          onAlternarLateral={() => setLateralAbierto((v) => !v)}
+        />
 
         <main className="vst-contenido">{children}</main>
       </div>

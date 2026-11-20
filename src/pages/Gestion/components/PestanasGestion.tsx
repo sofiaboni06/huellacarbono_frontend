@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom'
 import { Contact, ShieldCheck } from 'lucide-react'
+import { usePerfil } from '../../../context/PerfilContext'
 
 /**
  * Pestañas horizontales que comunican las dos vistas de configuración de
@@ -9,6 +10,9 @@ import { Contact, ShieldCheck } from 'lucide-react'
  * sean idénticos en los dos puntos de entrada.
  */
 export default function PestanasGestion() {
+  const { puede, permisosListos } = usePerfil()
+  if (!permisosListos || !puede('rol.ver')) return null
+
   return (
     <nav className="gst-tabs" aria-label="Secciones de gestión de accesos">
       <NavLink

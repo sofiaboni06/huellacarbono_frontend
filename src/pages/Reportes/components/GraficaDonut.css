@@ -82,7 +82,7 @@
 }
 
 .gd-leyenda-item:hover {
-  background: rgba(32, 52, 77, 0.75);
+  background: #e7f6ee;
 }
 
 .gd-leyenda-item:focus-visible {
@@ -91,7 +91,7 @@
 }
 
 .gd-leyenda-item.activo {
-  background: #20344d;
+  background: #e7f1ff;
   border-color: rgba(22, 119, 242, 0.35);
   box-shadow: var(--hv-shadow-sm);
 }

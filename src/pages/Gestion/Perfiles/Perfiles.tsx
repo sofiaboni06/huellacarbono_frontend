@@ -7,6 +7,7 @@ import Modal from '../../../components/common/Modal'
 import PestanasGestion from '../components/PestanasGestion'
 import TablaPerfiles from './components/TablaPerfiles'
 import ModalPerfil from './components/ModalPerfil'
+import { usePerfil } from '../../../context/PerfilContext'
 import {
   actualizarPerfil,
   cambiarEstadoPerfil,
@@ -25,6 +26,9 @@ import './Perfiles.css'
  */
 export default function Perfiles() {
   const avisar = useAviso()
+  const { puede } = usePerfil()
+  const puedeCrear = puede('rol.crear')
+  const puedeEditar = puede('rol.editar')
 
   const [perfiles, setPerfiles] = useState<Perfil[]>([])
   const [cargando, setCargando] = useState(true)
@@ -35,9 +39,14 @@ export default function Perfiles() {
   const [eliminando, setEliminando] = useState(false)
 
   const recargar = useCallback(async () => {
-    setPerfiles(await listarPerfiles())
-    setCargando(false)
-  }, [])
+    try {
+      setPerfiles(await listarPerfiles())
+    } catch (error) {
+      avisar(error instanceof Error ? error.message : 'No fue posible cargar los perfiles.')
+    } finally {
+      setCargando(false)
+    }
+  }, [avisar])
 
   useEffect(() => {
     void recargar()
@@ -54,26 +63,28 @@ export default function Perfiles() {
   }
 
   async function guardar(datos: PerfilFormulario): Promise<boolean> {
-    if (perfilEdicion) {
-      const actualizado = await actualizarPerfil(perfilEdicion.id, datos)
-      if (!actualizado) {
-        avisar('No fue posible actualizar el perfil.')
-        return false
+    try {
+      if (perfilEdicion) {
+        await actualizarPerfil(perfilEdicion.id, datos)
+        avisar(`Perfil «${datos.nombre}» actualizado correctamente.`)
+      } else {
+        await crearPerfil(datos)
+        avisar(`Perfil «${datos.nombre}» creado correctamente.`)
       }
-      avisar(`Perfil «${datos.nombre}» actualizado correctamente.`)
-    } else {
-      const creado = await crearPerfil(datos)
-      avisar(`Perfil «${creado.nombre}» creado correctamente.`)
+      await recargar()
+      return true
+    } catch (error) {
+      avisar(error instanceof Error ? error.message : 'No fue posible guardar el perfil.')
+      return false
     }
-    await recargar()
-    return true
   }
 
   async function alternarEstado(perfil: Perfil) {
     const nuevo: Estado = perfil.estado === 'activo' ? 'inactivo' : 'activo'
-    const resultado = await cambiarEstadoPerfil(perfil.id, nuevo)
-    if (!resultado) {
-      avisar('No fue posible cambiar el estado del perfil.')
+    try {
+      await cambiarEstadoPerfil(perfil.id, nuevo)
+    } catch (error) {
+      avisar(error instanceof Error ? error.message : 'No fue posible cambiar el estado del perfil.')
       return
     }
     avisar(
@@ -87,14 +98,14 @@ export default function Perfiles() {
   async function confirmarEliminacion() {
     if (!confirmacion) return
     setEliminando(true)
-    const ok = await eliminarPerfil(confirmacion.id)
+    try {
+      await eliminarPerfil(confirmacion.id)
+      avisar(`Perfil «${confirmacion.nombre}» desactivado.`)
+    } catch (error) {
+      avisar(error instanceof Error ? error.message : 'No fue posible desactivar el perfil.')
+    }
     setEliminando(false)
     setConfirmacion(null)
-    if (!ok) {
-      avisar('No fue posible eliminar el perfil.')
-      return
-    }
-    avisar(`Perfil «${confirmacion.nombre}» eliminado.`)
     await recargar()
   }
 
@@ -106,10 +117,12 @@ export default function Perfiles() {
         titulo="Gestión de Perfiles"
         subtitulo="Administra los perfiles y sus autorizaciones dentro de la plataforma."
         acciones={
-          <Button onClick={abrirAlta}>
-            <Plus size={16} />
-            Nuevo Perfil
-          </Button>
+          puedeCrear ? (
+            <Button onClick={abrirAlta}>
+              <Plus size={16} />
+              Nuevo Perfil
+            </Button>
+          ) : null
         }
       />
 
@@ -138,15 +151,22 @@ export default function Perfiles() {
               <Contact size={26} />
             </span>
             <h3>Aún no hay perfiles</h3>
-            <p>Crea el primer perfil con el botón «Nuevo Perfil» para poder asignarlo a los usuarios.</p>
-            <Button variante="contorno" onClick={abrirAlta}>
-              <Plus size={15} />
-              Nuevo Perfil
-            </Button>
+            <p>
+              {puedeCrear
+                ? 'Crea el primer perfil con el botón «Nuevo Perfil» para poder asignarlo a los usuarios.'
+                : 'Cuando existan perfiles, aparecerán en este listado.'}
+            </p>
+            {puedeCrear ? (
+              <Button variante="contorno" onClick={abrirAlta}>
+                <Plus size={15} />
+                Nuevo Perfil
+              </Button>
+            ) : null}
           </div>
         ) : (
           <TablaPerfiles
             perfiles={perfiles}
+            puedeEditar={puedeEditar}
             onEditar={abrirEdicion}
             onAlternarEstado={alternarEstado}
             onEliminar={(perfil) => setConfirmacion(perfil)}
@@ -156,9 +176,8 @@ export default function Perfiles() {
         <p className="gst-demo">
           <TriangleAlert size={14} aria-hidden="true" />
           <span>
-            Datos de demostración guardados en este navegador (<code>src/services/perfilesService.ts</code>
-            ). Los permisos que se asignen a cada perfil se administran en la pestaña «Roles y
-            Permisos».
+            Los perfiles se guardan en el servidor. Los cuatro roles del sistema no se pueden
+            renombrar ni desactivar.
           </span>
         </p>
       </section>
@@ -172,7 +191,7 @@ export default function Perfiles() {
 
       <Modal
         abierto={confirmacion !== null}
-        titulo="Eliminar perfil"
+        titulo="Desactivar perfil"
         onCerrar={() => setConfirmacion(null)}
         ancho="420px"
       >
@@ -180,17 +199,17 @@ export default function Perfiles() {
           <span className="gst-confirmar-icono" aria-hidden="true">
             <Trash2 size={26} />
           </span>
-          <h4>¿Eliminar este perfil?</h4>
+          <h4>¿Desactivar este perfil?</h4>
           <p>
-            Se eliminará <b>{confirmacion?.nombre}</b> junto con sus permisos asociados. Esta acción
-            no se puede deshacer.
+            <b>{confirmacion?.nombre}</b> dejará de poder asignarse. Los roles del sistema no se
+            pueden desactivar.
           </p>
           <div className="gst-confirmar-pie">
             <Button variante="contorno" onClick={() => setConfirmacion(null)} disabled={eliminando}>
               Cancelar
             </Button>
             <Button onClick={confirmarEliminacion} disabled={eliminando}>
-              {eliminando ? 'Eliminando…' : 'Sí, eliminar'}
+              {eliminando ? 'Desactivando…' : 'Sí, desactivar'}
             </Button>
           </div>
         </div>

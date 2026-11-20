@@ -6,14 +6,15 @@ import Button from '../../../components/common/Button'
 import Modal from '../../../components/common/Modal'
 import TablaUsuarios from './components/TablaUsuarios'
 import ModalUsuario from './components/ModalUsuario'
+import { usePerfil } from '../../../context/PerfilContext'
 import {
   cambiarEstadoUsuario,
   crearUsuario,
   eliminarUsuario,
   actualizarUsuario,
+  listarOpcionesPerfil,
   listarUsuarios,
 } from '../../../services/usuariosService'
-import { listarPerfiles } from '../../../services/perfilesService'
 import type { Estado, Perfil, Usuario, UsuarioFormulario } from '../../../services/tipos'
 import './Usuarios.css'
 
@@ -41,6 +42,9 @@ interface Confirmacion {
  */
 export default function Usuarios() {
   const avisar = useAviso()
+  const { puede } = usePerfil()
+  const puedeCrear = puede('usuario.crear')
+  const puedeEditar = puede('usuario.editar')
 
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
   const [perfiles, setPerfiles] = useState<Perfil[]>([])
@@ -58,14 +62,19 @@ export default function Usuarios() {
 
   /** Recarga la lista desde el servicio. */
   const recargar = useCallback(async () => {
-    const [listaUsuarios, listaPerfiles] = await Promise.all([
-      listarUsuarios(),
-      listarPerfiles(),
-    ])
-    setUsuarios(listaUsuarios)
-    setPerfiles(listaPerfiles)
-    setCargando(false)
-  }, [])
+    try {
+      const [listaUsuarios, listaPerfiles] = await Promise.all([
+        listarUsuarios(),
+        listarOpcionesPerfil(),
+      ])
+      setUsuarios(listaUsuarios)
+      setPerfiles(listaPerfiles)
+    } catch (error) {
+      avisar(error instanceof Error ? error.message : 'No fue posible cargar los usuarios.')
+    } finally {
+      setCargando(false)
+    }
+  }, [avisar])
 
   useEffect(() => {
     void recargar()
@@ -95,8 +104,7 @@ export default function Usuarios() {
         usuario.apellidos,
         `${usuario.nombres} ${usuario.apellidos}`,
         usuario.correo,
-        usuario.numeroDocumento,
-        `${usuario.tipoDocumento} ${usuario.numeroDocumento}`,
+        usuario.perfil,
       ]
       return candidatos.some((candidato) => normalizar(candidato).includes(texto))
     })
@@ -122,27 +130,29 @@ export default function Usuarios() {
 
   /** Guarda alta o edición según corresponda. */
   async function guardar(datos: UsuarioFormulario): Promise<boolean> {
-    if (usuarioEdicion) {
-      const actualizado = await actualizarUsuario(usuarioEdicion.id, datos)
-      if (!actualizado) {
-        avisar('No fue posible actualizar el usuario.')
-        return false
+    try {
+      if (usuarioEdicion) {
+        await actualizarUsuario(usuarioEdicion.id, datos)
+        avisar(`Usuario «${datos.nombres} ${datos.apellidos}» actualizado correctamente.`)
+      } else {
+        await crearUsuario(datos)
+        avisar(`Usuario «${datos.nombres} ${datos.apellidos}» registrado correctamente.`)
       }
-      avisar(`Usuario «${datos.nombres} ${datos.apellidos}» actualizado correctamente.`)
-    } else {
-      const creado = await crearUsuario(datos)
-      avisar(`Usuario «${creado.nombres} ${creado.apellidos}» registrado correctamente.`)
+      await recargar()
+      return true
+    } catch (error) {
+      avisar(error instanceof Error ? error.message : 'No fue posible guardar el usuario.')
+      return false
     }
-    await recargar()
-    return true
   }
 
   /** Activa o desactiva un usuario. */
   async function alternarEstado(usuario: Usuario) {
     const nuevo: Estado = usuario.estado === 'activo' ? 'inactivo' : 'activo'
-    const resultado = await cambiarEstadoUsuario(usuario.id, nuevo)
-    if (!resultado) {
-      avisar('No fue posible cambiar el estado del usuario.')
+    try {
+      await cambiarEstadoUsuario(usuario.id, nuevo)
+    } catch (error) {
+      avisar(error instanceof Error ? error.message : 'No fue posible cambiar el estado del usuario.')
       return
     }
     avisar(
@@ -158,14 +168,14 @@ export default function Usuarios() {
     if (!confirmacion) return
     setEliminando(true)
     const { usuario } = confirmacion
-    const ok = await eliminarUsuario(usuario.id)
+    try {
+      await eliminarUsuario(usuario.id)
+      avisar(`Usuario «${usuario.nombres} ${usuario.apellidos}» desactivado.`)
+    } catch (error) {
+      avisar(error instanceof Error ? error.message : 'No fue posible desactivar el usuario.')
+    }
     setEliminando(false)
     setConfirmacion(null)
-    if (!ok) {
-      avisar('No fue posible eliminar el usuario.')
-      return
-    }
-    avisar(`Usuario «${usuario.nombres} ${usuario.apellidos}» eliminado.`)
     await recargar()
   }
 
@@ -178,10 +188,12 @@ export default function Usuarios() {
         titulo="Gestión de Usuarios"
         subtitulo="Administra los usuarios registrados en la plataforma HuellaVerde."
         acciones={
-          <Button onClick={abrirAlta}>
-            <Plus size={16} />
-            Nuevo Usuario
-          </Button>
+          puedeCrear ? (
+            <Button onClick={abrirAlta}>
+              <Plus size={16} />
+              Nuevo Usuario
+            </Button>
+          ) : null
         }
       />
 
@@ -193,8 +205,8 @@ export default function Usuarios() {
             type="search"
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            placeholder="Buscar por nombre, correo o documento…"
-            aria-label="Buscar por nombre, correo electrónico o documento"
+            placeholder="Buscar por nombre, correo o perfil…"
+            aria-label="Buscar por nombre, correo electrónico o perfil"
           />
           {busqueda && (
             <button
@@ -260,7 +272,9 @@ export default function Usuarios() {
             <p>
               {hayFiltros
                 ? 'Ningún usuario coincide con la búsqueda o los filtros aplicados. Ajusta los criterios para ver más resultados.'
-                : 'Registra el primer usuario con el botón «Nuevo Usuario».'}
+                : puedeCrear
+                  ? 'Registra el primer usuario con el botón «Nuevo Usuario».'
+                  : 'Cuando existan usuarios, aparecerán en este listado.'}
             </p>
             {hayFiltros && (
               <Button
@@ -280,6 +294,7 @@ export default function Usuarios() {
           <>
             <TablaUsuarios
               usuarios={visibles}
+              puedeEditar={puedeEditar}
               onEditar={abrirEdicion}
               onAlternarEstado={alternarEstado}
               onEliminar={(usuario) => setConfirmacion({ usuario })}
@@ -328,9 +343,8 @@ export default function Usuarios() {
         <p className="gst-demo">
           <TriangleAlert size={14} aria-hidden="true" />
           <span>
-            Datos de demostración: los 24 usuarios provienen de{' '}
-            <code>src/services/usuariosService.ts</code> y se guardan en este navegador. Cuando el
-            backend exponga los endpoints reales, solo se reemplaza el servicio.
+            Los usuarios se leen y guardan en el servidor. Desactivar una cuenta no borra su
+            historial.
           </span>
         </p>
       </section>
@@ -345,7 +359,7 @@ export default function Usuarios() {
 
       <Modal
         abierto={confirmacion !== null}
-        titulo="Eliminar usuario"
+        titulo="Desactivar usuario"
         onCerrar={() => setConfirmacion(null)}
         ancho="420px"
       >
@@ -353,17 +367,18 @@ export default function Usuarios() {
           <span className="gst-confirmar-icono" aria-hidden="true">
             <Trash2 size={26} />
           </span>
-          <h4>¿Eliminar este usuario?</h4>
+          <h4>¿Desactivar este usuario?</h4>
           <p>
-            Se eliminará <b>{confirmacion?.usuario.nombres} {confirmacion?.usuario.apellidos}</b>{' '}
-            ({confirmacion?.usuario.correo}) de la plataforma. Esta acción no se puede deshacer.
+            <b>{confirmacion?.usuario.nombres} {confirmacion?.usuario.apellidos}</b>{' '}
+            ({confirmacion?.usuario.correo}) no podrá iniciar sesión. Puedes activarlo de nuevo
+            después.
           </p>
           <div className="gst-confirmar-pie">
             <Button variante="contorno" onClick={() => setConfirmacion(null)} disabled={eliminando}>
               Cancelar
             </Button>
             <Button onClick={confirmarEliminacion} disabled={eliminando}>
-              {eliminando ? 'Eliminando…' : 'Sí, eliminar'}
+              {eliminando ? 'Desactivando…' : 'Sí, desactivar'}
             </Button>
           </div>
         </div>

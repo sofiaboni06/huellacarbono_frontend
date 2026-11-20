@@ -207,3 +207,9 @@
     transform: none;
   }
 }
+
+.ini-panel-vacio {
+  margin: 0;
+  color: var(--hv-muted, #a9b7c9);
+  line-height: 1.5;
+}

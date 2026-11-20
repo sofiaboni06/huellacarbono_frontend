@@ -48,24 +48,24 @@
   border: 1px solid var(--hv-line);
   border-radius: 16px;
   /* Fila translúcida oscura (glass) con transición y hover suave */
-  background: rgba(27, 44, 67, 0.5);
+  background: #f4faf7;
   transition: background 0.16s ease, border-color 0.16s ease;
 }
 
 .prf-notif-item:hover {
-  background: rgba(27, 44, 67, 0.92);
+  background: #e7f6ee;
   border-color: rgba(148, 177, 210, 0.3);
 }
 
 .prf-notif-item.no-leida {
   /* No leída: superficie más luminosa + borde verde de énfasis */
-  background: rgba(32, 52, 77, 0.72);
+  background: #e7f6ee;
   border-color: rgba(66, 216, 121, 0.34);
   box-shadow: var(--hv-shadow-sm);
 }
 
 .prf-notif-item.no-leida:hover {
-  background: rgba(38, 62, 94, 0.9);
+  background: #d7f0e4;
   border-color: rgba(66, 216, 121, 0.5);
 }
 
@@ -87,7 +87,7 @@
 
 .prf-notif-icono.tipo-info {
   background: rgba(22, 119, 242, 0.18);
-  color: #8ec1ff;
+  color: #1677f2;
 }
 
 .prf-notif-icono.tipo-usuario {
