@@ -27,7 +27,7 @@
 
 .hv-inicio {
   /* Variables del Dashboard (solo viven dentro de esta vista) */
-  --ini-side-w: 146px;
+  --ini-side-w: 180px;
   --ini-azul: #1677f2;
   --ini-verde: #42d879;
   --ini-morado: #a855f7;
@@ -137,7 +137,9 @@
   flex-direction: column;
   flex: 1;
   min-width: 0;
+  max-width: 100%;
   margin-left: var(--ini-side-w);
+  overflow-x: clip;
 }
 
 .ini-contenido {

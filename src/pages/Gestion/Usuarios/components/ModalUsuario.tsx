@@ -2,25 +2,17 @@ import { useEffect, useMemo, useState } from 'react'
 import type { FormEvent } from 'react'
 import Modal from '../../../../components/common/Modal'
 import Button from '../../../../components/common/Button'
-import { CENTROS, REGIONALES } from '../../../../services/datosDemo'
 import { correoDuplicado } from '../../../../services/usuariosService'
-import type { Estado, Perfil, Regional, TipoDocumento, Usuario, UsuarioFormulario } from '../../../../services/tipos'
+import type { Estado, Perfil, Usuario, UsuarioFormulario } from '../../../../services/tipos'
 
-/** Tipos de documento soportados. */
-const TIPOS_DOCUMENTO: TipoDocumento[] = ['CC', 'CE', 'TI', 'NIT']
-
-/** Formulario vacío (alta de usuario). */
 const VACIO: UsuarioFormulario = {
-  tipoDocumento: 'CC',
-  numeroDocumento: '',
   nombres: '',
   apellidos: '',
   correo: '',
-  telefono: '',
-  regional: 'Regional Bogotá',
-  centro: 'SENA Bogotá',
-  perfil: '',
+  perfilId: '',
   estado: 'activo',
+  password: '',
+  passwordConfirmation: '',
 }
 
 type Errores = Partial<Record<keyof UsuarioFormulario, string>>
@@ -35,13 +27,8 @@ interface ModalUsuarioProps {
 
 const CORREO_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-/** Valida el formulario completo. Devuelve el mapa de errores. */
-function validar(datos: UsuarioFormulario, idExcluido?: string): Errores {
+function validar(datos: UsuarioFormulario, editando: boolean, idExcluido?: string): Errores {
   const errores: Errores = {}
-  const numero = datos.numeroDocumento.trim()
-
-  if (!numero) errores.numeroDocumento = 'El número de documento es obligatorio.'
-  else if (numero.length < 5) errores.numeroDocumento = 'Ingresa al menos 5 caracteres.'
 
   if (!datos.nombres.trim()) errores.nombres = 'Los nombres son obligatorios.'
   else if (datos.nombres.trim().length < 2) errores.nombres = 'Ingresa al menos 2 caracteres.'
@@ -54,22 +41,19 @@ function validar(datos: UsuarioFormulario, idExcluido?: string): Errores {
   else if (!CORREO_RE.test(correo)) errores.correo = 'Ingresa un correo válido.'
   else if (correoDuplicado(correo, idExcluido)) errores.correo = 'Este correo ya está registrado.'
 
-  const telefono = datos.telefono.replace(/\s+/g, '')
-  if (!telefono) errores.telefono = 'El teléfono es obligatorio.'
-  else if (!/^\d{7,10}$/.test(telefono)) errores.telefono = 'Ingresa de 7 a 10 dígitos.'
+  if (!datos.perfilId) errores.perfilId = 'Asigna un perfil.'
 
-  if (!datos.regional) errores.regional = 'Selecciona una regional.'
-  if (!datos.centro) errores.centro = 'Selecciona un centro de formación.'
-  if (!datos.perfil) errores.perfil = 'Asigna un perfil.'
-  if (!datos.estado) errores.estado = 'Selecciona un estado.'
+  const pideClave = !editando || datos.password.length > 0 || datos.passwordConfirmation.length > 0
+  if (pideClave) {
+    if (datos.password.length < 8) errores.password = 'La contraseña debe tener al menos 8 caracteres.'
+    if (datos.password !== datos.passwordConfirmation) {
+      errores.passwordConfirmation = 'La confirmación no coincide.'
+    }
+  }
 
   return errores
 }
 
-/**
- * Modal de alta y edición de usuarios.
- * Ambos flujos comparten el mismo formulario y las mismas validaciones.
- */
 export default function ModalUsuario({
   abierto,
   usuario,
@@ -82,12 +66,18 @@ export default function ModalUsuario({
   const [errores, setErrores] = useState<Errores>({})
   const [enviando, setEnviando] = useState(false)
 
-  // Carga los datos del usuario seleccionado (o reinicia el alta).
   useEffect(() => {
     if (!abierto) return
     if (usuario) {
-      const { id: _id, ...resto } = usuario
-      setDatos({ ...resto })
+      setDatos({
+        nombres: usuario.nombres,
+        apellidos: usuario.apellidos,
+        correo: usuario.correo,
+        perfilId: usuario.perfilId,
+        estado: usuario.estado,
+        password: '',
+        passwordConfirmation: '',
+      })
     } else {
       setDatos({ ...VACIO })
     }
@@ -95,42 +85,28 @@ export default function ModalUsuario({
     setEnviando(false)
   }, [abierto, usuario])
 
-  /** Centros disponibles para la regional elegida. */
-  const centros = useMemo(() => CENTROS[datos.regional] ?? [], [datos.regional])
-
-  /** Perfiles vigentes (los inactivos se muestran deshabilitados). */
   const perfilesDisponibles = useMemo(
-    () => perfiles.filter((perfil) => perfil.estado === 'activo' || perfil.id === datos.perfil),
-    [perfiles, datos.perfil],
+    () => perfiles.filter((perfil) => perfil.estado === 'activo' || perfil.id === datos.perfilId),
+    [perfiles, datos.perfilId],
   )
 
   function cambiar(campo: keyof UsuarioFormulario, valor: string) {
-    setDatos((prev) => {
-      const siguiente: UsuarioFormulario = { ...prev, [campo]: valor }
-      // Al cambiar la regional, el centro se recalcula si ya no pertenece a ella.
-      if (campo === 'regional') {
-        const centrosNuevos = CENTROS[valor as Regional] ?? []
-        if (!centrosNuevos.includes(siguiente.centro)) siguiente.centro = centrosNuevos[0] ?? ''
-      }
-      return siguiente
-    })
+    setDatos((prev) => ({ ...prev, [campo]: valor }))
     setErrores((prev) => ({ ...prev, [campo]: undefined }))
   }
 
   async function enviar(evento: FormEvent) {
     evento.preventDefault()
-    const encontrados = validar(datos, usuario?.id)
+    const encontrados = validar(datos, editando, usuario?.id)
     setErrores(encontrados)
     if (Object.keys(encontrados).length > 0) return
 
     setEnviando(true)
     const ok = await onGuardar({
       ...datos,
-      numeroDocumento: datos.numeroDocumento.trim(),
       nombres: datos.nombres.trim(),
       apellidos: datos.apellidos.trim(),
       correo: datos.correo.trim().toLowerCase(),
-      telefono: datos.telefono.replace(/\s+/g, ''),
     })
     setEnviando(false)
     if (ok) onCerrar()
@@ -149,45 +125,13 @@ export default function ModalUsuario({
       <form className="gst-modal" onSubmit={enviar} noValidate>
         <div className="gst-rejilla">
           <div className="vst-campo">
-            <label htmlFor="usu-tipo-doc">Tipo de documento</label>
-            <select
-              id="usu-tipo-doc"
-              className="vst-select"
-              value={datos.tipoDocumento}
-              onChange={(e) => cambiar('tipoDocumento', e.target.value)}
-            >
-              {TIPOS_DOCUMENTO.map((tipo) => (
-                <option key={tipo} value={tipo}>
-                  {tipo}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="vst-campo">
-            <label htmlFor="usu-doc">Número de documento *</label>
-            <input
-              id="usu-doc"
-              className="vst-input"
-              type="text"
-              inputMode="numeric"
-              autoComplete="off"
-              placeholder="1023456789"
-              value={datos.numeroDocumento}
-              onChange={(e) => cambiar('numeroDocumento', e.target.value)}
-              {...invalido('numeroDocumento')}
-            />
-            {errores.numeroDocumento && <span className="vst-error">{errores.numeroDocumento}</span>}
-          </div>
-
-          <div className="vst-campo">
             <label htmlFor="usu-nombres">Nombres *</label>
             <input
               id="usu-nombres"
               className="vst-input"
               type="text"
               autoComplete="given-name"
-              placeholder="Sofía"
+              placeholder="Ana"
               value={datos.nombres}
               onChange={(e) => cambiar('nombres', e.target.value)}
               {...invalido('nombres')}
@@ -202,7 +146,7 @@ export default function ModalUsuario({
               className="vst-input"
               type="text"
               autoComplete="family-name"
-              placeholder="Gallego"
+              placeholder="Pérez"
               value={datos.apellidos}
               onChange={(e) => cambiar('apellidos', e.target.value)}
               {...invalido('apellidos')}
@@ -217,7 +161,7 @@ export default function ModalUsuario({
               className="vst-input"
               type="email"
               autoComplete="off"
-              placeholder="nombre@sena.edu.co"
+              placeholder="ana.perez@correo.com"
               value={datos.correo}
               onChange={(e) => cambiar('correo', e.target.value)}
               {...invalido('correo')}
@@ -226,19 +170,34 @@ export default function ModalUsuario({
           </div>
 
           <div className="vst-campo">
-            <label htmlFor="usu-telefono">Teléfono *</label>
+            <label htmlFor="usu-clave">{editando ? 'Nueva contraseña' : 'Contraseña *'}</label>
             <input
-              id="usu-telefono"
+              id="usu-clave"
               className="vst-input"
-              type="tel"
-              inputMode="numeric"
-              autoComplete="off"
-              placeholder="3001234567"
-              value={datos.telefono}
-              onChange={(e) => cambiar('telefono', e.target.value)}
-              {...invalido('telefono')}
+              type="password"
+              autoComplete="new-password"
+              placeholder={editando ? 'Déjala vacía para no cambiarla' : 'Mínimo 8 caracteres'}
+              value={datos.password}
+              onChange={(e) => cambiar('password', e.target.value)}
+              {...invalido('password')}
             />
-            {errores.telefono && <span className="vst-error">{errores.telefono}</span>}
+            {errores.password && <span className="vst-error">{errores.password}</span>}
+          </div>
+
+          <div className="vst-campo">
+            <label htmlFor="usu-clave-2">Confirmar contraseña</label>
+            <input
+              id="usu-clave-2"
+              className="vst-input"
+              type="password"
+              autoComplete="new-password"
+              value={datos.passwordConfirmation}
+              onChange={(e) => cambiar('passwordConfirmation', e.target.value)}
+              {...invalido('passwordConfirmation')}
+            />
+            {errores.passwordConfirmation && (
+              <span className="vst-error">{errores.passwordConfirmation}</span>
+            )}
           </div>
 
           <div className="vst-campo">
@@ -255,57 +214,23 @@ export default function ModalUsuario({
           </div>
 
           <div className="vst-campo">
-            <label htmlFor="usu-regional">Regional</label>
-            <select
-              id="usu-regional"
-              className="vst-select"
-              value={datos.regional}
-              onChange={(e) => cambiar('regional', e.target.value)}
-            >
-              {REGIONALES.map((regional) => (
-                <option key={regional} value={regional}>
-                  {regional}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="vst-campo">
-            <label htmlFor="usu-centro">Centro de formación *</label>
-            <select
-              id="usu-centro"
-              className="vst-select"
-              value={datos.centro}
-              onChange={(e) => cambiar('centro', e.target.value)}
-              {...invalido('centro')}
-            >
-              {centros.map((centro) => (
-                <option key={centro} value={centro}>
-                  {centro}
-                </option>
-              ))}
-            </select>
-            {errores.centro && <span className="vst-error">{errores.centro}</span>}
-          </div>
-
-          <div className="vst-campo gst-ancha">
             <label htmlFor="usu-perfil">Perfil asignado *</label>
             <select
               id="usu-perfil"
               className="vst-select"
-              value={datos.perfil}
-              onChange={(e) => cambiar('perfil', e.target.value)}
-              {...invalido('perfil')}
+              value={datos.perfilId}
+              onChange={(e) => cambiar('perfilId', e.target.value)}
+              {...invalido('perfilId')}
             >
               <option value="">Selecciona un perfil…</option>
               {perfilesDisponibles.map((perfil) => (
-                <option key={perfil.id} value={perfil.nombre}>
+                <option key={perfil.id} value={perfil.id}>
                   {perfil.nombre}
                   {perfil.estado === 'inactivo' ? ' (inactivo)' : ''}
                 </option>
               ))}
             </select>
-            {errores.perfil && <span className="vst-error">{errores.perfil}</span>}
+            {errores.perfilId && <span className="vst-error">{errores.perfilId}</span>}
           </div>
         </div>
 

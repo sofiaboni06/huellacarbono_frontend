@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { Bell, HelpCircle, LogOut, Shield, SlidersHorizontal, User } from 'lucide-react'
+import { api } from '../../../services/api'
+import { cerrarSesion } from '../../../services/sesion'
 import { usePerfil } from '../../../context/PerfilContext'
 import fotoPerfil from '../../../assets/images/profile.png'
 import './MenuPerfil.css'
@@ -57,7 +59,15 @@ export default function MenuPerfil({ onCerrar }: MenuPerfilProps) {
         type="button"
         role="menuitem"
         className="ini-menu-item ini-menu-item--salir"
-        onClick={() => ir('/login')}
+        onClick={() => {
+          onCerrar()
+          void api('/account/logout', { method: 'POST' })
+            .catch(() => undefined)
+            .finally(() => {
+              cerrarSesion()
+              navigate('/login')
+            })
+        }}
       >
         <LogOut size={16} strokeWidth={2.1} aria-hidden="true" />
         <span>Cerrar sesión</span>

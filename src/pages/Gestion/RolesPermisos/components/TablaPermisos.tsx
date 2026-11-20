@@ -14,6 +14,7 @@ interface TablaPermisosProps {
   matriz: MatrizPermisos
   onCambiar: (moduloId: string, accion: Accion, valor: boolean) => void
   deshabilitado?: boolean
+  puedeMarcar?: (moduloId: string, accion: Accion) => boolean
 }
 
 /**
@@ -23,7 +24,12 @@ interface TablaPermisosProps {
  * y dispara `onCambiar`; el estado de verdad vive en la vista, no aquí, para
  * que la matriz sea fácil de sustituir por la respuesta del backend.
  */
-export default function TablaPermisos({ matriz, onCambiar, deshabilitado = false }: TablaPermisosProps) {
+export default function TablaPermisos({
+  matriz,
+  onCambiar,
+  deshabilitado = false,
+  puedeMarcar,
+}: TablaPermisosProps) {
   return (
     <div className="gst-tabla-envoltura">
       <table className="gst-tabla gst-tabla--permisos">
@@ -56,6 +62,7 @@ export default function TablaPermisos({ matriz, onCambiar, deshabilitado = false
                 {ACCIONES.map((accion) => {
                   const marcado = Boolean(fila?.[accion.id])
                   const etiqueta = `${accion.etiqueta} en ${modulo.nombre}`
+                  const bloqueada = deshabilitado || (puedeMarcar ? !puedeMarcar(modulo.id, accion.id) : false)
                   return (
                     <td key={accion.id} className="gst-permiso-celda">
                       <button
@@ -63,9 +70,9 @@ export default function TablaPermisos({ matriz, onCambiar, deshabilitado = false
                         role="checkbox"
                         aria-checked={marcado}
                         aria-label={etiqueta}
-                        title={etiqueta}
+                        title={bloqueada && !deshabilitado ? `${etiqueta}. Aún no se puede asignar.` : etiqueta}
                         className="gst-check"
-                        disabled={deshabilitado}
+                        disabled={bloqueada}
                         onClick={() => onCambiar(modulo.id, accion.id, !marcado)}
                       >
                         <Check size={14} strokeWidth={3} />
