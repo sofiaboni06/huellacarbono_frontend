@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight, Eye, EyeOff, Lock, Mail, Droplets, Leaf, BarChart3 } from 'lucide-react'
+import ReCAPTCHA from 'react-google-recaptcha' // <-- Faltaba este import
 import Modal from '../../components/common/Modal'
 import { api } from '../../services/api'
 import { guardarSesion } from '../../services/sesion'
@@ -17,6 +18,10 @@ interface ErroresLogin {
 
 const CORREO_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const CLAVE_USUARIO_RECORDADO = 'hv:usuario-recordado'
+
+// Variables de entorno del captcha
+const CAPTCHA_HABILITADO = import.meta.env.VITE_ENABLE_CAPTCHA === 'true'
+const CAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || ''
 
 function LogoGoogle() {
   return (
@@ -44,15 +49,13 @@ export default function Login() {
   const [recordarme, setRecordarme] = useState(true)
 
   const [errores, setErrores] = useState<ErroresLogin>({})
-  const [aviso, setAviso] = useState('')
-  const [enviando, setEnviando] = useState(false)
+  const [aviso, setAviso] = useState('') // <-- Corregido: era avisoDemo
 
   // Estados del captcha
   const [captchaToken, setCaptchaToken] = useState<string | null>(null)
   const [errorCaptcha, setErrorCaptcha] = useState('')
   const captchaRef = useRef<ReCAPTCHA>(null)
 
-  // Estado para simular envío al backend
   const [enviando, setEnviando] = useState(false)
 
   const [modalRecuperacion, setModalRecuperacion] = useState(false)
@@ -82,7 +85,11 @@ export default function Login() {
     }
 
     setErrores(nuevos)
-    if (Object.keys(nuevos).length > 0) {
+    
+    const hayErrorFormulario = Object.keys(nuevos).length > 0
+    const hayErrorCaptcha = CAPTCHA_HABILITADO && !captchaToken
+
+    if (hayErrorFormulario || hayErrorCaptcha) {
       setAviso('')
       return
     }
@@ -96,6 +103,7 @@ export default function Login() {
 
     setEnviando(true)
     setAviso('')
+    
     try {
       const respuesta = await api<{
         data: {
@@ -112,8 +120,13 @@ export default function Login() {
         }
       }>('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email: correoIngresado, password }),
+               body: JSON.stringify({ 
+          email: correoIngresado, 
+          password,
+          recaptchaToken: captchaToken || '' // Si es null, envía string vacío
+        }),
       })
+      
       const cuenta = respuesta.data.user
       guardarSesion(respuesta.data.token, {
         id: String(cuenta.id),
@@ -127,6 +140,12 @@ export default function Login() {
       navigate('/inicio')
     } catch (error) {
       setAviso(error instanceof Error ? error.message : 'No se pudo iniciar sesión.')
+      
+      // Si el backend rechaza el login por captcha, reseteamos el widget
+      if (CAPTCHA_HABILITADO) {
+        captchaRef.current?.reset()
+        setCaptchaToken(null)
+      }
     } finally {
       setEnviando(false)
     }
@@ -290,6 +309,26 @@ export default function Login() {
                   ¿Olvidaste tu contraseña?
                 </button>
               </div>
+
+              {/* ====== CAPTCHA ====== */}
+              {CAPTCHA_HABILITADO && (
+                <div className="hv-captcha-container" style={{ marginBottom: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <ReCAPTCHA
+                    ref={captchaRef}
+                    sitekey={CAPTCHA_SITE_KEY}
+                    onChange={(token) => {
+                      setCaptchaToken(token)
+                      if (token) setErrorCaptcha('')
+                    }}
+                    onExpired={() => setCaptchaToken(null)}
+                  />
+                  {errorCaptcha && (
+                    <p className="ge-field-error" role="alert" style={{ marginTop: '0.5rem' }}>
+                      {errorCaptcha}
+                    </p>
+                  )}
+                </div>
+              )}
 
               <button type="submit" className="ge-btn ge-btn--primary" disabled={enviando}>
                 <span>{enviando ? 'Ingresando…' : 'Iniciar sesión'}</span>
