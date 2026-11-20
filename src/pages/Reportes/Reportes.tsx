@@ -7,8 +7,7 @@ import { ErrorApi } from '../../services/api'
 import { listarOrganizacionesCalculo, obtenerInformeCarbono, resumenCarbono } from '../../services/calculosService'
 import type { ResumenCarbono } from '../../services/calculosService'
 import type { Organizacion } from '../../services/organizacionesService'
-import { crearPdf, descargarArchivo } from '../../utils/generarPdf'
-import { lineasInforme } from '../../utils/informeCarbono'
+import { crearInformePdf, descargarArchivo } from '../../utils/generarPdf'
 import GraficaEvolucion from './components/GraficaEvolucion'
 import GraficaDonut from './components/GraficaDonut'
 import './Reportes.css'
@@ -96,7 +95,7 @@ export default function Reportes() {
     }
     try {
       const informe = await obtenerInformeCarbono(seleccionado.id)
-      const blob = crearPdf(lineasInforme(informe), 'HuellaVerde · Informe de huella de carbono.')
+      const blob = await crearInformePdf(informe)
       descargarArchivo(`informe-${informe.organizacionNombre}.pdf`, blob)
       setGenerado(true)
       avisar('Informe descargado.')
