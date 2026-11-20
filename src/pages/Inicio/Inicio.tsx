@@ -9,6 +9,7 @@ import PanelEvolucion from './components/PanelEvolucion'
 import PanelDistribucion from './components/PanelDistribucion'
 import AccesosRapidos from './components/AccesosRapidos'
 import ActividadReciente from './components/ActividadReciente'
+import WelcomeOverlay from './components/WelcomeOverlay' // <-- IMPORTAMOS EL OVERLAY
 import hojaIzquierda from '../../assets/images/leaf-bl.png'
 import hojaDerecha from '../../assets/images/leaf-tr.png'
 import '../../styles/variables.css'
@@ -30,6 +31,7 @@ interface IndicadorPanel {
 }
 
 const INDICADORES: IndicadorPanel[] = [
+  // ... (tus datos de indicadores se mantienen igual)
   {
     id: 'hidrica',
     titulo: 'Huella Hídrica Total',
@@ -84,6 +86,9 @@ const INDICADORES: IndicadorPanel[] = [
 function InicioContenido() {
   const [aviso, setAviso] = useState('')
   const [lateralAbierto, setLateralAbierto] = useState(false)
+  
+  // Estado para animar el dashboard cuando se cierre el overlay
+  const [, setRevelado] = useState(false) 
 
   useEffect(() => {
     if (!aviso) return
@@ -105,6 +110,11 @@ function InicioContenido() {
 
   return (
     <div className="hv-inicio">
+      {/* --- OVERLAY DE BIENVENIDA --- */}
+      {/* Se coloca aquí para que quede por encima de todo. 
+          Él mismo decide si mostrarse o no (revisando el localStorage). */}
+      <WelcomeOverlay onClosing={() => setRevelado(true)} />
+
       {/* Hojas decorativas del entorno (recursos originales de la maqueta) */}
       <div className="ini-hojas" aria-hidden="true">
         <img className="ini-hoja ini-hoja--izq" src={hojaIzquierda} alt="" />
