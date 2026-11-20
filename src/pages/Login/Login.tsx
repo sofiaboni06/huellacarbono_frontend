@@ -37,7 +37,7 @@ function IconoGota() {
         stroke="currentColor"
         strokeWidth="1.7"
         strokeLinejoin="round"
-      />
+      /> 
       <path d="M13 18.5c.6 2 2.2 3.2 4 3.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   )

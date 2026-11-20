@@ -10,6 +10,7 @@ export const PERMISOS_CATALOGO = [
 /** Código que abre cada vista de gestión. El resto de la app no tiene permiso en la API. */
 const CODIGO_POR_RUTA: { prefijo: string; codigo: string | readonly string[] }[] = [
   { prefijo: '/gestion/usuarios', codigo: 'usuario.ver' },
+  { prefijo: '/gestion/centros', codigo: 'centro.ver' },
   { prefijo: '/gestion/perfiles', codigo: 'rol.ver' },
   { prefijo: '/gestion/roles-permisos', codigo: 'rol.ver' },
   { prefijo: '/gestion/organizaciones', codigo: 'organizacion.ver' },

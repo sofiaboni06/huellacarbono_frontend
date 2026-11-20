@@ -1,12 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
+import { Outlet, useLocation } from 'react-router-dom'
 import SidebarInicio from '../../pages/Inicio/components/SidebarInicio'
 import BarraSuperior from '../../pages/Inicio/components/BarraSuperior'
-import follaje from '../../assets/images/planta-hojas.jpg'
+import headerSaludo from '../../assets/images/header-hojas.jpg'
 import { usePreferencias } from '../../context/PreferenciasContext'
 import '../../styles/variables.css'
 import './PlantillaVista.css'
-import '../../pages/Inicio/DashboardVerde.css'
 
 type AvisoFn = (mensaje: string) => void
 
@@ -54,66 +54,95 @@ export function AvisoProvider({ children }: { children: ReactNode }) {
   return <AvisoContext.Provider value={valor}>{children}</AvisoContext.Provider>
 }
 
+const ClaseVistaContext = createContext<(clase: string) => void>(() => undefined)
+
 interface PlantillaVistaProps {
   /** Título del documento durante la estancia en la vista. */
   titulo: string
-  /** Clase adicional de la raíz (identifica la vista: cal-, rep-, prf-…). */
+  /** Clase adicional de la raíz (identifica la vista: cal, rep, prf…). */
   className?: string
   children: ReactNode
 }
 
 /**
- * Armazón común de todas las vistas fuera del Login y del Dashboard:
- * el mismo menú, la misma barra y el mismo follaje que Inicio.
- * Ningún módulo mantiene una navegación propia.
+ * Marco único de la aplicación autenticada.
+ * El menú y la barra superior viven aquí, así que no se desmontan al cambiar de vista.
  */
-export default function PlantillaVista({ titulo, className = '', children }: PlantillaVistaProps) {
+export function MarcoAplicacion() {
+  const { pathname } = useLocation()
   const { tema, hojasVisibles, animacionesActivas } = usePreferencias()
   const aviso = useAvisoActual()
   const [lateralAbierto, setLateralAbierto] = useState(false)
-
+  const [claseVista, setClaseVista] = useState('')
+  const esInicio = pathname === '/inicio'
   const cerrarLateral = useCallback(() => setLateralAbierto(false), [])
+
+  useEffect(() => {
+    setLateralAbierto(false)
+  }, [pathname])
+
+  const raiz = `${esInicio ? 'hv-inicio' : 'hv-vista hv-inicio'} ${claseVista}`.trim()
+
+  return (
+    <ClaseVistaContext.Provider value={setClaseVista}>
+      <div
+        className={raiz}
+        data-tema={tema}
+        data-hojas={hojasVisibles ? 'visibles' : 'ocultas'}
+        data-animaciones={animacionesActivas ? 'activas' : 'reducidas'}
+      >
+        <SidebarInicio abierto={lateralAbierto} onCerrar={cerrarLateral} />
+
+        {lateralAbierto ? (
+          <button type="button" className="ini-velo vst-velo" onClick={cerrarLateral} aria-label="Cerrar menú lateral" />
+        ) : null}
+
+        <div
+          className="vst-zona ini-zona"
+          style={{ '--ini-header': `url("${headerSaludo}")` } as CSSProperties}
+        >
+          {esInicio ? (
+            <div className="ini-ambiente" aria-hidden="true">
+              <span className="ini-onda ini-onda--1" />
+              <span className="ini-onda ini-onda--2" />
+              <span className="ini-luz-ambiente" />
+            </div>
+          ) : null}
+          <BarraSuperior
+            placeholder="Buscar en tu dashboard..."
+            onAlternarLateral={() => setLateralAbierto((valor) => !valor)}
+          />
+          <main className={esInicio ? 'ini-contenido' : 'vst-contenido'}>
+            <Outlet />
+          </main>
+        </div>
+
+        {aviso ? (
+          <div className="vst-aviso" role="status" aria-live="polite">
+            {aviso}
+          </div>
+        ) : null}
+      </div>
+    </ClaseVistaContext.Provider>
+  )
+}
+
+/**
+ * Registra la clase y el título de la vista dentro del marco compartido.
+ * No pinta otro menú: el navbar es el de `MarcoAplicacion`.
+ */
+export default function PlantillaVista({ titulo, className = '', children }: PlantillaVistaProps) {
+  const setClaseVista = useContext(ClaseVistaContext)
 
   useEffect(() => {
     const tituloAnterior = document.title
     document.title = titulo
+    setClaseVista(className)
     return () => {
       document.title = tituloAnterior
+      setClaseVista('')
     }
-  }, [titulo])
+  }, [titulo, className, setClaseVista])
 
-  return (
-    <div
-      className={`hv-vista hv-inicio ${className}`.trim()}
-      data-tema={tema}
-      data-hojas={hojasVisibles ? 'visibles' : 'ocultas'}
-      data-animaciones={animacionesActivas ? 'activas' : 'reducidas'}
-    >
-      <SidebarInicio abierto={lateralAbierto} onCerrar={cerrarLateral} />
-
-      {lateralAbierto ? (
-        <button
-          type="button"
-          className="vst-velo"
-          onClick={cerrarLateral}
-          aria-label="Cerrar menú lateral"
-        />
-      ) : null}
-
-      <div className="vst-zona ini-zona" style={{ '--ini-follaje': `url("${follaje}")` } as CSSProperties}>
-        <BarraSuperior
-          placeholder="Buscar en tu dashboard..."
-          onAlternarLateral={() => setLateralAbierto((v) => !v)}
-        />
-
-        <main className="vst-contenido">{children}</main>
-      </div>
-
-      {aviso ? (
-        <div className="vst-aviso" role="status" aria-live="polite">
-          {aviso}
-        </div>
-      ) : null}
-    </div>
-  )
+  return children
 }

@@ -3,13 +3,16 @@ import type { FormEvent } from 'react'
 import Modal from '../../../../components/common/Modal'
 import Button from '../../../../components/common/Button'
 import { correoDuplicado } from '../../../../services/usuariosService'
+import { etiquetaPerfil } from '../../../../services/tipos'
 import type { Estado, Perfil, Usuario, UsuarioFormulario } from '../../../../services/tipos'
+import type { CentroFormacion } from '../../../../services/centrosService'
 
 const VACIO: UsuarioFormulario = {
   nombres: '',
   apellidos: '',
   correo: '',
   perfilId: '',
+  centroId: '',
   estado: 'activo',
   password: '',
   passwordConfirmation: '',
@@ -21,13 +24,26 @@ interface ModalUsuarioProps {
   abierto: boolean
   usuario?: Usuario | null
   perfiles: Perfil[]
+  /** El administrador general elige el centro. El del centro hereda el suyo. */
+  eligeCentro: boolean
+  centros: CentroFormacion[]
   onCerrar: () => void
   onGuardar: (datos: UsuarioFormulario) => Promise<boolean>
 }
 
 const CORREO_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-function validar(datos: UsuarioFormulario, editando: boolean, idExcluido?: string): Errores {
+function esAdministradorGeneral(perfilId: string, perfiles: Perfil[]) {
+  return perfiles.find((perfil) => perfil.id === perfilId)?.nombre === 'ADMINISTRADOR'
+}
+
+function validar(
+  datos: UsuarioFormulario,
+  editando: boolean,
+  perfiles: Perfil[],
+  eligeCentro: boolean,
+  idExcluido?: string,
+): Errores {
   const errores: Errores = {}
 
   if (!datos.nombres.trim()) errores.nombres = 'Los nombres son obligatorios.'
@@ -42,6 +58,9 @@ function validar(datos: UsuarioFormulario, editando: boolean, idExcluido?: strin
   else if (correoDuplicado(correo, idExcluido)) errores.correo = 'Este correo ya está registrado.'
 
   if (!datos.perfilId) errores.perfilId = 'Asigna un perfil.'
+  else if (eligeCentro && !esAdministradorGeneral(datos.perfilId, perfiles) && !datos.centroId) {
+    errores.centroId = 'Asigna el centro de formación.'
+  }
 
   const pideClave = !editando || datos.password.length > 0 || datos.passwordConfirmation.length > 0
   if (pideClave) {
@@ -58,6 +77,8 @@ export default function ModalUsuario({
   abierto,
   usuario,
   perfiles,
+  eligeCentro,
+  centros,
   onCerrar,
   onGuardar,
 }: ModalUsuarioProps) {
@@ -74,6 +95,7 @@ export default function ModalUsuario({
         apellidos: usuario.apellidos,
         correo: usuario.correo,
         perfilId: usuario.perfilId,
+        centroId: usuario.centroId,
         estado: usuario.estado,
         password: '',
         passwordConfirmation: '',
@@ -89,6 +111,8 @@ export default function ModalUsuario({
     () => perfiles.filter((perfil) => perfil.estado === 'activo' || perfil.id === datos.perfilId),
     [perfiles, datos.perfilId],
   )
+  const pideCentro = eligeCentro && !esAdministradorGeneral(datos.perfilId, perfiles)
+  const centrosDisponibles = centros.filter((centro) => centro.activo || centro.id === datos.centroId)
 
   function cambiar(campo: keyof UsuarioFormulario, valor: string) {
     setDatos((prev) => ({ ...prev, [campo]: valor }))
@@ -97,16 +121,18 @@ export default function ModalUsuario({
 
   async function enviar(evento: FormEvent) {
     evento.preventDefault()
-    const encontrados = validar(datos, editando, usuario?.id)
+    const encontrados = validar(datos, editando, perfiles, eligeCentro, usuario?.id)
     setErrores(encontrados)
     if (Object.keys(encontrados).length > 0) return
 
     setEnviando(true)
+    const general = esAdministradorGeneral(datos.perfilId, perfiles)
     const ok = await onGuardar({
       ...datos,
       nombres: datos.nombres.trim(),
       apellidos: datos.apellidos.trim(),
       correo: datos.correo.trim().toLowerCase(),
+      centroId: eligeCentro && !general ? datos.centroId : '',
     })
     setEnviando(false)
     if (ok) onCerrar()
@@ -225,13 +251,40 @@ export default function ModalUsuario({
               <option value="">Selecciona un perfil…</option>
               {perfilesDisponibles.map((perfil) => (
                 <option key={perfil.id} value={perfil.id}>
-                  {perfil.nombre}
+                  {etiquetaPerfil(perfil.nombre)}
                   {perfil.estado === 'inactivo' ? ' (inactivo)' : ''}
                 </option>
               ))}
             </select>
             {errores.perfilId && <span className="vst-error">{errores.perfilId}</span>}
           </div>
+
+          {pideCentro ? (
+            <div className="vst-campo gst-ancha">
+              <label htmlFor="usu-centro">Centro de formación *</label>
+              <select
+                id="usu-centro"
+                className="vst-select"
+                value={datos.centroId}
+                onChange={(e) => cambiar('centroId', e.target.value)}
+                {...invalido('centroId')}
+              >
+                <option value="">Selecciona un centro…</option>
+                {centrosDisponibles.map((centro) => (
+                  <option key={centro.id} value={centro.id}>
+                    {centro.nombre}
+                    {centro.regionalNombre ? ` · ${centro.regionalNombre}` : ''}
+                    {centro.activo ? '' : ' (inactivo)'}
+                  </option>
+                ))}
+              </select>
+              {errores.centroId && <span className="vst-error">{errores.centroId}</span>}
+            </div>
+          ) : eligeCentro ? null : (
+            <p className="gst-ayuda gst-ancha">
+              El usuario queda en tu centro de formación y solo verá las empresas que él mismo registre.
+            </p>
+          )}
         </div>
 
         <div className="gst-modal-pie">

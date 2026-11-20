@@ -145,7 +145,7 @@ export default function CalculoCarbono() {
   const [periodoId, setPeriodoId] = useState('')
   const [versionId, setVersionId] = useState('')
   const [unidades, setUnidades] = useState('')
-  const [unidadFuncional, setUnidadFuncional] = useState('empaques')
+  const [unidadFuncional, setUnidadFuncional] = useState('')
 
   const [registrosActivos, setRegistrosActivos] = useState<number | null>(null)
   const [resultado, setResultado] = useState<Resultado | null>(null)
@@ -225,22 +225,31 @@ export default function CalculoCarbono() {
   }
 
   async function calcular() {
+    const producidas = unidades.trim()
+    const funcional = unidadFuncional.trim()
+    const cantidadValida = producidas !== '' && Number(producidas) > 0
+    const enviaIntensidad = cantidadValida && funcional !== ''
+    const avisoIntensidad = enviaIntensidad
+      ? ''
+      : producidas === '' && funcional === ''
+        ? ' No escribiste las unidades producidas: el total sí quedó, y la intensidad no, porque ese dato es opcional.'
+        : ' Para la intensidad hacen falta la cantidad y el nombre, por ejemplo 10000 empaques. El total sí se calculó.'
     setCargando(true)
     try {
       const calculo = await calcularCarbono({
         organizacionId,
         periodoId,
         versionId,
-        unidadesProducidas: unidades,
-        unidadFuncional,
+        unidadesProducidas: enviaIntensidad ? producidas : undefined,
+        unidadFuncional: enviaIntensidad ? funcional : undefined,
       })
       setResultado(calculo)
       setAcciones(await listarReduccion(calculo.id))
       setPaso(4)
       avisar(
         calculo.totalCo2e
-          ? `Resultado: ${calculo.totalCo2e} ${calculo.unidadResultado}${calculo.toneladasCo2e ? `, ${calculo.toneladasCo2e} t CO2e` : ''}`
-          : 'El cálculo se guardó. Revisa las filas que no entraron en la suma.',
+          ? `Resultado: ${calculo.totalCo2e} ${calculo.unidadResultado}${calculo.toneladasCo2e ? `, ${calculo.toneladasCo2e} t CO2e` : ''}.${avisoIntensidad}`
+          : `El cálculo se guardó. Revisa las filas que no entraron en la suma.${avisoIntensidad}`,
       )
     } catch (error) {
       avisar(error instanceof ErrorApi ? error.message : 'No se pudo calcular.')
@@ -255,7 +264,7 @@ export default function CalculoCarbono() {
     setPeriodoId('')
     setVersionId('')
     setUnidades('')
-    setUnidadFuncional('empaques')
+    setUnidadFuncional('')
     setRegistrosActivos(null)
     setResultado(null)
     setAcciones([])
@@ -553,7 +562,7 @@ export default function CalculoCarbono() {
             <header className="cal-bloque-cabecera">
               <h2>Paso 3 · Metodología y cálculo</h2>
               <p>
-                Selecciona la metodología con los factores de emisión. Si registras las unidades producidas, el sistema también calculará la intensidad por unidad.
+                Selecciona la metodología con los factores de emisión. Las unidades producidas son opcionales: si las escribes, sale la intensidad; si las dejas vacías, el total se calcula igual.
               </p>
             </header>
             <p className="cal-nota-guia cal-nota-guia--formula">{PASOS[2].nota}</p>
@@ -666,7 +675,7 @@ export default function CalculoCarbono() {
                 <dd className="cal-num">
                   {resultado.intensidadCo2e
                     ? `${resultado.intensidadCo2e} kg/${resultado.unidadFuncional || 'unidad'}`
-                    : 'No indicada'}
+                    : 'Sin dato: no escribiste las unidades producidas'}
                 </dd>
               </div>
               <div className="cal-indicador">

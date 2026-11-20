@@ -23,33 +23,33 @@
   box-sizing: border-box;
 }
 
-/* Mismo lienzo menta que el dashboard de inicio */
+/* Mismo lienzo hielo que el dashboard de inicio */
 body:has(.hv-vista) {
-  background: #eef6f1;
+  background: var(--hv-hielo);
 }
 
 .hv-vista,
 .hv-vista[data-tema='claro'],
 .hv-vista[data-tema='profundo'] {
   --ini-side-w: 252px;
-  --hv-bg: #eef6f1;
-  --hv-bg-soft: #f4faf7;
-  --hv-cream: #f7fbf9;
-  --hv-card: #ffffff;
-  --hv-card-solid: #ffffff;
-  --hv-sage: #e7f3ec;
+  --hv-bg: var(--hv-hielo);
+  --hv-bg-soft: var(--hv-nube);
+  --hv-cream: var(--hv-blanco-azul);
+  --hv-card: rgba(244, 249, 254, 0.82);
+  --hv-card-solid: var(--hv-blanco-azul);
+  --hv-sage: var(--hv-header-izq);
   --hv-line: rgba(22, 48, 68, 0.1);
-  --hv-surface: #f3faf6;
-  --hv-surface-2: #e5f3eb;
-  --hv-glass: rgba(255, 255, 255, 0.92);
-  --hv-glass-brd: rgba(255, 255, 255, 0.96);
-  --hv-ink: #12324a;
-  --hv-text: #314b5e;
-  --hv-muted: #5c7384;
-  --hv-verde: #169859;
-  --hv-shadow-sm: 0 2px 8px rgba(20, 58, 44, 0.06);
-  --hv-shadow: 0 14px 34px rgba(20, 58, 44, 0.08);
-  --hv-shadow-lg: 0 24px 50px rgba(20, 50, 40, 0.14);
+  --hv-surface: var(--hv-blanco-azul);
+  --hv-surface-2: var(--hv-header-centro);
+  --hv-glass: linear-gradient(180deg, rgba(244, 249, 254, 0.86) 0%, rgba(220, 234, 248, 0.72) 100%);
+  --hv-glass-brd: rgba(255, 255, 255, 0.75);
+  --hv-ink: var(--hv-noche);
+  --hv-text: var(--hv-texto-secundario);
+  --hv-muted: #5d7288;
+  --hv-verde: var(--hv-carbono);
+  --hv-shadow-sm: 0 2px 8px rgba(7, 27, 43, 0.06);
+  --hv-shadow: 0 18px 40px rgba(7, 27, 43, 0.1);
+  --hv-shadow-lg: 0 24px 50px rgba(7, 27, 43, 0.16);
 
   position: relative;
   isolation: isolate;
@@ -60,9 +60,10 @@ body:has(.hv-vista) {
   font-family: var(--hv-font);
   font-size: 16px;
   line-height: 1.45;
-  color: #163044;
+  color: var(--hv-noche);
   color-scheme: light;
-  background: #eef6f1;
+  background:
+    linear-gradient(180deg, var(--hv-header-claro) 0%, var(--hv-hielo) 280px, var(--hv-hielo) 100%);
 }
 
 /* El follaje vive en la foto del lienzo, no en hojas sueltas. */
@@ -224,13 +225,15 @@ body:has(.hv-vista) {
 
 /* ------------------------- Tarjeta base (glass) -------------------------- */
 .vst-tarjeta {
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  border: 1px solid rgba(255, 255, 255, 0.96);
+  background: linear-gradient(180deg, rgba(244, 249, 254, 0.86) 0%, rgba(220, 234, 248, 0.74) 100%);
+  backdrop-filter: blur(18px) saturate(1.2);
+  -webkit-backdrop-filter: blur(18px) saturate(1.2);
+  border: 1px solid rgba(255, 255, 255, 0.75);
   border-radius: 22px;
-  box-shadow: 0 14px 34px rgba(20, 58, 44, 0.07);
-  color: #163044;
+  box-shadow:
+    0 18px 40px rgba(7, 27, 43, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  color: var(--hv-noche);
   min-width: 0;
 }
 

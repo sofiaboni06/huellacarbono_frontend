@@ -94,3 +94,27 @@
   color: inherit;
   font-weight: 600;
 }
+
+.org-bloque {
+  margin-bottom: 16px;
+}
+
+.org-bloque-cabeza {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.org-bloque-cabeza h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.org-bloque-cabeza p {
+  margin: 4px 0 0;
+  color: var(--hv-muted);
+  font-size: 0.9rem;
+}

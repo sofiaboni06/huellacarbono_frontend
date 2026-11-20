@@ -13,13 +13,20 @@
 }
 
 .ini-bienvenida-saludo {
-  color: #f5f7fb;
+  color: var(--hv-noche);
   letter-spacing: -1px;
+}
+
+.ini-bienvenida-mano {
+  display: inline-flex;
+  margin-left: 8px;
+  color: var(--hv-linea-carbono);
+  vertical-align: -3px;
 }
 
 .ini-bienvenida-subtitulo {
   margin-top: 6px;
-  color: #a9b7c9;
+  color: var(--hv-texto-secundario);
   font-size: clamp(13px, 1.1vw, 15px);
   font-weight: 400;
   line-height: 1.45;

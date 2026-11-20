@@ -15,6 +15,11 @@ interface UsuarioApi {
   active: boolean
   lastAccessAt: string | null
   roles: RolApi[]
+  centro: {
+    id: number
+    nombre: string
+    regional: { nombre: string } | null
+  } | null
 }
 
 interface Pagina<T> {
@@ -35,6 +40,9 @@ function aUsuario(apiUsuario: UsuarioApi): Usuario {
     perfilId: rol ? String(rol.id) : '',
     estado: apiUsuario.active ? 'activo' : 'inactivo',
     ultimoAcceso: apiUsuario.lastAccessAt,
+    centroId: apiUsuario.centro ? String(apiUsuario.centro.id) : '',
+    centroNombre: apiUsuario.centro?.nombre ?? '',
+    regionalNombre: apiUsuario.centro?.regional?.nombre ?? '',
   }
 }
 
@@ -89,6 +97,7 @@ export async function crearUsuario(datos: UsuarioFormulario): Promise<Usuario> {
       password: datos.password,
       passwordConfirmation: datos.passwordConfirmation,
       roleIds: [Number(datos.perfilId)],
+      centroId: datos.centroId ? Number(datos.centroId) : undefined,
     }),
   })
   return aUsuario(creado.data)
@@ -108,6 +117,7 @@ export async function actualizarUsuario(
     cuerpo.password = datos.password
     cuerpo.passwordConfirmation = datos.passwordConfirmation
   }
+  if (datos.centroId) cuerpo.centroId = Number(datos.centroId)
 
   const actualizado = await api<Pagina<UsuarioApi>>(`/users/${id}`, {
     method: 'PATCH',

@@ -14,6 +14,9 @@ export interface Usuario {
   perfilId: string
   estado: Estado
   ultimoAcceso: string | null
+  centroId: string
+  centroNombre: string
+  regionalNombre: string
 }
 
 export interface UsuarioFormulario {
@@ -21,9 +24,22 @@ export interface UsuarioFormulario {
   apellidos: string
   correo: string
   perfilId: string
+  centroId: string
   estado: Estado
   password: string
   passwordConfirmation: string
+}
+
+const ETIQUETAS_PERFIL: Record<string, string> = {
+  ADMINISTRADOR: 'Administrador general',
+  ADMIN_CENTRO: 'Administrador de centro',
+  RESPONSABLE_AMBIENTAL: 'Responsable ambiental',
+  ANALISTA_AMBIENTAL: 'Analista ambiental',
+  USUARIO_CONSULTA: 'Consulta',
+}
+
+export function etiquetaPerfil(nombre: string): string {
+  return ETIQUETAS_PERFIL[nombre] ?? nombre
 }
 
 export interface Perfil {

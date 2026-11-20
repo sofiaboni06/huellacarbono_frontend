@@ -1,15 +1,14 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ArrowLeft, ListTree, Pencil, Plus, Power, Users } from 'lucide-react'
+import { ArrowLeft, ListTree, Pencil, Plus, Power } from 'lucide-react'
 import PlantillaVista, { useAviso } from '../../../components/layout/PlantillaVista'
 import PageHeader from '../../../components/common/PageHeader'
 import Button from '../../../components/common/Button'
 import { usePerfil } from '../../../context/PerfilContext'
 import ModalSede from './components/ModalSede'
-import ModalUsuariosSede from './components/ModalUsuariosSede'
+import PeriodosOrganizacion from './components/PeriodosOrganizacion'
 import {
   actualizarSede,
-  asignarUsuariosSede,
   cambiarEstadoSede,
   crearSede,
   etiquetaTipo,
@@ -33,7 +32,6 @@ export default function OrganizacionDetalle() {
   const [cargando, setCargando] = useState(true)
   const [modalSede, setModalSede] = useState(false)
   const [edicion, setEdicion] = useState<Sede | null>(null)
-  const [sedeUsuarios, setSedeUsuarios] = useState<Sede | null>(null)
 
   const recargar = useCallback(async () => {
     try {
@@ -76,19 +74,6 @@ export default function OrganizacionDetalle() {
       await recargar()
     } catch (error) {
       avisar(error instanceof Error ? error.message : 'No se pudo cambiar el estado de la sede.')
-    }
-  }
-
-  async function guardarUsuarios(usuarioIds: string[]) {
-    if (!sedeUsuarios) return false
-    try {
-      await asignarUsuariosSede(sedeUsuarios.id, usuarioIds)
-      avisar('Usuarios de la sede actualizados.')
-      await recargar()
-      return true
-    } catch (error) {
-      avisar(error instanceof Error ? error.message : 'No se pudieron asignar los usuarios.')
-      return false
     }
   }
 
@@ -140,6 +125,8 @@ export default function OrganizacionDetalle() {
         </p>
       ) : null}
 
+      {organizacion ? <PeriodosOrganizacion organizacionId={id} /> : null}
+
       <section className="vst-tarjeta gst-tabla-tarjeta">
         {cargando ? (
           <div className="gst-cargando" role="status">
@@ -158,7 +145,6 @@ export default function OrganizacionDetalle() {
                 <tr>
                   <th scope="col">Sede</th>
                   <th scope="col">Responsable</th>
-                  <th scope="col">Usuarios</th>
                   <th scope="col">Procesos</th>
                   <th scope="col">Estado</th>
                   {puedeEditar || puedeVerProcesos ? <th scope="col">Acciones</th> : null}
@@ -175,7 +161,6 @@ export default function OrganizacionDetalle() {
                       {sede.responsableNombre || 'Sin responsable'}
                       <div className="gst-correo">{sede.responsableCargo}</div>
                     </td>
-                    <td>{sede.usuarios.length}</td>
                     <td>{sede.procesosActivos}</td>
                     <td>
                       <span className={`gst-estado gst-estado--${sede.estado}`}>
@@ -198,15 +183,6 @@ export default function OrganizacionDetalle() {
                           ) : null}
                           {puedeEditar ? (
                             <>
-                          <button
-                            type="button"
-                            className="gst-accion"
-                            aria-label={`Asignar usuarios a ${sede.nombre}`}
-                            disabled={sede.estado !== 'activo'}
-                            onClick={() => setSedeUsuarios(sede)}
-                          >
-                            <Users size={15} />
-                          </button>
                           <button
                             type="button"
                             className="gst-accion"
@@ -244,12 +220,6 @@ export default function OrganizacionDetalle() {
         sede={edicion}
         onCerrar={() => setModalSede(false)}
         onGuardar={guardarSede}
-      />
-      <ModalUsuariosSede
-        abierto={Boolean(sedeUsuarios)}
-        sede={sedeUsuarios}
-        onCerrar={() => setSedeUsuarios(null)}
-        onGuardar={guardarUsuarios}
       />
     </PlantillaVista>
   )

@@ -1,5 +1,4 @@
 import { useCallback, useState } from 'react'
-import type { CSSProperties } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import {
   BarChart3,
@@ -27,9 +26,6 @@ import type { LucideIcon } from 'lucide-react'
 import { usePerfil } from '../../../context/PerfilContext'
 import { PERMISOS_CATALOGO } from '../../../services/acceso'
 import { useClickOutside } from '../../../hooks/useClickOutside'
-import MenuPerfil from './MenuPerfil'
-import fotoPerfil from '../../../assets/images/profile.png'
-import navbarFoto from '../../../assets/images/navbar-aurora.jpg'
 import plantaNavbar from '../../../assets/images/planta-navbar.png'
 import './SidebarInicio.css'
 
@@ -67,10 +63,10 @@ interface SidebarInicioProps {
 
 /**
  * Barra lateral fija del Dashboard y de las vistas principales: marca, módulos,
- * desplegables de Cálculo y Gestión, tarjeta ambiental y bloque de usuario.
+ * desplegables de Cálculo y Gestión y tarjeta ambiental.
  */
 export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps) {
-  const { perfil, rol, puede } = usePerfil()
+  const { puede } = usePerfil()
   const verCatalogos = PERMISOS_CATALOGO.some((codigo) => puede(codigo))
   const gestion = GESTION.filter((enlace) => {
     if (enlace.to === '/gestion/catalogos') return verCatalogos
@@ -81,7 +77,6 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
 
   const [calculoAbierto, setCalculoAbierto] = useState(() => pathname.startsWith('/calculos'))
   const [gestionAbierta, setGestionAbierta] = useState(() => pathname.startsWith('/gestion'))
-  const [perfilAbierto, setPerfilAbierto] = useState(false)
 
   const enCalculos = pathname.startsWith('/calculos')
   const enGestion = pathname.startsWith('/gestion')
@@ -92,10 +87,8 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
   const cerrarGestion = useCallback(() => {
     if (!enGestion) setGestionAbierta(false)
   }, [enGestion])
-  const cerrarPerfil = useCallback(() => setPerfilAbierto(false), [])
   const refCalculo = useClickOutside<HTMLLIElement>(cerrarCalculo, calculoAbierto)
   const refGestion = useClickOutside<HTMLLIElement>(cerrarGestion, gestionAbierta)
-  const refPerfil = useClickOutside<HTMLDivElement>(cerrarPerfil, perfilAbierto)
 
   const rutaActual = `${pathname}${search}`
   const [rutaPrevia, setRutaPrevia] = useState(rutaActual)
@@ -103,29 +96,14 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
     setRutaPrevia(rutaActual)
     setCalculoAbierto(pathname.startsWith('/calculos'))
     setGestionAbierta(pathname.startsWith('/gestion'))
-    setPerfilAbierto(false)
   }
 
-  const nombreCompleto = `${perfil.nombre} ${perfil.apellidos}`.trim()
   const tipoCalculo = new URLSearchParams(search).get('tipo')
   const tipoActivo: 'carbono' | 'hidrica' | 'historial' =
     tipoCalculo === 'hidrica' || tipoCalculo === 'historial' ? tipoCalculo : 'carbono'
 
   return (
-    <aside
-      className={`ini-lateral ${abierto ? 'abierto' : ''}`}
-      aria-label="Menú lateral"
-      style={{ '--ini-navbar': `url("${navbarFoto}")` } as CSSProperties}
-    >
-      <div className="ini-lateral-atmosfera" aria-hidden="true">
-        <span className="ini-lateral-velo" />
-        <span className="ini-aurora ini-aurora--1" />
-        <span className="ini-aurora ini-aurora--2" />
-        <span className="ini-aurora ini-aurora--3" />
-        <span className="ini-aurora-luz ini-aurora-luz--a" />
-        <span className="ini-aurora-luz ini-aurora-luz--b" />
-      </div>
-
+    <aside className={`ini-lateral ${abierto ? 'abierto' : ''}`} aria-label="Menú lateral">
       <div className="ini-lateral-top">
         <NavLink to="/inicio" className="ini-lateral-marca" onClick={onCerrar}>
           <span className="ini-lateral-hoja" aria-hidden="true">
@@ -299,30 +277,6 @@ export default function SidebarInicio({ abierto, onCerrar }: SidebarInicioProps)
           <strong>Pequeñas acciones, grandes cambios.</strong>
           <span>Cuidemos el planeta →</span>
         </Link>
-      </div>
-
-      <div className="ini-lateral-usuario" ref={refPerfil}>
-        <button
-          type="button"
-          className="ini-lateral-usuario-boton"
-          onClick={() => setPerfilAbierto((v) => !v)}
-          aria-label={`Menú de perfil de ${nombreCompleto}`}
-          aria-haspopup="menu"
-          aria-expanded={perfilAbierto}
-        >
-          <img className="ini-lateral-usuario-foto" src={fotoPerfil} alt="" aria-hidden="true" />
-          <span className="ini-lateral-usuario-texto">
-            <b>{nombreCompleto}</b>
-            <i>{rol}</i>
-          </span>
-          <ChevronDown
-            size={14}
-            strokeWidth={2.4}
-            aria-hidden="true"
-            className={`ini-lateral-flecha ${perfilAbierto ? 'girada' : ''}`}
-          />
-        </button>
-        {perfilAbierto ? <MenuPerfil onCerrar={cerrarPerfil} /> : null}
       </div>
     </aside>
   )

@@ -36,6 +36,7 @@ export default function Organizaciones() {
   const puedeCrear = puede('organizacion.crear')
   const puedeEditar = puede('organizacion.editar')
   const puedeVerSedes = puede('sede.ver')
+  const tituloLista = puede('centro.ver') ? 'Organizaciones' : 'Mis organizaciones'
 
   const [organizaciones, setOrganizaciones] = useState<Organizacion[]>([])
   const [departamentos, setDepartamentos] = useState<Departamento[]>([])
@@ -137,10 +138,10 @@ export default function Organizaciones() {
   }
 
   return (
-    <PlantillaVista titulo="Organizaciones" className="gst gst-usuarios">
+    <PlantillaVista titulo={tituloLista} className="gst gst-usuarios">
       <PageHeader
-        titulo="Organizaciones"
-        subtitulo="Departamento, municipio y organización. Las sedes viven dentro de cada una."
+        titulo={tituloLista}
+        subtitulo="Empresas a las que les calculas la huella. Solo ves las que tú registraste, con sus sedes, su periodo y su cálculo."
         acciones={
           puedeCrear ? (
             <Button

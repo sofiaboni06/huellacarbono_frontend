@@ -15,6 +15,9 @@ import {
   listarOpcionesPerfil,
   listarUsuarios,
 } from '../../../services/usuariosService'
+import { listarCentros } from '../../../services/centrosService'
+import type { CentroFormacion } from '../../../services/centrosService'
+import { etiquetaPerfil } from '../../../services/tipos'
 import type { Estado, Perfil, Usuario, UsuarioFormulario } from '../../../services/tipos'
 import './Usuarios.css'
 
@@ -48,7 +51,9 @@ export default function Usuarios() {
 
   const [usuarios, setUsuarios] = useState<Usuario[]>([])
   const [perfiles, setPerfiles] = useState<Perfil[]>([])
+  const [centros, setCentros] = useState<CentroFormacion[]>([])
   const [cargando, setCargando] = useState(true)
+  const eligeCentro = puede('centro.ver')
 
   const [busqueda, setBusqueda] = useState('')
   const [filtroPerfil, setFiltroPerfil] = useState('todos')
@@ -63,18 +68,20 @@ export default function Usuarios() {
   /** Recarga la lista desde el servicio. */
   const recargar = useCallback(async () => {
     try {
-      const [listaUsuarios, listaPerfiles] = await Promise.all([
+      const [listaUsuarios, listaPerfiles, listaCentros] = await Promise.all([
         listarUsuarios(),
         listarOpcionesPerfil(),
+        eligeCentro ? listarCentros(true) : Promise.resolve([]),
       ])
       setUsuarios(listaUsuarios)
       setPerfiles(listaPerfiles)
+      setCentros(listaCentros)
     } catch (error) {
       avisar(error instanceof Error ? error.message : 'No fue posible cargar los usuarios.')
     } finally {
       setCargando(false)
     }
-  }, [avisar])
+  }, [avisar, eligeCentro])
 
   useEffect(() => {
     void recargar()
@@ -105,6 +112,8 @@ export default function Usuarios() {
         `${usuario.nombres} ${usuario.apellidos}`,
         usuario.correo,
         usuario.perfil,
+        usuario.centroNombre,
+        usuario.regionalNombre,
       ]
       return candidatos.some((candidato) => normalizar(candidato).includes(texto))
     })
@@ -186,7 +195,11 @@ export default function Usuarios() {
     <PlantillaVista titulo="Gestión de Usuarios" className="gst gst-usuarios">
       <PageHeader
         titulo="Gestión de Usuarios"
-        subtitulo="Administra los usuarios registrados en la plataforma HuellaVerde."
+        subtitulo={
+          eligeCentro
+            ? 'Crea el administrador de cada centro. Ese administrador crea a los profesionales que calculan la huella.'
+            : 'Crea los profesionales de tu centro. Cada uno registra y ve solo las empresas que analiza.'
+        }
         acciones={
           puedeCrear ? (
             <Button onClick={abrirAlta}>
@@ -231,7 +244,7 @@ export default function Usuarios() {
               <option value="todos">Todos los perfiles</option>
               {opcionesPerfil.map((nombre) => (
                 <option key={nombre} value={nombre}>
-                  {nombre}
+                  {etiquetaPerfil(nombre)}
                 </option>
               ))}
             </select>
@@ -353,6 +366,8 @@ export default function Usuarios() {
         abierto={modalAbierto}
         usuario={usuarioEdicion}
         perfiles={perfiles}
+        eligeCentro={eligeCentro}
+        centros={centros}
         onCerrar={() => setModalAbierto(false)}
         onGuardar={guardar}
       />

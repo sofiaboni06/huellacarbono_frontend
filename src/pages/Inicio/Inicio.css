@@ -42,11 +42,9 @@
   font-family: var(--hv-font);
   font-size: 15px;
   line-height: 1.45;
-  color: #f5f7fb;
-  background:
-    radial-gradient(1000px 560px at 16% -8%, rgba(22, 119, 242, 0.16) 0%, rgba(22, 119, 242, 0) 60%),
-    radial-gradient(760px 480px at 104% 104%, rgba(66, 216, 121, 0.08) 0%, rgba(66, 216, 121, 0) 62%),
-    #07111f;
+  color: var(--hv-ink);
+  color-scheme: light;
+  background: var(--hv-hielo);
 }
 
 /* Reinicia los estilos heredados de la plantilla index.css. */
@@ -171,12 +169,13 @@
 
 /* ------------------------- Tarjeta base (glass) -------------------------- */
 .ini-tarjeta {
-  background: linear-gradient(180deg, rgba(27, 44, 67, 0.82) 0%, rgba(18, 32, 52, 0.92) 100%);
+  background: linear-gradient(180deg, rgba(244, 249, 254, 0.82) 0%, rgba(220, 234, 248, 0.72) 100%);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
-  border: 1px solid var(--ini-borde);
+  border: 1px solid rgba(255, 255, 255, 0.75);
   border-radius: 16px;
-  box-shadow: 0 12px 32px rgba(2, 8, 18, 0.36);
+  box-shadow: 0 18px 40px rgba(7, 27, 43, 0.12);
+  color: var(--hv-ink);
   min-width: 0;
   transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
 }

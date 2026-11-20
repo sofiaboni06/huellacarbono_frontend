@@ -1,6 +1,6 @@
 /* ==========================================================================
    Dashboard HuellaVerde — identidad de la captura.
-   Navbar: fotografía propia + velo + auroras CSS.
+   Navbar: blanco y azul, el mismo vidrio de las tarjetas.
    Header: fotografía botánica con fundido al hielo.
    Tarjetas: vidrio, borde blanco al 75% y sombra azul al 12%.
    ========================================================================== */
@@ -36,136 +36,10 @@ body:has(.hv-inicio) {
   padding: 22px 16px 14px;
   gap: 16px;
   overflow: hidden;
-  color: var(--hv-hielo);
-  background-color: var(--hv-petroleo);
-  background-image: var(--ini-navbar);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: 46% center;
-  border-right: 0;
-  box-shadow: none;
-}
-
-.hv-inicio .ini-lateral-atmosfera {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.hv-inicio .ini-lateral-velo {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(
-      180deg,
-      color-mix(in srgb, var(--hv-noche) 88%, transparent) 0%,
-      color-mix(in srgb, var(--hv-petroleo) 74%, transparent) 24%,
-      color-mix(in srgb, var(--hv-profundo) 38%, transparent) 52%,
-      color-mix(in srgb, var(--hv-noche) 18%, transparent) 74%,
-      color-mix(in srgb, var(--hv-noche) 58%, transparent) 100%
-    ),
-    radial-gradient(120% 46% at 0% 100%, color-mix(in srgb, var(--hv-petroleo-verde) 46%, transparent), transparent 58%);
-}
-
-.hv-inicio .ini-aurora {
-  position: absolute;
-  left: -70%;
-  width: 240%;
-  height: 46px;
-  border-radius: 999px;
-  filter: blur(16px);
-  mix-blend-mode: screen;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--hv-turquesa) 15%, transparent) 12%,
-    var(--hv-turquesa) 34%,
-    var(--hv-cian) 52%,
-    var(--hv-agua-luz) 70%,
-    transparent 100%
-  );
-  animation: hv-aurora-a 26s linear infinite alternate;
-}
-
-.hv-inicio .ini-aurora--1 {
-  top: 38%;
-  opacity: 0.72;
-}
-
-.hv-inicio .ini-aurora--2 {
-  top: 54%;
-  height: 30px;
-  opacity: 0.5;
-  animation-name: hv-aurora-b;
-  animation-duration: 19s;
-  animation-delay: -7s;
-}
-
-.hv-inicio .ini-aurora--3 {
-  top: 67%;
-  height: 22px;
-  opacity: 0.38;
-  animation-name: hv-aurora-c;
-  animation-duration: 32s;
-  animation-delay: -12s;
-}
-
-.hv-inicio .ini-aurora-luz {
-  position: absolute;
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  filter: blur(12px);
-  mix-blend-mode: screen;
-  background: radial-gradient(circle, color-mix(in srgb, var(--hv-agua-luz) 62%, transparent), transparent 68%);
-  animation: hv-luz-respira 9s var(--hv-ease-in-out) infinite alternate;
-}
-
-.hv-inicio .ini-aurora-luz--a {
-  left: -40px;
-  bottom: 18%;
-}
-
-.hv-inicio .ini-aurora-luz--b {
-  right: -50px;
-  top: 30%;
-  width: 140px;
-  height: 140px;
-  opacity: 0.55;
-  background: radial-gradient(circle, color-mix(in srgb, var(--hv-turquesa) 50%, transparent), transparent 70%);
-  animation-duration: 12s;
-  animation-delay: -4s;
-}
-
-@keyframes hv-aurora-a {
-  from { transform: translate3d(-6%, 0, 0) rotate(-18deg); }
-  to { transform: translate3d(8%, 8%, 0) rotate(-8deg); }
-}
-
-@keyframes hv-aurora-b {
-  from { transform: translate3d(4%, 0, 0) rotate(-10deg); }
-  to { transform: translate3d(-8%, -6%, 0) rotate(4deg); }
-}
-
-@keyframes hv-aurora-c {
-  from { transform: translate3d(-4%, 4%, 0) rotate(8deg); }
-  to { transform: translate3d(10%, -2%, 0) rotate(-4deg); }
-}
-
-@keyframes hv-luz-respira {
-  from { opacity: 0.35; transform: translate3d(0, 0, 0); }
-  to { opacity: 0.75; transform: translate3d(0, -8%, 0); }
-}
-
-.hv-inicio .ini-lateral-top,
-.hv-inicio .ini-lateral-nav,
-.hv-inicio .ini-lateral-planta,
-.hv-inicio .ini-lateral-usuario {
-  position: relative;
-  z-index: 1;
+  color: var(--hv-noche);
+  background: linear-gradient(180deg, var(--hv-vidrio) 0%, var(--hv-blanco-azul) 58%, var(--hv-hielo) 100%);
+  border-right: 1px solid color-mix(in srgb, var(--hv-gris-azul) 72%, var(--hv-vidrio));
+  box-shadow: 10px 0 32px color-mix(in srgb, var(--hv-noche) 6%, transparent);
 }
 
 .hv-inicio .ini-lateral-nav {
@@ -187,20 +61,37 @@ body:has(.hv-inicio) {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--hv-turquesa) 16%, transparent);
-  border: 1px solid color-mix(in srgb, var(--hv-borde-activo) 55%, transparent);
-  color: var(--hv-agua-luz);
-  box-shadow: 0 0 16px color-mix(in srgb, var(--hv-turquesa) 35%, transparent);
+  background: color-mix(in srgb, var(--hv-azul-agua) 16%, var(--hv-vidrio));
+  border: 1px solid color-mix(in srgb, var(--hv-azul-agua) 34%, var(--hv-vidrio));
+  color: var(--hv-azul-intenso);
+  box-shadow: none;
 }
 
 .hv-inicio .ini-lateral-marca-texto,
-.hv-inicio .ini-lateral-marca-texto b,
-.hv-inicio .ini-lateral-marca-texto i {
-  color: var(--hv-hielo);
+.hv-inicio .ini-lateral-marca-texto b {
+  color: var(--hv-noche);
   font-size: 17px;
   font-style: normal;
   font-weight: 650;
   letter-spacing: -0.03em;
+}
+
+.hv-inicio .ini-lateral-marca-texto i {
+  color: var(--hv-azul-intenso);
+  font-size: 17px;
+  font-style: normal;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+}
+
+.hv-inicio .ini-lateral-cerrar {
+  border-color: color-mix(in srgb, var(--hv-gris-azul) 80%, var(--hv-vidrio));
+  background: var(--hv-vidrio);
+  color: var(--hv-noche);
+}
+
+.hv-inicio .ini-lateral-cerrar:hover {
+  background: var(--hv-cristal);
 }
 
 .hv-inicio .ini-lateral-lista {
@@ -213,7 +104,7 @@ body:has(.hv-inicio) {
   border: 1px solid transparent;
   border-radius: 14px;
   background: transparent;
-  color: var(--hv-hielo);
+  color: var(--hv-texto-secundario);
   font-size: 14.5px;
   font-weight: 500;
   transition:
@@ -224,39 +115,36 @@ body:has(.hv-inicio) {
 }
 
 .hv-inicio .ini-lateral-enlace svg {
-  color: var(--hv-cristal);
+  color: var(--hv-azul-intenso);
 }
 
 .hv-inicio .ini-lateral-enlace:hover {
-  background: color-mix(in srgb, var(--hv-vidrio) 8%, transparent);
-  color: var(--hv-hielo);
+  background: color-mix(in srgb, var(--hv-cristal) 72%, var(--hv-vidrio));
+  color: var(--hv-noche);
 }
 
 .hv-inicio .ini-lateral-enlace.activo {
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--hv-borde-activo) 34%, transparent) 0%,
-    color-mix(in srgb, var(--hv-activo) 82%, transparent) 100%
-  );
-  border-color: var(--hv-borde-activo);
-  color: var(--hv-hielo);
+  background: linear-gradient(180deg, var(--hv-blue-2) 0%, var(--hv-blue) 100%);
+  border-color: transparent;
+  color: var(--hv-vidrio);
   font-weight: 650;
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--hv-borde-activo) 40%, transparent),
-    0 10px 24px color-mix(in srgb, var(--hv-turquesa) 34%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--hv-vidrio) 42%, transparent);
+  box-shadow: 0 8px 16px color-mix(in srgb, var(--hv-blue) 28%, transparent);
+}
+
+.hv-inicio .ini-lateral-flecha {
+  color: var(--hv-texto-secundario);
 }
 
 .hv-inicio .ini-lateral-enlace.activo svg,
-.hv-inicio .ini-lateral-flecha {
-  color: var(--hv-hielo);
+.hv-inicio .ini-lateral-enlace.activo .ini-lateral-flecha {
+  color: var(--hv-vidrio);
 }
 
 .hv-inicio .ini-lateral-enlace:focus-visible,
 .hv-inicio .ini-lateral-subenlace:focus-visible,
 .hv-inicio .ini-lateral-marca:focus-visible,
 .hv-inicio .ini-lateral-usuario-boton:focus-visible {
-  outline: 2px solid var(--hv-borde-activo);
+  outline: 2px solid var(--hv-blue);
   outline-offset: 2px;
 }
 
@@ -269,7 +157,7 @@ body:has(.hv-inicio) {
   margin: 4px 0 6px 16px;
   padding: 2px 0 2px 10px;
   border: 0;
-  border-left: 1px solid color-mix(in srgb, var(--hv-borde-activo) 50%, transparent);
+  border-left: 1px solid color-mix(in srgb, var(--hv-azul-agua) 45%, var(--hv-vidrio));
   border-radius: 0;
   background: transparent;
   box-shadow: none;
@@ -279,32 +167,33 @@ body:has(.hv-inicio) {
 .hv-inicio .ini-lateral-subenlace {
   padding: 8px 10px;
   border-radius: 10px;
-  color: var(--hv-cristal);
+  color: var(--hv-texto-secundario);
   font-size: 13px;
 }
 
 .hv-inicio .ini-lateral-subenlace svg {
-  color: var(--hv-agua-luz);
+  color: var(--hv-grafica);
 }
 
 .hv-inicio .ini-lateral-subenlace:hover {
-  background: color-mix(in srgb, var(--hv-vidrio) 8%, transparent);
-  color: var(--hv-hielo);
+  background: color-mix(in srgb, var(--hv-cristal) 72%, var(--hv-vidrio));
+  color: var(--hv-noche);
 }
 
 .hv-inicio .ini-lateral-subenlace.activo {
-  background: color-mix(in srgb, var(--hv-activo) 42%, transparent);
-  color: var(--hv-hielo);
+  background: color-mix(in srgb, var(--hv-blue) 12%, var(--hv-vidrio));
+  color: var(--hv-azul-intenso);
   font-weight: 600;
 }
 
 .hv-inicio .ini-lateral-nav {
-  scrollbar-color: color-mix(in srgb, var(--hv-turquesa-suave) 55%, transparent) transparent;
+  scrollbar-color: var(--hv-gris-azul) transparent;
 }
 
 .hv-inicio .ini-lateral-planta {
   min-height: 0;
   margin-top: auto;
+  margin-bottom: 64px;
   overflow: visible;
   border: 0;
   border-radius: 0;
@@ -315,19 +204,32 @@ body:has(.hv-inicio) {
 .hv-inicio .ini-lateral-lema {
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--hv-borde-activo) 28%, #12815c) 0%,
-    #0b6248 100%
+    color-mix(in srgb, var(--hv-carbono) 20%, var(--hv-vidrio)) 0%,
+    color-mix(in srgb, var(--hv-linea-carbono) 32%, var(--hv-vidrio)) 100%
   );
-  box-shadow: 0 10px 18px color-mix(in srgb, var(--hv-noche) 35%, transparent);
+  border: 1px solid color-mix(in srgb, var(--hv-linea-carbono) 36%, var(--hv-vidrio));
+  box-shadow: 0 8px 16px color-mix(in srgb, var(--hv-linea-carbono) 14%, transparent);
 }
 
-.hv-inicio .ini-lateral-lema strong,
+.hv-inicio .ini-lateral-lema strong {
+  color: var(--hv-green-800);
+}
+
 .hv-inicio .ini-lateral-lema span {
-  color: var(--hv-hielo);
+  color: var(--hv-green-700);
 }
 
 .hv-inicio .ini-lateral-lema:hover {
-  background: linear-gradient(180deg, #18a876 0%, #0e7a59 100%);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--hv-carbono) 30%, var(--hv-vidrio)) 0%,
+    color-mix(in srgb, var(--hv-linea-carbono) 42%, var(--hv-vidrio)) 100%
+  );
+  border-color: color-mix(in srgb, var(--hv-linea-carbono) 48%, var(--hv-vidrio));
+}
+
+.hv-inicio .ini-lateral-lema:focus-visible {
+  outline-color: var(--hv-linea-carbono);
 }
 
 .hv-inicio .ini-lateral-planta img {
@@ -338,39 +240,36 @@ body:has(.hv-inicio) {
   object-fit: contain;
   object-position: center bottom;
   transform: none;
+  filter: drop-shadow(0 8px 12px color-mix(in srgb, var(--hv-noche) 10%, transparent));
 }
 
 .hv-inicio .ini-lateral-usuario-boton {
   gap: 10px;
   padding: 8px 8px;
-  border: 1px solid color-mix(in srgb, var(--hv-borde-activo) 42%, transparent);
+  border: 1px solid color-mix(in srgb, var(--hv-gris-azul) 75%, var(--hv-vidrio));
   border-radius: 16px;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--hv-marino) 92%, transparent),
-    color-mix(in srgb, var(--hv-petroleo) 94%, transparent)
-  );
-  box-shadow: inset 0 1px 0 color-mix(in srgb, var(--hv-turquesa-azul) 28%, transparent);
+  background: var(--hv-vidrio);
+  box-shadow: none;
 }
 
 .hv-inicio .ini-lateral-usuario-boton:hover {
-  background: color-mix(in srgb, var(--hv-marino) 88%, var(--hv-pizarra));
+  background: var(--hv-blanco-azul);
 }
 
 .hv-inicio .ini-lateral-usuario-foto {
   width: 36px;
   height: 36px;
-  border: 2px solid color-mix(in srgb, var(--hv-borde-activo) 70%, transparent);
+  border: 2px solid color-mix(in srgb, var(--hv-blue) 35%, var(--hv-vidrio));
 }
 
 .hv-inicio .ini-lateral-usuario-texto b {
   font-size: 13.5px;
-  color: var(--hv-hielo);
+  color: var(--hv-noche);
 }
 
 .hv-inicio .ini-lateral-usuario-texto i {
   font-size: 11.5px;
-  color: var(--hv-turquesa-suave);
+  color: var(--hv-texto-secundario);
 }
 
 /* ------------------------------ Header ---------------------------------- */
@@ -398,19 +297,9 @@ body:has(.hv-inicio) {
   width: min(680px, 52%);
   height: 268px;
   pointer-events: none;
-  background:
-    linear-gradient(
-      90deg,
-      color-mix(in srgb, var(--hv-celeste-brillo) 88%, var(--hv-turquesa-azul)) 0%,
-      transparent 28%
-    ),
-    linear-gradient(
-      180deg,
-      transparent 0%,
-      transparent 48%,
-      color-mix(in srgb, var(--hv-celeste-brillo) 92%, var(--hv-cian)) 100%
-    ),
-    var(--ini-header) 42% center / cover no-repeat;
+  background: var(--ini-header) 42% center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 38%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 38%);
 }
 
 .hv-inicio .ini-zona,
@@ -1270,16 +1159,12 @@ body:has(.hv-inicio) {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hv-inicio .ini-aurora,
-  .hv-inicio .ini-aurora-luz,
   .hv-inicio .ini-onda,
   .hv-inicio .ini-luz-ambiente {
     animation: none;
   }
 }
 
-.hv-inicio[data-animaciones='reducidas'] .ini-aurora,
-.hv-inicio[data-animaciones='reducidas'] .ini-aurora-luz,
 .hv-inicio[data-animaciones='reducidas'] .ini-onda,
 .hv-inicio[data-animaciones='reducidas'] .ini-luz-ambiente {
   animation: none;

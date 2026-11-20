@@ -1,4 +1,5 @@
 import { Pencil, Power, Trash2 } from 'lucide-react'
+import { etiquetaPerfil } from '../../../../services/tipos'
 import type { Usuario } from '../../../../services/tipos'
 
 interface TablaUsuariosProps {
@@ -41,6 +42,7 @@ export default function TablaUsuarios({
             <th scope="col">Usuario</th>
             <th scope="col">Correo</th>
             <th scope="col">Perfil</th>
+            <th scope="col">Centro</th>
             <th scope="col">Estado</th>
             {puedeEditar ? <th scope="col">Acciones</th> : null}
           </tr>
@@ -60,7 +62,17 @@ export default function TablaUsuarios({
               </td>
               <td className="gst-correo">{usuario.correo}</td>
               <td>
-                <span className="gst-etiqueta-perfil">{usuario.perfil}</span>
+                <span className="gst-etiqueta-perfil">{etiquetaPerfil(usuario.perfil)}</span>
+              </td>
+              <td>
+                {usuario.centroNombre ? (
+                  <>
+                    <b>{usuario.centroNombre}</b>
+                    <div className="gst-correo">{usuario.regionalNombre}</div>
+                  </>
+                ) : (
+                  '—'
+                )}
               </td>
               <td>
                 <span

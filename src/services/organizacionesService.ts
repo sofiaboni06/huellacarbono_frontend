@@ -444,10 +444,3 @@ export async function cambiarEstadoSede(sede: Sede, estado: 'activo' | 'inactivo
   return aSede(respuesta.data)
 }
 
-export async function asignarUsuariosSede(sedeId: string, usuarioIds: string[]): Promise<Sede> {
-  const respuesta = await api<{ data: SedeApi }>(`/sedes/${sedeId}/usuarios`, {
-    method: 'PUT',
-    body: JSON.stringify({ userIds: usuarioIds.map(Number) }),
-  })
-  return aSede(respuesta.data)
-}

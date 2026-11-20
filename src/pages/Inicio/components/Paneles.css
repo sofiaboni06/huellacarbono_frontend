@@ -43,7 +43,7 @@
   gap: 6px;
   font-size: 11.5px;
   font-weight: 500;
-  color: #a9b7c9;
+  color: var(--hv-texto-secundario);
   white-space: nowrap;
 }
 
@@ -95,13 +95,13 @@
   font-weight: 700;
   line-height: 1;
   letter-spacing: -0.6px;
-  color: #f5f7fb;
+  color: var(--hv-noche);
 }
 
 .ini-donut-centro span {
   font-size: 11.5px;
   font-weight: 500;
-  color: #a9b7c9;
+  color: var(--hv-texto-secundario);
 }
 
 .ini-panel-fuentes {
@@ -126,15 +126,15 @@
   background: transparent;
   font-family: inherit;
   font-size: 11.5px;
-  color: #a9b7c9;
+  color: var(--hv-texto-secundario);
   text-align: left;
   cursor: pointer;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
 }
 
 .ini-panel-fuente:hover {
-  background: rgba(169, 183, 201, 0.08);
-  color: #d7dfea;
+  background: var(--hv-cristal);
+  color: var(--hv-noche);
 }
 
 .ini-panel-fuente:focus-visible {
@@ -145,7 +145,7 @@
 .ini-panel-fuente.activa {
   background: rgba(22, 119, 242, 0.12);
   border-color: rgba(22, 119, 242, 0.3);
-  color: #f5f7fb;
+  color: var(--hv-noche);
 }
 
 .ini-panel-fuente-nombre {
@@ -157,7 +157,7 @@
 .ini-panel-fuente b {
   margin-left: auto;
   font-weight: 700;
-  color: #f5f7fb;
+  color: var(--hv-eje);
 }
 
 /* ----------------------------- Responsive ------------------------------- */

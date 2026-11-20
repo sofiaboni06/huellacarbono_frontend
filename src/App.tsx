@@ -2,7 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-route
 import type { ReactNode } from 'react'
 import { codigoDeRuta, destinoGestion, puedeEntrar } from './services/acceso'
 import { leerToken } from './services/sesion'
-import { AvisoProvider } from './components/layout/PlantillaVista'
+import { AvisoProvider, MarcoAplicacion } from './components/layout/PlantillaVista'
 import { NotificacionesProvider } from './context/NotificacionesContext'
 import { PerfilProvider, usePerfil } from './context/PerfilContext'
 import { PreferenciasProvider } from './context/PreferenciasContext'
@@ -24,9 +24,11 @@ import Perfiles from './pages/Gestion/Perfiles/Perfiles'
 import RolesPermisos from './pages/Gestion/RolesPermisos/RolesPermisos'
 import UnidadesMedida from './pages/Gestion/UnidadesMedida/UnidadesMedida'
 import Catalogos from './pages/Gestion/Catalogos/Catalogos'
+import Centros from './pages/Gestion/Centros/Centros'
 import Organizaciones from './pages/Gestion/Organizaciones/Organizaciones'
 import OrganizacionDetalle from './pages/Gestion/Organizaciones/OrganizacionDetalle'
 import ProcesosSede from './pages/Gestion/Organizaciones/ProcesosSede'
+import './pages/Inicio/DashboardVerde.css'
 
 /**
  * Rutas de la aplicación.
@@ -85,29 +87,32 @@ function App() {
             <AvisoProvider>
               <Routes>
                 <Route path="/login" element={<Login />} />
-                <Route path="/inicio" element={<RutaPrivada><Inicio /></RutaPrivada>} />
-                <Route path="/calculos" element={<RutaPrivada><Calculos /></RutaPrivada>} />
-                <Route path="/reportes" element={<RutaPrivada><Reportes /></RutaPrivada>} />
-                <Route path="/configuracion" element={<RutaPrivada><Configuracion /></RutaPrivada>} />
-                <Route path="/ayuda" element={<RutaPrivada><Ayuda /></RutaPrivada>} />
-                <Route path="/guias" element={<RutaPrivada><Guias /></RutaPrivada>} />
+                <Route element={<RutaPrivada><MarcoAplicacion /></RutaPrivada>}>
+                  <Route path="/inicio" element={<Inicio />} />
+                  <Route path="/calculos" element={<Calculos />} />
+                  <Route path="/reportes" element={<Reportes />} />
+                  <Route path="/configuracion" element={<Configuracion />} />
+                  <Route path="/ayuda" element={<Ayuda />} />
+                  <Route path="/guias" element={<Guias />} />
 
-                <Route path="/perfil" element={<RutaPrivada><Perfil /></RutaPrivada>}>
-                  <Route index element={<SeccionPerfil />} />
-                  <Route path="notificaciones" element={<SeccionNotificaciones />} />
-                  <Route path="seguridad" element={<SeccionSeguridad />} />
-                  <Route path="preferencias" element={<SeccionPreferencias />} />
+                  <Route path="/perfil" element={<Perfil />}>
+                    <Route index element={<SeccionPerfil />} />
+                    <Route path="notificaciones" element={<SeccionNotificaciones />} />
+                    <Route path="seguridad" element={<SeccionSeguridad />} />
+                    <Route path="preferencias" element={<SeccionPreferencias />} />
+                  </Route>
+
+                  <Route path="/gestion" element={<EntradaGestion />} />
+                  <Route path="/gestion/usuarios" element={<RutaConPermiso><Usuarios /></RutaConPermiso>} />
+                  <Route path="/gestion/centros" element={<RutaConPermiso><Centros /></RutaConPermiso>} />
+                  <Route path="/gestion/perfiles" element={<RutaConPermiso><Perfiles /></RutaConPermiso>} />
+                  <Route path="/gestion/roles-permisos" element={<RutaConPermiso><RolesPermisos /></RutaConPermiso>} />
+                  <Route path="/gestion/organizaciones" element={<RutaConPermiso><Organizaciones /></RutaConPermiso>} />
+                  <Route path="/gestion/catalogos" element={<RutaConPermiso><Catalogos /></RutaConPermiso>} />
+                  <Route path="/gestion/unidades-medida" element={<RutaConPermiso><UnidadesMedida /></RutaConPermiso>} />
+                  <Route path="/gestion/organizaciones/:id/sedes/:sedeId" element={<RutaConPermiso><ProcesosSede /></RutaConPermiso>} />
+                  <Route path="/gestion/organizaciones/:id" element={<RutaConPermiso><OrganizacionDetalle /></RutaConPermiso>} />
                 </Route>
-
-                <Route path="/gestion" element={<EntradaGestion />} />
-                <Route path="/gestion/usuarios" element={<RutaConPermiso><Usuarios /></RutaConPermiso>} />
-                <Route path="/gestion/perfiles" element={<RutaConPermiso><Perfiles /></RutaConPermiso>} />
-                <Route path="/gestion/roles-permisos" element={<RutaConPermiso><RolesPermisos /></RutaConPermiso>} />
-                <Route path="/gestion/organizaciones" element={<RutaConPermiso><Organizaciones /></RutaConPermiso>} />
-                <Route path="/gestion/catalogos" element={<RutaConPermiso><Catalogos /></RutaConPermiso>} />
-                <Route path="/gestion/unidades-medida" element={<RutaConPermiso><UnidadesMedida /></RutaConPermiso>} />
-                <Route path="/gestion/organizaciones/:id/sedes/:sedeId" element={<RutaConPermiso><ProcesosSede /></RutaConPermiso>} />
-                <Route path="/gestion/organizaciones/:id" element={<RutaConPermiso><OrganizacionDetalle /></RutaConPermiso>} />
 
                 <Route path="/" element={<Landing />} />
                 <Route path="*" element={<Navigate to="/login" replace />} />
