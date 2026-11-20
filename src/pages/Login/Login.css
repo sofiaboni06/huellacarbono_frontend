@@ -578,3 +578,22 @@
     flex-direction: column;
   }
 }
+/* ===== Captcha ===== */
+.hv-captcha-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.hv-captcha-container > div {
+  transform: scale(0.92);
+  transform-origin: center;
+}
+
+/* En pantallas muy pequeñas, escalar un poco más el captcha */
+@media (max-width: 480px) {
+  .hv-captcha-container > div {
+    transform: scale(0.82);
+  }
+}

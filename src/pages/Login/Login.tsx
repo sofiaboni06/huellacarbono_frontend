@@ -47,6 +47,14 @@ export default function Login() {
   const [aviso, setAviso] = useState('')
   const [enviando, setEnviando] = useState(false)
 
+  // Estados del captcha
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [errorCaptcha, setErrorCaptcha] = useState('')
+  const captchaRef = useRef<ReCAPTCHA>(null)
+
+  // Estado para simular envío al backend
+  const [enviando, setEnviando] = useState(false)
+
   const [modalRecuperacion, setModalRecuperacion] = useState(false)
   const [correo, setCorreo] = useState('')
   const [errorCorreo, setErrorCorreo] = useState('')
@@ -64,6 +72,13 @@ export default function Login() {
     }
     if (!password) {
       nuevos.password = 'Ingresa tu contraseña.'
+    }
+
+    // Validación del captcha
+    if (CAPTCHA_HABILITADO && !captchaToken) {
+      setErrorCaptcha('Por favor, completa el captcha para continuar.')
+    } else {
+      setErrorCaptcha('')
     }
 
     setErrores(nuevos)
