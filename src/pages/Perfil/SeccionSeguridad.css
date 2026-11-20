@@ -72,3 +72,98 @@
     gap: 10px;
   }
 }
+
+/* =========================================
+   INPUTS CON OJITO Y MEDIDOR DE CONTRASEÑA
+========================================= */
+
+.prf-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.prf-input-wrapper .vst-input {
+  padding-right: 40px; /* Espacio para el ojito */
+  width: 100%;
+}
+
+.prf-ojito {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: #6b7280; /* Gris neutro */
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: color 0.2s;
+}
+
+.prf-ojito:hover {
+  color: #10b981; /* Verde Huella Verde al pasar el mouse */
+}
+
+/* Medidor de fortaleza */
+.prf-fortaleza-contenedor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.prf-fortaleza-barras {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.prf-barra {
+  height: 4px;
+  flex: 1;
+  border-radius: 4px;
+  background-color: #e5e7eb; /* Fondo gris por defecto */
+  transition: background-color 0.3s ease;
+}
+
+.prf-fortaleza-texto {
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* Lista de requisitos */
+.prf-requisitos {
+  list-style: none;
+  padding: 0;
+  margin: 8px 0 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.prf-requisitos li {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #ef4444; /* Rojo por defecto (falta cumplir) */
+  transition: color 0.2s ease;
+}
+
+.prf-requisitos li.ok {
+  color: #10b981; /* Verde si cumple el requisito */
+}
+
+/* Modo Oscuro (si aplica en tu proyecto) */
+@media (prefers-color-scheme: dark) {
+  .prf-barra {
+    background-color: #374151;
+  }
+  .prf-ojito {
+    color: #9ca3af;
+  }
+}

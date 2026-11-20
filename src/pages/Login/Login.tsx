@@ -1,12 +1,13 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { ArrowRight, Eye, EyeOff, Lock, Mail, Send, User } from 'lucide-react'
+import { ArrowRight, Eye, EyeOff, Lock, Mail, Droplets, Leaf, BarChart3 } from 'lucide-react'
+import ReCAPTCHA from 'react-google-recaptcha' // <-- Faltaba este import
 import Modal from '../../components/common/Modal'
 import { api } from '../../services/api'
 import { guardarSesion } from '../../services/sesion'
-import escenaTierra from '../../assets/images/login-fondo-4k.jpg'
-import logoFabrica from '../../assets/images/logo-fabrica.png'
+import fondoLogin from '../../assets/images/hero-tierra-fondo-hd.jpg'
+import logoGeova from '../../assets/images/logo-huella.png'
 import '../../styles/variables.css'
 import './Login.css'
 
@@ -18,77 +19,9 @@ interface ErroresLogin {
 const CORREO_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 const CLAVE_USUARIO_RECORDADO = 'hv:usuario-recordado'
 
-function LogoHoja({ size = 40 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 64 64" aria-hidden="true">
-      <path fill="#20D878" d="M30 58c-1-8-6-14-12-18 8 1 14 6 16 14 1-10 6-20 16-26-6 10-10 20-12 30 8-6 14-16 16-26-2 16-10 28-24 26z" />
-      <path fill="#83F45B" d="M28 50C16 38 12 20 22 8c2 12 8 20 16 26C30 20 40 10 54 8 46 24 38 38 28 50z" />
-      <path d="M30 46C24 36 22 24 26 14" fill="none" stroke="#0B3025" strokeWidth="1.3" strokeLinecap="round" opacity="0.35" />
-    </svg>
-  )
-}
-
-function IconoGota() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-      <path
-        d="M16 4s-8 9.2-8 15.2a8 8 0 0 0 16 0C24 13.2 16 4 16 4z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinejoin="round"
-      /> 
-      <path d="M13 18.5c.6 2 2.2 3.2 4 3.2" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-    </svg>
-  )
-}
-
-function IconoCO2() {
-  return (
-    <svg width="34" height="26" viewBox="0 0 34 26" aria-hidden="true">
-      <text
-        x="0"
-        y="20"
-        fill="currentColor"
-        fontFamily="Poppins, sans-serif"
-        fontSize="16"
-        fontWeight="700"
-      >
-        CO
-      </text>
-      <text
-        x="23"
-        y="23"
-        fill="currentColor"
-        fontFamily="Poppins, sans-serif"
-        fontSize="10"
-        fontWeight="700"
-      >
-        2
-      </text>
-    </svg>
-  )
-}
-
-function IconoReportes() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true">
-      <path d="M6 24V14M13 24V10M20 24V15" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" />
-      <path d="M18 8h8M22.5 4.5 26 8l-3.5 3.5" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  )
-}
-
-function IconoCorazon() {
-  return (
-    <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden="true">
-      <path
-        fill="#83F45B"
-        d="M12 20s-7-4.4-7-9.1C5 8 6.8 6.2 9 6.2c1.3 0 2.4.6 3 1.6.6-1 1.7-1.6 3-1.6 2.2 0 4 1.8 4 4.7C19 15.6 12 20 12 20z"
-      />
-    </svg>
-  )
-}
+// Variables de entorno del captcha
+const CAPTCHA_HABILITADO = import.meta.env.VITE_ENABLE_CAPTCHA === 'true'
+const CAPTCHA_SITE_KEY = import.meta.env.VITE_RECAPTCHA_SITE_KEY || ''
 
 function LogoGoogle() {
   return (
@@ -116,7 +49,13 @@ export default function Login() {
   const [recordarme, setRecordarme] = useState(true)
 
   const [errores, setErrores] = useState<ErroresLogin>({})
-  const [aviso, setAviso] = useState('')
+  const [aviso, setAviso] = useState('') // <-- Corregido: era avisoDemo
+
+  // Estados del captcha
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [errorCaptcha, setErrorCaptcha] = useState('')
+  const captchaRef = useRef<ReCAPTCHA>(null)
+
   const [enviando, setEnviando] = useState(false)
 
   const [modalRecuperacion, setModalRecuperacion] = useState(false)
@@ -138,8 +77,19 @@ export default function Login() {
       nuevos.password = 'Ingresa tu contraseña.'
     }
 
+    // Validación del captcha
+    if (CAPTCHA_HABILITADO && !captchaToken) {
+      setErrorCaptcha('Por favor, completa el captcha para continuar.')
+    } else {
+      setErrorCaptcha('')
+    }
+
     setErrores(nuevos)
-    if (Object.keys(nuevos).length > 0) {
+    
+    const hayErrorFormulario = Object.keys(nuevos).length > 0
+    const hayErrorCaptcha = CAPTCHA_HABILITADO && !captchaToken
+
+    if (hayErrorFormulario || hayErrorCaptcha) {
       setAviso('')
       return
     }
@@ -153,6 +103,7 @@ export default function Login() {
 
     setEnviando(true)
     setAviso('')
+    
     try {
       const respuesta = await api<{
         data: {
@@ -169,8 +120,13 @@ export default function Login() {
         }
       }>('/auth/login', {
         method: 'POST',
-        body: JSON.stringify({ email: correoIngresado, password }),
+               body: JSON.stringify({ 
+          email: correoIngresado, 
+          password,
+          recaptchaToken: captchaToken || '' // Si es null, envía string vacío
+        }),
       })
+      
       const cuenta = respuesta.data.user
       guardarSesion(respuesta.data.token, {
         id: String(cuenta.id),
@@ -184,6 +140,12 @@ export default function Login() {
       navigate('/inicio')
     } catch (error) {
       setAviso(error instanceof Error ? error.message : 'No se pudo iniciar sesión.')
+      
+      // Si el backend rechaza el login por captcha, reseteamos el widget
+      if (CAPTCHA_HABILITADO) {
+        captchaRef.current?.reset()
+        setCaptchaToken(null)
+      }
     } finally {
       setEnviando(false)
     }
@@ -220,249 +182,267 @@ export default function Login() {
   }
 
   return (
-    <div className="hv-login">
-      <img className="hv-login__bg" src={escenaTierra} alt="" />
+    <div className="ge-login">
+      <img className="ge-login__bg" src={fondoLogin} alt="" />
 
-      <header className="hv-top">
-        <div className="hv-brand">
-          <LogoHoja size={30} />
-          <p className="hv-wordmark">
-            Huella<span>Verde</span>
-          </p>
-          <img className="hv-brand__fabrica" src={logoFabrica} alt="Fábrica de Software" />
-          <span className="hv-brand__rule" aria-hidden="true" />
-          <p className="hv-brand__tag">Analiza · Calcula · Protege</p>
-        </div>
-        <p className="hv-pill">
-          <IconoCorazon />
-          Un planeta más verde, está en tus manos
-        </p>
-      </header>
+      <div className="ge-login__shell">
+        {/* Left: Brand / Visual */}
+        <section className="ge-brand" aria-label="Información de GEOVA">
+          <div className="ge-brand__top">
+            <img className="ge-brand__logo" src={logoGeova} alt="Logo GEOVA" />
+            <div className="ge-brand__titles">
+              <p className="ge-brand__name">GEOVA</p>
+              <p className="ge-brand__slogan">Gestión y Evaluación de la Huella de Carbono y Agua.</p>
+            </div>
+          </div>
 
-      <div className="hv-login__main">
-        <section className="hv-hero" aria-label="Presentación de HuellaVerde">
-          <h1 className="hv-hero__title">
-            <span>Un planeta más</span>
-            <span>sostenible,</span>
-            <span className="hv-hero__accent">en tus manos</span>
-          </h1>
-          <p className="hv-hero__desc">
-            Calcula tu huella ambiental y contribuye a un futuro más verde.
-          </p>
-          <ul className="hv-feats">
-            <li className="hv-feat">
-              <IconoGota />
-              <strong>Huella Hídrica</strong>
-              <span>Cuida el agua</span>
-            </li>
-            <li className="hv-feat">
-              <IconoCO2 />
-              <strong>Huella de Carbono</strong>
-              <span>Reduce emisiones</span>
-            </li>
-            <li className="hv-feat">
-              <IconoReportes />
-              <strong>Reportes en tiempo real</strong>
-              <span>Mide tu impacto</span>
-            </li>
-          </ul>
+          <div className="ge-brand__content">
+            <p className="ge-brand__eyebrow">Plataforma ambiental</p>
+            <h1 className="ge-brand__headline">
+              Gestión ambiental
+              <span>con enfoque sostenible.</span>
+            </h1>
+            <p className="ge-brand__desc">
+              Calcula y visualiza tu huella de carbono y agua para tomar decisiones con impacto real.
+            </p>
+
+            <div className="ge-brand__cards">
+              <div className="ge-feature">
+                <span className="ge-feature__icon" aria-hidden="true"><Droplets size={18} /></span>
+                <div>
+                  <strong>Huella Hídrica</strong>
+                  <p>Uso del agua en tus procesos.</p>
+                </div>
+              </div>
+              <div className="ge-feature">
+                <span className="ge-feature__icon" aria-hidden="true"><Leaf size={18} /></span>
+                <div>
+                  <strong>Huella de Carbono</strong>
+                  <p>Emisiones y oportunidades de mejora.</p>
+                </div>
+              </div>
+              <div className="ge-feature">
+                <span className="ge-feature__icon" aria-hidden="true"><BarChart3 size={18} /></span>
+                <div>
+                  <strong>Reportes claros</strong>
+                  <p>Resultados visuales y accionables.</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <section className="hv-card" aria-label="Inicio de sesión">
-          <div className="hv-card__mark" aria-hidden="true">
-            <LogoHoja size={28} />
-          </div>
-          <h2 className="hv-card__title">¡Bienvenido!</h2>
-          <p className="hv-card__subtitle">Inicia sesión para continuar</p>
+        {/* Right: Auth card */}
+        <section className="ge-auth" aria-label="Inicio de sesión">
+          <div className="ge-card">
+            <div className="ge-card__head">
+              <img className="ge-card__logo" src={logoGeova} alt="" aria-hidden="true" />
+              <div>
+                <p className="ge-card__welcome">Bienvenido a GEOVA</p>
+                <h2 className="ge-card__title">Inicia sesión</h2>
+                <p className="ge-card__subtitle">Accede a tu plataforma de gestión ambiental.</p>
+              </div>
+            </div>
 
-          <form className="hv-card__form" onSubmit={enviarLogin} noValidate>
-            <Campo
-              error={errores.usuario}
-              icono={<User className="login-input__lead" size={18} aria-hidden="true" />}
-              extra={<Send className="login-input__trail" size={16} aria-hidden="true" />}
-            >
-              <input
-                type="email"
-                name="usuario"
-                autoComplete="username"
-                placeholder="Correo electrónico"
-                aria-label="Correo electrónico"
-                aria-invalid={Boolean(errores.usuario)}
-                value={usuario}
-                onChange={(e) => {
-                  setUsuario(e.target.value)
-                  if (errores.usuario) setErrores((prev) => ({ ...prev, usuario: undefined }))
-                }}
-              />
-            </Campo>
-
-            <Campo
-              error={errores.password}
-              icono={<Lock className="login-input__lead" size={18} aria-hidden="true" />}
-              extra={
-                <button
-                  type="button"
-                  className="login-input__eye"
-                  onClick={() => setVerPassword((v) => !v)}
-                  aria-label={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
-                  aria-pressed={verPassword}
-                >
-                  {verPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              }
-            >
-              <input
-                type={verPassword ? 'text' : 'password'}
-                name="password"
-                autoComplete="current-password"
-                placeholder="Contraseña"
-                aria-label="Contraseña"
-                aria-invalid={Boolean(errores.password)}
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value)
-                  if (errores.password) setErrores((prev) => ({ ...prev, password: undefined }))
-                }}
-              />
-            </Campo>
-
-            <div className="hv-card__options">
-              <label className="hv-check">
+            <form className="ge-form" onSubmit={enviarLogin} noValidate>
+              <Campo
+                label="Correo electrónico"
+                error={errores.usuario}
+                icono={<Mail className="ge-input__lead" size={18} aria-hidden="true" />}
+              >
                 <input
-                  type="checkbox"
-                  checked={recordarme}
-                  onChange={(e) => setRecordarme(e.target.checked)}
+                  type="email"
+                  name="usuario"
+                  autoComplete="username"
+                  placeholder="nombre@empresa.com"
+                  aria-label="Correo electrónico"
+                  aria-invalid={Boolean(errores.usuario)}
+                  value={usuario}
+                  onChange={(e) => {
+                    setUsuario(e.target.value)
+                    if (errores.usuario) setErrores((prev) => ({ ...prev, usuario: undefined }))
+                  }}
                 />
-                <span>Recordarme</span>
-              </label>
-              <button type="button" className="hv-forgot" onClick={abrirRecuperacion}>
-                ¿Olvidaste tu contraseña?
-              </button>
-            </div>
+              </Campo>
 
-            <button type="submit" className="login-btn login-btn--primary" disabled={enviando}>
-              <span>{enviando ? 'Ingresando…' : 'Ingresar'}</span>
-              <span className="login-btn__arrow" aria-hidden="true">
-                <ArrowRight size={18} />
-              </span>
-            </button>
+              <Campo
+                label="Contraseña"
+                error={errores.password}
+                icono={<Lock className="ge-input__lead" size={18} aria-hidden="true" />}
+                extra={
+                  <button
+                    type="button"
+                    className="ge-input__eye"
+                    onClick={() => setVerPassword((v) => !v)}
+                    aria-label={verPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                    aria-pressed={verPassword}
+                  >
+                    {verPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                }
+              >
+                <input
+                  type={verPassword ? 'text' : 'password'}
+                  name="password"
+                  autoComplete="current-password"
+                  placeholder="Tu contraseña"
+                  aria-label="Contraseña"
+                  aria-invalid={Boolean(errores.password)}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value)
+                    if (errores.password) setErrores((prev) => ({ ...prev, password: undefined }))
+                  }}
+                />
+              </Campo>
 
-            {aviso && (
-              <p className="hv-card__aviso" role="alert">
-                {aviso}
-              </p>
-            )}
-
-            <div className="hv-sep" aria-hidden="true">
-              <span />
-              <i>o</i>
-              <span />
-            </div>
-
-            <button type="button" className="login-btn login-btn--google" onClick={iniciarConGoogle}>
-              <LogoGoogle /> Iniciar con Google
-            </button>
-          </form>
-
-          <footer className="hv-card__footer">
-            <LogoHoja size={16} />
-            <span className="hv-card__brand">
-              Huella<span>Verde</span>
-            </span>
-            <span aria-hidden="true">·</span>
-            <span>Juntos por un planeta mejor</span>
-          </footer>
-
-          <Modal
-            abierto={modalRecuperacion}
-            titulo="Recuperar contraseña"
-            onCerrar={cerrarRecuperacion}
-            ancho="430px"
-          >
-            {solicitudEnviada ? (
-              <div className="recovery__done">
-                <span className="recovery__done-icon" aria-hidden="true">
-                  <Mail size={20} />
-                </span>
-                <p className="recovery__done-title">Solicitud registrada</p>
-                <p className="recovery__text">
-                  Entorno de demostración: no hay backend conectado, por lo que no se envió ningún
-                  correo a <strong>{correo.trim()}</strong>. Cuando el servicio esté disponible,
-                  recibirás el enlace para restablecer tu contraseña.
-                </p>
-                <button type="button" className="login-btn login-btn--google" onClick={cerrarRecuperacion}>
-                  Entendido
+              <div className="ge-form__row">
+                <label className="ge-check">
+                  <input
+                    type="checkbox"
+                    checked={recordarme}
+                    onChange={(e) => setRecordarme(e.target.checked)}
+                  />
+                  <span>Recordarme</span>
+                </label>
+                <button type="button" className="ge-link" onClick={abrirRecuperacion}>
+                  ¿Olvidaste tu contraseña?
                 </button>
               </div>
-            ) : (
-              <form className="recovery" onSubmit={enviarRecuperacion} noValidate>
-                <p className="recovery__text">
-                  Escribe el correo con el que te registraste y te mostraremos los pasos para
-                  restablecer tu contraseña.
-                </p>
-                <div className={`login-input${errorCorreo ? ' login-input--error' : ''}`}>
-                  <Mail className="login-input__lead" size={17} aria-hidden="true" />
-                  <input
-                    type="email"
-                    name="correo"
-                    autoComplete="email"
-                    placeholder="tucorreo@ejemplo.com"
-                    aria-label="Correo electrónico de recuperación"
-                    aria-invalid={Boolean(errorCorreo)}
-                    value={correo}
-                    onChange={(e) => {
-                      setCorreo(e.target.value)
-                      if (errorCorreo) setErrorCorreo('')
+
+              {/* ====== CAPTCHA ====== */}
+              {CAPTCHA_HABILITADO && (
+                <div className="hv-captcha-container" style={{ marginBottom: '1rem', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <ReCAPTCHA
+                    ref={captchaRef}
+                    sitekey={CAPTCHA_SITE_KEY}
+                    onChange={(token) => {
+                      setCaptchaToken(token)
+                      if (token) setErrorCaptcha('')
                     }}
+                    onExpired={() => setCaptchaToken(null)}
                   />
+                  {errorCaptcha && (
+                    <p className="ge-field-error" role="alert" style={{ marginTop: '0.5rem' }}>
+                      {errorCaptcha}
+                    </p>
+                  )}
                 </div>
-                {errorCorreo && (
-                  <p className="login-field-error" role="alert">
-                    {errorCorreo}
-                  </p>
-                )}
-                <button type="submit" className="login-btn login-btn--primary">
-                  <span>Solicitar recuperación</span>
-                </button>
-                <p className="recovery__note">
-                  <strong>Nota:</strong> demostración sin backend, no se envían correos reales.
+              )}
+
+              <button type="submit" className="ge-btn ge-btn--primary" disabled={enviando}>
+                <span>{enviando ? 'Ingresando…' : 'Iniciar sesión'}</span>
+                <span className="ge-btn__arrow" aria-hidden="true">
+                  <ArrowRight size={18} />
+                </span>
+              </button>
+
+              {aviso && (
+                <p className="ge-alert" role="alert">
+                  {aviso}
                 </p>
-              </form>
-            )}
-          </Modal>
+              )}
+
+              <div className="ge-sep" aria-hidden="true">
+                <span />
+                <i>o</i>
+                <span />
+              </div>
+
+              <button type="button" className="ge-btn ge-btn--google" onClick={iniciarConGoogle}>
+                <LogoGoogle /> Continuar con Google
+              </button>
+            </form>
+
+            <p className="ge-card__footnote">Protegido. Usa tus credenciales corporativas o de acceso asignadas.</p>
+          </div>
         </section>
       </div>
 
-      <div className="hv-scroll" aria-hidden="true">
-        <span className="hv-scroll__mouse">
-          <i />
-        </span>
-        <span>Desliza para descubrir más</span>
-      </div>
+      <Modal
+        abierto={modalRecuperacion}
+        titulo="Recuperar contraseña"
+        onCerrar={cerrarRecuperacion}
+        ancho="430px"
+      >
+        {solicitudEnviada ? (
+          <div className="ge-recovery__done">
+            <span className="ge-recovery__done-icon" aria-hidden="true">
+              <Mail size={20} />
+            </span>
+            <p className="ge-recovery__done-title">Solicitud registrada</p>
+            <p className="ge-recovery__text">
+              Entorno de demostración: no hay backend conectado, por lo que no se envió ningún
+              correo a <strong>{correo.trim()}</strong>. Cuando el servicio esté disponible,
+              recibirás el enlace para restablecer tu contraseña.
+            </p>
+            <button type="button" className="ge-btn ge-btn--google" onClick={cerrarRecuperacion}>
+              Entendido
+            </button>
+          </div>
+        ) : (
+          <form className="ge-recovery" onSubmit={enviarRecuperacion} noValidate>
+            <p className="ge-recovery__text">
+              Escribe el correo con el que te registraste y te mostraremos los pasos para
+              restablecer tu contraseña.
+            </p>
+            <div className={`ge-input${errorCorreo ? ' ge-input--error' : ''}`}>
+              <Mail className="ge-input__lead" size={17} aria-hidden="true" />
+              <input
+                type="email"
+                name="correo"
+                autoComplete="email"
+                placeholder="tucorreo@ejemplo.com"
+                aria-label="Correo electrónico de recuperación"
+                aria-invalid={Boolean(errorCorreo)}
+                value={correo}
+                onChange={(e) => {
+                  setCorreo(e.target.value)
+                  if (errorCorreo) setErrorCorreo('')
+                }}
+              />
+            </div>
+            {errorCorreo && (
+              <p className="ge-field-error" role="alert">
+                {errorCorreo}
+              </p>
+            )}
+            <button type="submit" className="ge-btn ge-btn--primary">
+              <span>Solicitar recuperación</span>
+            </button>
+            <p className="ge-recovery__note">
+              <strong>Nota:</strong> demostración sin backend, no se envían correos reales.
+            </p>
+          </form>
+        )}
+      </Modal>
     </div>
   )
 }
 
 function Campo({
+  label,
   error,
   icono,
   extra,
   children,
 }: {
+  label: string
   error?: string
   icono: ReactNode
   extra?: ReactNode
   children: ReactNode
 }) {
   return (
-    <div className="hv-field">
-      <div className={`login-input${error ? ' login-input--error' : ''}`}>
+    <div className="ge-field">
+      <label className="ge-field__label">{label}</label>
+      <div className={`ge-input${error ? ' ge-input--error' : ''}`}>
         {icono}
         {children}
         {extra}
       </div>
       {error && (
-        <p className="login-field-error" role="alert">
+        <p className="ge-field-error" role="alert">
           {error}
         </p>
       )}
