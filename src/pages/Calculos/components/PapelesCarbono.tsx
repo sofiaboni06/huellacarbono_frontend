@@ -121,8 +121,11 @@ const PLANTAS_NITRICAS = [
   { valor: 'H_H', texto: 'Alta presión (H/H)' },
 ]
 
-/** Magnitudes entre las que el backend puede convertir con densidad o poder calorífico. */
-const MAGNITUDES_ENERGETICAS = ['masa', 'volumen', 'energia', 'volumen estandar de gas']
+/**
+ * Magnitudes entre las que el backend convierte con densidad o poder calorífico.
+ * El metro cúbico estándar (m³st) es volumen: 1 m³st = 1 m³.
+ */
+const MAGNITUDES_ENERGETICAS = ['masa', 'volumen', 'energia']
 
 function normalizar(texto: string) {
   return texto
