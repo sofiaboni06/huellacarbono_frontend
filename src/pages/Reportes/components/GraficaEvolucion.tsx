@@ -49,6 +49,14 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
       .map((d, i) => `${i === 0 ? 'M' : 'L'} ${posicionX(i).toFixed(1)} ${posicionY(d[clave]).toFixed(1)}`)
       .join(' ')
 
+  /** Cierra el trazo hacia la base para rellenar el área bajo la línea. */
+  const cerrar = (clave: 'hidrica' | 'carbono') => {
+    if (!datos.length) return ''
+    const ultimoX = posicionX(datos.length - 1)
+    const base = (ARRIBA + altoUtil).toFixed(1)
+    return `${trazar(clave)} L ${ultimoX.toFixed(1)} ${base} L ${IZQ} ${base} Z`
+  }
+
   const rejilla = Array.from({ length: divisiones + 1 }, (_, k) => (tope * k) / divisiones)
   const puntoActivo = activo !== null ? datos[activo] : null
 
@@ -66,6 +74,20 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
         aria-label={`Evolución mensual de la huella. ${etiquetaAria}`}
         onMouseLeave={() => setActivo(null)}
       >
+        {/* ------------------------------ Degradados ----------------------------- */}
+        <defs>
+          <linearGradient id="ge-area-carbono" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={COLOR_CARBONO} stopOpacity="0.22" />
+            <stop offset="100%" stopColor={COLOR_CARBONO} stopOpacity="0" />
+          </linearGradient>
+          {hayHidrica ? (
+            <linearGradient id="ge-area-hidrica" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={COLOR_HIDRICA} stopOpacity="0.18" />
+              <stop offset="100%" stopColor={COLOR_HIDRICA} stopOpacity="0" />
+            </linearGradient>
+          ) : null}
+        </defs>
+
         {/* ------------------------------- Rejilla ------------------------------ */}
         {rejilla.map((valor) => (
           <g key={valor}>
@@ -117,8 +139,19 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
 
         {/* ------------------------------- Series ------------------------------ */}
         {hayHidrica ? (
-          <path d={trazar('hidrica')} fill="none" stroke={COLOR_HIDRICA} strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" />
+          <>
+            <path d={cerrar('hidrica')} fill="url(#ge-area-hidrica)" stroke="none" aria-hidden="true" />
+            <path
+              d={trazar('hidrica')}
+              fill="none"
+              stroke={COLOR_HIDRICA}
+              strokeWidth={2.6}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+            />
+          </>
         ) : null}
+        <path d={cerrar('carbono')} fill="url(#ge-area-carbono)" stroke="none" aria-hidden="true" />
         <path d={trazar('carbono')} fill="none" stroke={COLOR_CARBONO} strokeWidth={2.6} strokeLinejoin="round" strokeLinecap="round" />
 
         {datos.map((d, i) => (
@@ -128,7 +161,7 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
                 cx={posicionX(i)}
                 cy={posicionY(d.hidrica)}
                 r={activo === i ? 5.5 : 3.6}
-                fill="#0b1526"
+                fill="#fff"
                 stroke={COLOR_HIDRICA}
                 strokeWidth={2.4}
               />
@@ -137,7 +170,7 @@ export default function GraficaEvolucion({ datos }: GraficaEvolucionProps) {
               cx={posicionX(i)}
               cy={posicionY(d.carbono)}
               r={activo === i ? 5.5 : 3.6}
-              fill="#0b1526"
+              fill="#fff"
               stroke={COLOR_CARBONO}
               strokeWidth={2.4}
             />

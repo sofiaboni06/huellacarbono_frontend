@@ -11,6 +11,7 @@ import {
 import { crearPdf, descargarArchivo } from '../../../utils/generarPdf'
 import { lineasInforme } from '../../../utils/informeCarbono'
 import type { CalculoCarbono } from '../../../services/calculosService'
+import ConsolidacionHuella, { TablaTrazabilidad } from './ConsolidacionHuella'
 import './HistorialCalculos.css'
 
 function fechaLegible(valor: string) {
@@ -75,6 +76,7 @@ export default function HistorialCalculos() {
                   <th scope="col">Organización</th>
                   <th scope="col">Periodo</th>
                   <th scope="col">Metodología</th>
+                  <th scope="col">Estado</th>
                   <th scope="col">Resultado</th>
                   <th scope="col">Fecha</th>
                   <th scope="col"></th>
@@ -93,6 +95,13 @@ export default function HistorialCalculos() {
                       <td>{item.periodoNombre}</td>
                       <td>
                         {item.metodologiaNombre} {item.numeroVersion}
+                      </td>
+                      <td>
+                        {item.estado === 'HISTORICO'
+                          ? 'Histórico'
+                          : ['CALCULADO', 'APROBADO'].includes(item.estado)
+                            ? 'Vigente'
+                            : item.estado}
                       </td>
                       <td className="cal-resultado cal-num">
                         {item.totalCo2e ? `${item.totalCo2e} ${item.unidadResultado}` : 'Sin total'}
@@ -198,32 +207,15 @@ export default function HistorialCalculos() {
 
           {detalle.observacion ? <p className="cal-ayuda">{detalle.observacion}</p> : null}
 
-          <div className="cal-tabla-envoltura cal-historial-tabla-envoltura">
-            <table className="cal-historial-tabla">
-              <thead>
-                <tr>
-                  <th>Actividad</th>
-                  <th>Proceso</th>
-                  <th>Alcance</th>
-                  <th>Fuente</th>
-                  <th>Resultado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {detalle.lineas.map((linea) => (
-                  <tr key={linea.id}>
-                    <td>{linea.actividadNombre}</td>
-                    <td>{linea.procesoNombre || '—'}</td>
-                    <td>{linea.alcanceNombre || linea.alcanceCodigo}</td>
-                    <td>{linea.fuenteNombre}</td>
-                    <td className="cal-resultado cal-num">
-                      {linea.valorCo2e} {linea.unidad}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          {detalle.resumenConsolidacion ? (
+            <ConsolidacionHuella resumen={detalle.resumenConsolidacion} />
+          ) : (
+            <p className="cal-ayuda">
+              Cálculo anterior al motor 2.2.0: no tiene consolidación guardada por alcance y base GWP.
+            </p>
+          )}
+
+          <TablaTrazabilidad lineas={detalle.lineas} />
         </section>
       ) : null}
     </div>

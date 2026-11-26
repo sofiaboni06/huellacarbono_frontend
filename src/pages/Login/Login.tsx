@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import type { FormEvent, ReactNode } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ArrowRight, Eye, EyeOff, Lock, Mail, Droplets, Leaf, BarChart3 } from 'lucide-react'
-import ReCAPTCHA from 'react-google-recaptcha' // <-- Faltaba este import
+import ReCAPTCHA from 'react-google-recaptcha'
 import Modal from '../../components/common/Modal'
 import { api } from '../../services/api'
 import { guardarSesion } from '../../services/sesion'
@@ -85,7 +85,6 @@ export default function Login() {
     }
 
     setErrores(nuevos)
-    
     const hayErrorFormulario = Object.keys(nuevos).length > 0
     const hayErrorCaptcha = CAPTCHA_HABILITADO && !captchaToken
 
@@ -140,8 +139,7 @@ export default function Login() {
       navigate('/inicio')
     } catch (error) {
       setAviso(error instanceof Error ? error.message : 'No se pudo iniciar sesión.')
-      
-      // Si el backend rechaza el login por captcha, reseteamos el widget
+      // El token de reCAPTCHA es de un solo uso: se pide uno nuevo tras un intento fallido.
       if (CAPTCHA_HABILITADO) {
         captchaRef.current?.reset()
         setCaptchaToken(null)

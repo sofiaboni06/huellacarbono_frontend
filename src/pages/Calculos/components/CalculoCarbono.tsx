@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import {
   AlertTriangle,
   ArrowLeft,
+  History,
   ArrowRight,
   BookOpen,
   Building2,
@@ -20,41 +21,110 @@ import { useAviso } from '../../../components/layout/PlantillaVista'
 import { ErrorApi } from '../../../services/api'
 import {
   calcularCarbono,
+  diagnosticoDeError,
+  mensajeUsuarioCalculo,
+  mensajeUsuarioRequisito,
   listarOrganizacionesCalculo,
   listarReduccion,
+  listarCalculosCarbono,
+  obtenerCalculoCarbono,
   obtenerInformeCarbono,
   opcionesCalculo,
 } from '../../../services/calculosService'
 import type {
   AccionReduccion,
   CalculoCarbono as Resultado,
+  DiagnosticoCalculo,
   PeriodoCalculo,
   VersionCalculo,
 } from '../../../services/calculosService'
 import { lineasInforme } from '../../../utils/informeCarbono'
+import { configuracionCamposProducto } from '../requisitosCalculoProducto'
 import { crearPdf, descargarArchivo } from '../../../utils/generarPdf'
 import type { Organizacion } from '../../../services/organizacionesService'
+import type { GrupoEmision } from '../../../services/calculosService'
 import PapelesCarbono from './PapelesCarbono'
+import ConsolidacionHuella, { TablaTrazabilidad } from './ConsolidacionHuella'
+import PeriodosOrganizacion from './PeriodosOrganizacion'
+import { usePerfil } from '../../../context/PerfilContext'
+
+/** Traducción de los códigos `requisito` que devuelve el motor en `omitidos`. */
+const REQUISITOS: Record<string, string> = {
+  FUENTE_INACTIVA: 'Fuente inactiva',
+  ACTIVIDAD_NO_VALIDA: 'Actividad de emisión no válida',
+  ALCANCE_NO_VALIDO: 'Alcance no coincide con el catálogo',
+  REGLA_NO_VALIDA: 'Regla de cálculo no válida',
+  METODOLOGIA_NO_DISPONIBLE: 'Metodología no disponible',
+  METODOLOGIA_ESPECIFICA_PENDIENTE: 'Metodología específica pendiente',
+  DATOS_FALTANTES: 'Faltan datos',
+  FACTOR_NO_DISPONIBLE: 'Sin factor de emisión',
+  FACTOR_NO_APROBADO: 'Factor sin aprobar',
+  FACTOR_RECHAZADO: 'Factor rechazado',
+  FACTOR_INACTIVO: 'Factor inactivo',
+  FACTOR_INEXISTENTE: 'Sin factor registrado',
+  FACTOR_OTRA_VERSION: 'Factor de otra versión',
+  FACTOR_FUERA_VIGENCIA: 'Sin factor vigente para la fecha',
+  REGION_NO_COINCIDE: 'Región no coincide',
+  REGION_NO_DETERMINADA: 'Ubicación sin determinar',
+  SECTOR_NO_COINCIDE: 'Sector no coincide',
+  VARIANTE_NO_COINCIDE: 'Opción declarada sin factor',
+  COMPONENTE_SIN_FACTOR: 'Componente sin factor',
+  FACTOR_AMBIGUO: 'Factor ambiguo',
+  UNIDAD_INCOMPATIBLE: 'Unidad incompatible',
+  GWP_NO_DEFINIDO: 'GWP no definido',
+  DECISION_PENDIENTE: 'Decisión técnica pendiente',
+  FUENTE_NO_APLICA: 'Fuente no aplica',
+  FUENTE_BLOQUEADA: 'Fuente bloqueada',
+}
+
+function etiquetaRequisito(codigo: string) {
+  return REQUISITOS[codigo] ?? 'Revisar dato'
+}
+
+function Desglose({ titulo, grupos, unidad }: { titulo: string; grupos: GrupoEmision[]; unidad: string }) {
+  if (!grupos.length) return null
+  const ordenados = [...grupos].sort((a, b) => b.porcentaje - a.porcentaje)
+  return (
+    <div className="cal-desglose">
+      <h3 className="cal-subtitulo">{titulo}</h3>
+      <ul>
+        {ordenados.map((grupo) => (
+          <li key={grupo.nombre}>
+            <div className="cal-desglose-fila">
+              <span>{grupo.nombre}</span>
+              <strong className="cal-num">
+                {grupo.valorCo2e} {unidad} · {grupo.porcentaje}%
+              </strong>
+            </div>
+            <span className="cal-desglose-barra" aria-hidden="true">
+              <span style={{ width: `${Math.min(100, Math.max(0, grupo.porcentaje))}%` }} />
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 type PasoCarbono = 1 | 2 | 3 | 4
 
 const PASOS: { n: PasoCarbono; titulo: string; detalle: string; nota: string }[] = [
   {
     n: 1,
-    titulo: 'Empresa y periodo',
-    detalle: 'Elige a quién y qué mes medir',
-    nota: 'De acuerdo con la guía, el inventario empieza por el objetivo y el alcance: qué organización se mide (límite organizacional) y en qué periodo (límite temporal).',
+    titulo: 'Empresa, periodo y metodología',
+    detalle: 'Elige a quién, cuándo y con qué factores medir',
+    nota: 'De acuerdo con la guía, el inventario empieza por el objetivo y el alcance: qué organización se mide (límite organizacional), en qué periodo (límite temporal) y con qué metodología y versión de factores.',
   },
   {
     n: 2,
-    titulo: 'Consumos del mes',
-    detalle: 'Carga las facturas o soportes',
+    titulo: 'Datos de actividad',
+    detalle: 'Alcance, fuente, cantidad y soporte',
     nota: 'De acuerdo con la guía, cada fila es un dato de actividad: cantidad, unidad, fuente y alcance. El alcance 1 es directo, el 2 es energía adquirida y el 3 es la cadena de valor. La factura o el soporte queda como evidencia.',
   },
   {
     n: 3,
-    titulo: 'Metodología y cálculo',
-    detalle: 'Aplica factores y calcula',
+    titulo: 'Cálculo',
+    detalle: 'El backend aplica los factores aprobados',
     nota: 'De acuerdo con la guía, las emisiones salen de dato de actividad × factor de emisión de la metodología elegida, ya en kg CO₂e. Esa versión trae el factor vigente de cada fuente y unidad. Si indicas las unidades producidas, el total también se expresa como intensidad por unidad funcional.',
   },
   {
@@ -149,8 +219,20 @@ export default function CalculoCarbono() {
 
   const [registrosActivos, setRegistrosActivos] = useState<number | null>(null)
   const [resultado, setResultado] = useState<Resultado | null>(null)
+  const [resultadoTrazable, setResultadoTrazable] = useState<Resultado | null>(null)
+  const [periodoErrorTraza, setPeriodoErrorTraza] = useState('')
   const [acciones, setAcciones] = useState<AccionReduccion[]>([])
   const [cargando, setCargando] = useState(false)
+  const [errorCalculo, setErrorCalculo] = useState('')
+  /** Solo un 422 se debe a los datos de actividad; 401/403/404/409 tienen otra causa. */
+  const [errorCalculoEsDatos, setErrorCalculoEsDatos] = useState(false)
+  /** Diagnóstico por dato cuando ninguno se pudo calcular (422 E_SIN_DATOS_CALCULABLES). */
+  const [diagnostico, setDiagnostico] = useState<DiagnosticoCalculo | null>(null)
+  const [verPeriodos, setVerPeriodos] = useState(false)
+  const [recargaOpciones, setRecargaOpciones] = useState(0)
+  const { permisos } = usePerfil()
+  const puedeVerPeriodos = permisos.includes('organizacion.ver')
+  const puedeEditarPeriodos = permisos.includes('organizacion.editar')
 
   useEffect(() => {
     void listarOrganizacionesCalculo()
@@ -181,17 +263,47 @@ export default function CalculoCarbono() {
     return () => {
       activo = false
     }
-  }, [organizacionId, avisar])
+  }, [organizacionId, avisar, recargaOpciones])
+
+  // Al volver a consultar un periodo, carga las conversiones de la última
+  // ejecución persistida; nunca calcula equivalencias antes de elegir factor.
+  useEffect(() => {
+    if (!organizacionId || !periodoId) {
+      return
+    }
+    let activo = true
+    void listarCalculosCarbono(organizacionId)
+      .then((calculos) => calculos.find((item) =>
+        item.periodoId === periodoId && ['CALCULADO', 'APROBADO'].includes(item.estado),
+      ))
+      .then((ultimo) => ultimo ? obtenerCalculoCarbono(ultimo.id) : null)
+      .then((calculo) => {
+        if (activo) {
+          setResultadoTrazable(calculo)
+          setPeriodoErrorTraza((actual) => actual === periodoId ? '' : actual)
+        }
+      })
+      .catch((error: unknown) => {
+        console.error('No fue posible consultar la trazabilidad del cálculo', error)
+        if (activo) setPeriodoErrorTraza(periodoId)
+      })
+    return () => { activo = false }
+  }, [organizacionId, periodoId])
 
   function seleccionarOrganizacion(id: string) {
     setOrganizacionId(id)
     setPeriodoId('')
     setVersionId('')
     setResultado(null)
+    setResultadoTrazable(null)
     setAcciones([])
     setRegistrosActivos(null)
     setPeriodos([])
     setVersiones([])
+    setUnidades('')
+    setUnidadFuncional('')
+    setErrorCalculo('')
+    setDiagnostico(null)
     setCargandoOpciones(Boolean(id))
   }
 
@@ -208,11 +320,18 @@ export default function CalculoCarbono() {
     [versiones, versionId],
   )
 
+  const camposProducto = configuracionCamposProducto(versionActual?.requisitosCalculoProducto ?? 'PENDIENTE_DEFINICION')
+
   const alCambiarPapeles = useCallback((cantidad: number) => {
     setRegistrosActivos(cantidad)
   }, [])
 
   const paso1Completo = Boolean(organizacionId && periodoId)
+  const datosIntensidadCompletos = Boolean(unidades.trim() && unidadFuncional.trim())
+  const unidadesInvalidas =
+    datosIntensidadCompletos &&
+    Boolean(unidades.trim()) &&
+    (!/^(?:0|[1-9]\d{0,15})(?:\.\d{1,8})?$/.test(unidades.trim()) || !/[1-9]/.test(unidades))
   const paso2Desbloqueado = paso1Completo
   const paso3Desbloqueado = paso1Completo
   const paso4Desbloqueado = Boolean(resultado)
@@ -235,24 +354,54 @@ export default function CalculoCarbono() {
         ? ' No escribiste las unidades producidas: el total sí quedó, y la intensidad no, porque ese dato es opcional.'
         : ' Para la intensidad hacen falta la cantidad y el nombre, por ejemplo 10000 empaques. El total sí se calculó.'
     setCargando(true)
+    setErrorCalculo('')
+    setErrorCalculoEsDatos(false)
+    setDiagnostico(null)
+    let calculo: Resultado
     try {
-      const calculo = await calcularCarbono({
+      calculo = await calcularCarbono({
         organizacionId,
         periodoId,
         versionId,
         unidadesProducidas: enviaIntensidad ? producidas : undefined,
         unidadFuncional: enviaIntensidad ? funcional : undefined,
       })
-      setResultado(calculo)
-      setAcciones(await listarReduccion(calculo.id))
-      setPaso(4)
-      avisar(
-        calculo.totalCo2e
-          ? `Resultado: ${calculo.totalCo2e} ${calculo.unidadResultado}${calculo.toneladasCo2e ? `, ${calculo.toneladasCo2e} t CO2e` : ''}.${avisoIntensidad}`
-          : `El cálculo se guardó. Revisa las filas que no entraron en la suma.${avisoIntensidad}`,
-      )
     } catch (error) {
-      avisar(error instanceof ErrorApi ? error.message : 'No se pudo calcular.')
+      // El backend responde 422 si ningún dato tiene metodología, factor y unidad
+      // válidos: no se crea un cálculo vacío ni se muestra un resultado.
+      console.error('Error técnico al calcular la huella de carbono', error)
+      const mensaje = mensajeUsuarioCalculo(error)
+      setErrorCalculo(mensaje)
+      setErrorCalculoEsDatos(error instanceof ErrorApi && error.status === 422)
+      const detalle = diagnosticoDeError(error)
+      setDiagnostico(detalle)
+      avisar(
+        detalle
+          ? `Ninguno de los ${detalle.datosRecuperados} datos se pudo calcular. Revisa el diagnóstico.`
+          : mensaje,
+      )
+      setCargando(false)
+      return
+    }
+
+    // El cálculo ya quedó guardado: se muestra aunque falle la carga del plan.
+    setResultado(calculo)
+    setResultadoTrazable(calculo)
+    setAcciones([])
+    setPaso(4)
+    avisar(
+      calculo.totalCo2e
+        ? `Resultado: ${calculo.totalCo2e} ${calculo.unidadResultado}${calculo.toneladasCo2e ? `, ${calculo.toneladasCo2e} t CO2e` : ''}.${avisoIntensidad}`
+        : `El cálculo se guardó. Revisa las filas que no entraron en la suma.${avisoIntensidad}`,
+    )
+    try {
+      setAcciones(await listarReduccion(calculo.id))
+    } catch (error) {
+      avisar(
+        `El cálculo se guardó, pero no se pudo cargar el plan de reducción: ${
+          error instanceof ErrorApi ? error.message : 'error desconocido.'
+        }`,
+      )
     } finally {
       setCargando(false)
     }
@@ -268,6 +417,8 @@ export default function CalculoCarbono() {
     setRegistrosActivos(null)
     setResultado(null)
     setAcciones([])
+    setErrorCalculo('')
+    setDiagnostico(null)
   }
 
   return (
@@ -427,7 +578,7 @@ export default function CalculoCarbono() {
             </header>
             <p className="cal-nota-guia">{PASOS[0].nota}</p>
 
-            <div className="cal-carbono-campos cal-carbono-campos--dos">
+            <div className="cal-carbono-campos">
               <div className="vst-campo">
                 <label htmlFor="cal-org">Organización *</label>
                 <select
@@ -455,6 +606,8 @@ export default function CalculoCarbono() {
                     setPeriodoId(evento.target.value)
                     setResultado(null)
                     setAcciones([])
+                    setErrorCalculo('')
+                    setDiagnostico(null)
                   }}
                   disabled={!organizacionId || cargandoOpciones}
                 >
@@ -474,16 +627,96 @@ export default function CalculoCarbono() {
                   ))}
                 </select>
               </div>
+
+              <div className="vst-campo">
+                <label htmlFor="cal-version">Metodología y versión de factores *</label>
+                <select
+                  id="cal-version"
+                  className="vst-select"
+                  value={versionId}
+                  onChange={(evento) => {
+                    setVersionId(evento.target.value)
+                    setUnidades('')
+                    setUnidadFuncional('')
+                    setResultado(null)
+                    setAcciones([])
+                    setErrorCalculo('')
+                    setDiagnostico(null)
+                  }}
+                  disabled={!organizacionId || cargandoOpciones || versiones.length === 0}
+                >
+                  <option value="">
+                    {!organizacionId
+                      ? 'Primero elige una organización'
+                      : versiones.length
+                        ? 'Selecciona una metodología'
+                        : 'Sin versiones disponibles'}
+                  </option>
+                  {versiones.map((item) => (
+                    // Una versión que no cubre todo el periodo se rechaza con
+                    // VERSION_NO_CUBRE_PERIODO: se muestra, pero no se puede elegir.
+                    <option
+                      key={item.id}
+                      value={item.id}
+                      disabled={Boolean(periodoId) && !item.periodosCubiertos.includes(periodoId)}
+                    >
+                      {item.metodologiaNombre} {item.numeroVersion}
+                      {periodoId && !item.periodosCubiertos.includes(periodoId)
+                        ? ' (no cubre todo el periodo)'
+                        : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
+
+            {organizacionId && !cargandoOpciones && versiones.length === 0 ? (
+              <div className="cal-aviso-caja cal-aviso-caja--alerta">
+                <AlertTriangle size={18} aria-hidden="true" />
+                <span>
+                  No hay versiones de metodología de carbono vigentes. Puedes registrar datos de actividad, pero el
+                  cálculo quedará pendiente hasta que se configuren en <strong>Gestión → Catálogos</strong>.
+                </span>
+              </div>
+            ) : null}
 
             {organizacionId && !cargandoOpciones && periodos.length === 0 ? (
               <div className="cal-aviso-caja cal-aviso-caja--alerta">
                 <AlertTriangle size={18} aria-hidden="true" />
                 <span>
-                  Esta organización aún no tiene periodos configurados. Créalos en{' '}
-                  <strong>Gestión → Organizaciones</strong> antes de continuar.
+                  Esta organización aún no tiene periodos de medición.{' '}
+                  {puedeEditarPeriodos
+                    ? 'Créalo con «Gestionar periodos» antes de continuar.'
+                    : 'Pide a un administrador que cree el periodo antes de continuar.'}
                 </span>
               </div>
+            ) : null}
+
+            {organizacionId && puedeVerPeriodos ? (
+              <div className="cal-acciones">
+                <Button
+                  variante="contorno"
+                  className="cal-btn-compacto"
+                  aria-expanded={verPeriodos}
+                  onClick={() => setVerPeriodos((estado) => !estado)}
+                >
+                  {verPeriodos ? 'Ocultar periodos' : 'Gestionar periodos'}
+                  {verPeriodos ? <ChevronUp size={15} aria-hidden="true" /> : <ChevronDown size={15} aria-hidden="true" />}
+                </Button>
+              </div>
+            ) : null}
+
+            {organizacionId && puedeVerPeriodos && verPeriodos ? (
+              <PeriodosOrganizacion
+                key={organizacionId}
+                organizacionId={organizacionId}
+                organizacionNombre={organizacionActual?.nombre ?? ''}
+                puedeEditar={puedeEditarPeriodos}
+                onCambio={() => {
+                  setCargandoOpciones(true)
+                  setRecargaOpciones((n) => n + 1)
+                }}
+              />
             ) : null}
 
             {periodoActual ? (
@@ -499,8 +732,9 @@ export default function CalculoCarbono() {
                       ? 'Abierto (recibe nuevos consumos)'
                       : 'Cerrado (solo lectura para calcular)'}
                     {' · '}
-                    {versiones.length}{' '}
-                    {versiones.length === 1 ? 'metodología disponible' : 'metodologías disponibles'}
+                    {versionActual
+                      ? `${versionActual.metodologiaNombre} ${versionActual.numeroVersion}`
+                      : `${versiones.length} ${versiones.length === 1 ? 'metodología disponible' : 'metodologías disponibles'}`}
                   </span>
                 </div>
               </div>
@@ -512,7 +746,7 @@ export default function CalculoCarbono() {
                 disabled={!paso1Completo}
                 onClick={() => setPaso(2)}
               >
-                Continuar a consumos del mes
+                Continuar a datos de actividad
                 <ArrowRight size={15} strokeWidth={2.3} aria-hidden="true" />
               </Button>
             </div>
@@ -527,20 +761,26 @@ export default function CalculoCarbono() {
               key={`${organizacionId}-${periodoId}`}
               organizacionId={organizacionId}
               periodoId={periodoId}
+              fechaInicio={periodoActual?.fechaInicio ?? ''}
+              fechaFin={periodoActual?.fechaFin ?? ''}
               abierto={periodoActual?.estado === 'ABIERTO'}
+              versionId={versionId}
+              versionNombre={versionActual ? `${versionActual.metodologiaNombre} ${versionActual.numeroVersion}` : ''}
+              resultadoTrazable={resultadoTrazable?.periodoId === periodoId ? resultadoTrazable : null}
+              errorConsultaTraza={periodoErrorTraza === periodoId}
               onPapelesCambio={alCambiarPapeles}
             />
 
             <div className="cal-acciones cal-acciones--entre">
               <Button variante="contorno" onClick={() => setPaso(1)}>
                 <ArrowLeft size={15} strokeWidth={2.3} aria-hidden="true" />
-                Cambiar empresa o periodo
+                Cambiar empresa, periodo o metodología
               </Button>
 
               <div className="cal-acciones-grupo">
                 {registrosActivos === 0 ? (
                   <span className="cal-ayuda-inline">
-                    Agrega al menos 1 registro para calcular emisiones.
+                    Registra al menos 1 dato de actividad para calcular emisiones.
                   </span>
                 ) : null}
                 <Button
@@ -548,7 +788,7 @@ export default function CalculoCarbono() {
                   disabled={registrosActivos === 0}
                   onClick={() => setPaso(3)}
                 >
-                  Continuar a metodología y cálculo
+                  Continuar al cálculo
                   <ArrowRight size={15} strokeWidth={2.3} aria-hidden="true" />
                 </Button>
               </div>
@@ -556,85 +796,160 @@ export default function CalculoCarbono() {
           </div>
         ) : null}
 
-        {/* PASO 3: Metodología y cálculo */}
+        {/* PASO 3: Cálculo */}
         {paso === 3 ? (
           <div className="cal-seccion">
             <header className="cal-bloque-cabecera">
-              <h2>Paso 3 · Metodología y cálculo</h2>
+              <h2>Paso 3 · Cálculo</h2>
               <p>
-                Selecciona la metodología con los factores de emisión. Las unidades producidas son opcionales: si las escribes, sale la intensidad; si las dejas vacías, el total se calcula igual.
+                Se calcula el inventario completo del periodo: todos los datos de actividad no rechazados de la
+                organización, de cualquier alcance. El backend aplicará a cada dato el factor aprobado de la metodología
+                elegida. Solo entran en la suma los datos cuya fuente tiene metodología, factor y unidad válidos; el resto
+                se informa como pendiente. Las unidades producidas son opcionales: si las escribes, sale la intensidad;
+                si las dejas vacías, el total se calcula igual.
               </p>
             </header>
             <p className="cal-nota-guia cal-nota-guia--formula">{PASOS[2].nota}</p>
 
-            <div className="cal-carbono-campos">
-              <div className="vst-campo">
-                <label htmlFor="cal-version">Metodología de cálculo *</label>
-                <select
-                  id="cal-version"
-                  className="vst-select"
-                  value={versionId}
-                  onChange={(evento) => setVersionId(evento.target.value)}
-                  disabled={!organizacionId || versiones.length === 0}
-                >
-                  <option value="">
-                    {versiones.length ? 'Selecciona una metodología' : 'Sin versiones disponibles'}
-                  </option>
-                  {versiones.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.metodologiaNombre} {item.numeroVersion}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="vst-campo">
-                <label htmlFor="cal-unidades">Unidades producidas (opcional)</label>
-                <input
-                  id="cal-unidades"
-                  className="vst-input"
-                  type="number"
-                  min="0"
-                  step="any"
-                  inputMode="decimal"
-                  value={unidades}
-                  onChange={(evento) => setUnidades(evento.target.value)}
-                  placeholder="Ej. 10000"
-                />
-              </div>
-
-              <div className="vst-campo">
-                <label htmlFor="cal-unidad-funcional">Unidad funcional (opcional)</label>
-                <input
-                  id="cal-unidad-funcional"
-                  className="vst-input"
-                  value={unidadFuncional}
-                  onChange={(evento) => setUnidadFuncional(evento.target.value)}
-                  placeholder="Ej. empaques"
-                />
+            <div className="cal-resumen-paso">
+              <Calculator size={17} aria-hidden="true" />
+              <div>
+                <strong>
+                  {versionActual
+                    ? `${versionActual.metodologiaNombre} ${versionActual.numeroVersion}`
+                    : 'Sin metodología seleccionada'}
+                </strong>
+                <span>
+                  {registrosActivos ?? 0}{' '}
+                  {registrosActivos === 1 ? 'dato de actividad activo' : 'datos de actividad activos'} en{' '}
+                  {periodoActual?.nombre}
+                </span>
               </div>
             </div>
 
-            {versiones.length === 0 ? (
+            {versiones.length === 0 || !versionId ? (
               <div className="cal-aviso-caja cal-aviso-caja--alerta">
                 <AlertTriangle size={18} aria-hidden="true" />
                 <span>
-                  No hay versiones de metodología activas para esta organización. Configúralas en{' '}
-                  <strong>Gestión → Catálogos</strong>.
+                  {versiones.length === 0
+                    ? 'No hay versiones de metodología activas para esta organización. Configúralas en Gestión → Catálogos.'
+                    : 'Vuelve al paso 1 y elige la metodología con la que se calculará.'}
                 </span>
+              </div>
+            ) : null}
+
+            {camposProducto.avisoPendiente ? (
+              <div className="cal-aviso-caja">
+                <span>Los requisitos de cálculo por producto aún no están definidos para esta versión. Puedes calcular las emisiones totales; la intensidad solo se calculará si completas ambos campos.</span>
+              </div>
+            ) : null}
+
+            {camposProducto.visible ? (
+            <div className="cal-carbono-campos cal-carbono-campos--dos">
+              <div className="vst-campo">
+                <label htmlFor="cal-unidades">Unidades producidas {camposProducto.cantidadRequerida ? '*' : '(opcional)'}</label>
+                <input
+                  id="cal-unidades"
+                  className="vst-input"
+                  inputMode="decimal"
+                  value={unidades}
+                  onChange={(evento) => setUnidades(evento.target.value.replace(',', '.'))}
+                  placeholder="Ej. 10000"
+                  required={camposProducto.cantidadRequerida}
+                />
+              </div>
+
+              <div className="vst-campo">
+                <label htmlFor="cal-unidad-funcional">Unidad funcional {camposProducto.unidadFuncionalRequerida ? '*' : '(opcional)'}</label>
+                <input
+                  id="cal-unidad-funcional"
+                  className="vst-input"
+                  maxLength={80}
+                  value={unidadFuncional}
+                  onChange={(evento) => setUnidadFuncional(evento.target.value)}
+                  placeholder="Ej. empaques"
+                  required={camposProducto.unidadFuncionalRequerida}
+                />
+              </div>
+            </div>
+            ) : null}
+
+            {unidadesInvalidas ? (
+              <div className="cal-aviso-caja cal-aviso-caja--alerta" role="alert">
+                <AlertTriangle size={18} aria-hidden="true" />
+                <span>Las unidades producidas deben ser un número positivo con punto decimal (máximo 8 decimales).</span>
+              </div>
+            ) : null}
+
+            {errorCalculo ? (
+              <div className="cal-aviso-caja cal-aviso-caja--alerta" role="alert">
+                <AlertTriangle size={18} aria-hidden="true" />
+                <div>
+                  <strong>No fue posible completar el cálculo</strong>
+                  {diagnostico ? (
+                    <>
+                      <p className="cal-ayuda">
+                        Ninguno de los {diagnostico.datosRecuperados} datos de actividad del periodo se pudo
+                        calcular, así que no se guardó un cálculo vacío. Causas:
+                      </p>
+                      <ul className="cal-omitidos">
+                        {diagnostico.causas.map((causa) => (
+                          <li key={`${causa.requisito}-${causa.fuentes.join('-')}-${causa.ejemplo}`}>
+                            <span className="cal-estado revision">{etiquetaRequisito(causa.requisito)}</span>{' '}
+                            {causa.datos} {causa.datos === 1 ? 'dato' : 'datos'}
+                            {mensajeUsuarioRequisito(causa.requisito, causa.ejemplo)}
+                          </li>
+                        ))}
+                      </ul>
+                      <div className="cal-tabla-envoltura cal-historial-tabla-envoltura">
+                        <table className="cal-historial-tabla">
+                          <thead>
+                            <tr>
+                              <th>Alcance</th>
+                              <th>Fuente de emisión</th>
+                              <th>Actividad</th>
+                              <th>Requisito</th>
+                              <th>Motivo</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {diagnostico.detalle.map((fila) => (
+                              <tr key={fila.datoId}>
+                                <td>{fila.alcanceNombre ?? '—'}</td>
+                                <td>{fila.fuenteNombre}</td>
+                                <td>
+                                  {fila.actividadNombre} ({fila.cantidad} {fila.unidadSimbolo})
+                                </td>
+                                <td>{etiquetaRequisito(fila.requisito)}</td>
+                                <td>{mensajeUsuarioRequisito(fila.requisito, fila.motivo)}</td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </>
+                  ) : (
+                    <p className="cal-ayuda">{errorCalculo}</p>
+                  )}
+                  {errorCalculoEsDatos ? (
+                    <p className="cal-ayuda">
+                      Revisa en el paso 2 las fuentes marcadas como pendientes o sin factor aprobado.
+                    </p>
+                  ) : null}
+                </div>
               </div>
             ) : null}
 
             <div className="cal-acciones cal-acciones--entre">
               <Button variante="contorno" onClick={() => setPaso(2)}>
                 <ArrowLeft size={15} strokeWidth={2.3} aria-hidden="true" />
-                Volver a consumos
+                Volver a datos de actividad
               </Button>
 
               <Button
                 variante="primario"
                 onClick={() => void calcular()}
-                disabled={cargando || !organizacionId || !periodoId || !versionId}
+                disabled={cargando || !organizacionId || !periodoId || !versionId || unidadesInvalidas}
               >
                 <Calculator size={15} strokeWidth={2.3} aria-hidden="true" />
                 {cargando ? 'Calculando…' : 'Calcular huella de carbono'}
@@ -651,7 +966,9 @@ export default function CalculoCarbono() {
                 <Check size={22} strokeWidth={3} />
               </span>
               <div>
-                <p className="cal-resultado-etiqueta">Cálculo de carbono completado</p>
+                <p className="cal-resultado-etiqueta">
+                  Cálculo completado · inventario del periodo (todos los alcances)
+                </p>
                 <h2 className="cal-resultado-titulo">
                   {resultado.organizacionNombre} · {resultado.periodoNombre}
                 </h2>
@@ -685,8 +1002,10 @@ export default function CalculoCarbono() {
                 </dd>
               </div>
               <div className="cal-indicador">
-                <dt>Fuentes calculadas</dt>
-                <dd className="cal-num">{resultado.lineas.length}</dd>
+                <dt>Líneas calculadas / pendientes</dt>
+                <dd className="cal-num">
+                  {resultado.lineas.length} / {resultado.omitidos.length}
+                </dd>
               </div>
             </dl>
 
@@ -697,16 +1016,25 @@ export default function CalculoCarbono() {
               </div>
             ) : null}
 
-            {resultado.omitidos.length ? (
+            {resultado.resumenConsolidacion ? (
+              <ConsolidacionHuella resumen={resultado.resumenConsolidacion} />
+            ) : null}
+
+            {!resultado.resumenConsolidacion && resultado.omitidos.length ? (
               <div className="cal-aviso-caja cal-aviso-caja--alerta">
                 <AlertTriangle size={18} aria-hidden="true" />
                 <div>
-                  <strong>Registros omitidos en el cálculo ({resultado.omitidos.length})</strong>
+                  <strong>
+                    Datos pendientes, fuera de la suma ({resultado.omitidos.length})
+                  </strong>
                   <ul className="cal-omitidos">
                     {resultado.omitidos.map((fila) => (
                       <li key={fila.datoId}>
+                        {fila.requisito ? (
+                          <span className="cal-estado revision">{etiquetaRequisito(fila.requisito)}</span>
+                        ) : null}{' '}
                         {fila.actividadNombre} ({fila.cantidad} {fila.unidadSimbolo} · {fila.fuenteNombre}):{' '}
-                        {fila.motivo}
+                        {mensajeUsuarioRequisito(fila.requisito, fila.motivo)}
                       </li>
                     ))}
                   </ul>
@@ -714,34 +1042,19 @@ export default function CalculoCarbono() {
               </div>
             ) : null}
 
+            <div className="cal-desgloses">
+              <Desglose titulo="Por alcance" grupos={resultado.porAlcance} unidad={resultado.unidadResultado} />
+              <Desglose titulo="Por fuente de emisión" grupos={resultado.porFuente} unidad={resultado.unidadResultado} />
+              <Desglose
+                titulo="Por actividad de emisión"
+                grupos={resultado.porActividad}
+                unidad={resultado.unidadResultado}
+              />
+            </div>
+
             <div className="cal-bloque-tabla">
-              <h3 className="cal-subtitulo">Desglose de emisiones</h3>
-              <div className="cal-tabla-envoltura cal-historial-tabla-envoltura">
-                <table className="cal-historial-tabla">
-                  <thead>
-                    <tr>
-                      <th>Actividad</th>
-                      <th>Proceso</th>
-                      <th>Alcance</th>
-                      <th>Fuente</th>
-                      <th>Resultado</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {resultado.lineas.map((linea) => (
-                      <tr key={linea.id}>
-                        <td>{linea.actividadNombre}</td>
-                        <td>{linea.procesoNombre || '—'}</td>
-                        <td>{linea.alcanceNombre || linea.alcanceCodigo}</td>
-                        <td>{linea.fuenteNombre}</td>
-                        <td className="cal-resultado cal-num">
-                          {linea.valorCo2e} {linea.unidad}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+              <h3 className="cal-subtitulo">Detalle por dato y factor aplicado</h3>
+              <TablaTrazabilidad lineas={resultado.lineas} />
             </div>
 
             <PlanReduccion key={resultado.id} calculoId={resultado.id} acciones={acciones} />
@@ -749,13 +1062,19 @@ export default function CalculoCarbono() {
             <div className="cal-acciones cal-acciones--entre">
               <Button variante="contorno" onClick={() => setPaso(3)}>
                 <ArrowLeft size={15} strokeWidth={2.3} aria-hidden="true" />
-                Ajustar metodología o producción
+                Ajustar producción o recalcular
               </Button>
 
-              <Button variante="contorno" onClick={reiniciar}>
-                <RotateCcw size={15} strokeWidth={2.3} aria-hidden="true" />
-                Iniciar nuevo cálculo
-              </Button>
+              <div className="cal-acciones-grupo">
+                <Link className="cal-enlace-historial" to="/calculos?tipo=historial">
+                  <History size={15} strokeWidth={2.3} aria-hidden="true" />
+                  Ver historial de cálculos
+                </Link>
+                <Button variante="contorno" onClick={reiniciar}>
+                  <RotateCcw size={15} strokeWidth={2.3} aria-hidden="true" />
+                  Iniciar nuevo cálculo
+                </Button>
+              </div>
             </div>
           </div>
         ) : null}

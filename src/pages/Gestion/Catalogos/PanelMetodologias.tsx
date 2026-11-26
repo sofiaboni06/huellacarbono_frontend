@@ -35,6 +35,8 @@ const VERSION_VACIA: VersionFormulario = {
   fechaInicioVigencia: '',
   fechaFinVigencia: '',
   estado: 'activo',
+  referenciaDocumental: '',
+  requisitosCalculoProducto: 'PENDIENTE_DEFINICION',
 }
 
 export default function PanelMetodologias() {
@@ -131,6 +133,8 @@ export default function PanelMetodologias() {
             fechaInicioVigencia: version.fechaInicioVigencia,
             fechaFinVigencia: version.fechaFinVigencia,
             estado: version.estado,
+            referenciaDocumental: version.referenciaDocumental,
+            requisitosCalculoProducto: version.requisitosCalculoProducto,
           }
         : VERSION_VACIA,
     )
@@ -358,6 +362,24 @@ export default function PanelMetodologias() {
           <div className="vst-campo">
             <label htmlFor="ver-desc">Descripción</label>
             <textarea id="ver-desc" className="vst-input" rows={3} value={versionDatos.descripcion} onChange={(evento) => setVersionDatos((previo) => ({ ...previo, descripcion: evento.target.value }))} />
+          </div>
+          {seleccion?.tipo === 'CARBONO' ? (
+          <div className="vst-campo">
+            <label htmlFor="ver-requisito-producto">Requisitos de cálculo por producto</label>
+            <select id="ver-requisito-producto" className="vst-select" value={versionDatos.requisitosCalculoProducto} onChange={(evento) => setVersionDatos((previo) => ({ ...previo, requisitosCalculoProducto: evento.target.value as VersionFormulario['requisitosCalculoProducto'] }))}>
+              <option value="PENDIENTE_DEFINICION">Pendiente de definir (solo emisiones totales)</option>
+              <option value="SIN_INTENSIDAD">Sin intensidad por producto</option>
+              <option value="INTENSIDAD_OPCIONAL">Intensidad opcional</option>
+              <option value="UNIDAD_FUNCIONAL_REQUERIDA">Unidad funcional obligatoria</option>
+              <option value="UNIDADES_PRODUCIDAS_REQUERIDAS">Unidades producidas obligatorias</option>
+              <option value="AMBOS_REQUERIDOS">Ambos campos obligatorios</option>
+            </select>
+            <small>Configura según la documentación de esta edición. Las versiones existentes quedan pendientes hasta que se verifiquen sus requisitos.</small>
+          </div>
+          ) : null}
+          <div className="vst-campo">
+            <label htmlFor="ver-ref">Referencia documental</label>
+            <textarea id="ver-ref" className="vst-input" rows={2} maxLength={2000} placeholder="Cita del documento oficial de esta edición (autor, título, edición, año, URL)" value={versionDatos.referenciaDocumental ?? ''} onChange={(evento) => setVersionDatos((previo) => ({ ...previo, referenciaDocumental: evento.target.value }))} />
           </div>
           {versionEdicion ? (
             <div className="vst-campo">

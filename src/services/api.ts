@@ -8,11 +8,23 @@ export class ErrorApi extends Error {
   status: number
   /** Mensajes por campo cuando el backend responde 422. */
   campos: Record<string, string>
+  /** Cuerpo JSON completo de la respuesta de error (p. ej. `code` y `diagnostico`). */
+  cuerpo: unknown
+  /** Excepción de transporte original; se conserva para diagnóstico, no para la interfaz. */
+  causaTecnica: unknown
 
-  constructor(message: string, status: number, campos: Record<string, string> = {}) {
+  constructor(
+    message: string,
+    status: number,
+    campos: Record<string, string> = {},
+    cuerpo: unknown = null,
+    causaTecnica: unknown = null,
+  ) {
     super(message)
     this.status = status
     this.campos = campos
+    this.cuerpo = cuerpo
+    this.causaTecnica = causaTecnica
   }
 }
 
@@ -44,8 +56,8 @@ export async function api<T>(ruta: string, init: RequestInit = {}): Promise<T> {
   let respuesta: Response
   try {
     respuesta = await fetch(`${API_URL}/api/v1${ruta}`, { ...init, headers })
-  } catch {
-    throw new ErrorApi('No hay conexión con el servidor.', 0)
+  } catch (error) {
+    throw new ErrorApi('No fue posible comunicarse con el servicio.', 0, {}, null, error)
   }
 
   if (respuesta.status === 204) return undefined as T
@@ -60,7 +72,7 @@ export async function api<T>(ruta: string, init: RequestInit = {}): Promise<T> {
       }
     }
     const detalle = detalleError(cuerpo, respuesta.status)
-    throw new ErrorApi(detalle.mensaje, respuesta.status, detalle.campos)
+    throw new ErrorApi(detalle.mensaje, respuesta.status, detalle.campos, cuerpo)
   }
 
   return cuerpo

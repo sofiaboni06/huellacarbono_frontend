@@ -56,6 +56,14 @@ interface MetodologiaApi {
   versionesActivas: number
 }
 
+export type RequisitoCalculoProducto =
+  | 'PENDIENTE_DEFINICION'
+  | 'SIN_INTENSIDAD'
+  | 'INTENSIDAD_OPCIONAL'
+  | 'UNIDAD_FUNCIONAL_REQUERIDA'
+  | 'UNIDADES_PRODUCIDAS_REQUERIDAS'
+  | 'AMBOS_REQUERIDOS'
+
 export interface VersionMetodologia {
   id: string
   metodologiaId: string
@@ -64,6 +72,9 @@ export interface VersionMetodologia {
   fechaInicioVigencia: string
   fechaFinVigencia: string
   estado: EstadoCatalogo
+  /** Cita del documento oficial de la versión (backend: referencia_documental). */
+  referenciaDocumental: string
+  requisitosCalculoProducto: RequisitoCalculoProducto
 }
 
 export interface VersionFormulario {
@@ -72,6 +83,9 @@ export interface VersionFormulario {
   fechaInicioVigencia: string
   fechaFinVigencia: string
   estado: EstadoCatalogo
+  /** Opcional: si se omite, el backend conserva el valor guardado. */
+  referenciaDocumental?: string
+  requisitosCalculoProducto: RequisitoCalculoProducto
 }
 
 interface VersionApi {
@@ -82,6 +96,14 @@ interface VersionApi {
   fechaInicioVigencia: string
   fechaFinVigencia: string | null
   active: boolean
+  referenciaDocumental?: string | null
+  requisitosCalculoProducto?: RequisitoCalculoProducto
+}
+
+/** `undefined` deja el campo fuera del cuerpo; texto vacío lo borra (null). */
+function referenciaCuerpo(valor: string | undefined) {
+  if (valor === undefined) return undefined
+  return valor.trim() || null
 }
 
 export interface OpcionReferencia {
@@ -303,6 +325,8 @@ function aVersion(item: VersionApi): VersionMetodologia {
     fechaInicioVigencia: item.fechaInicioVigencia,
     fechaFinVigencia: item.fechaFinVigencia ?? '',
     estado: estadoDe(item.active),
+    referenciaDocumental: item.referenciaDocumental?.trim() ?? '',
+    requisitosCalculoProducto: item.requisitosCalculoProducto ?? 'PENDIENTE_DEFINICION',
   }
 }
 
@@ -321,6 +345,8 @@ export async function crearVersion(metodologiaId: string, datos: VersionFormular
       descripcion: datos.descripcion.trim() || null,
       fechaInicioVigencia: datos.fechaInicioVigencia,
       fechaFinVigencia: datos.fechaFinVigencia || null,
+      referenciaDocumental: referenciaCuerpo(datos.referenciaDocumental),
+      requisitosCalculoProducto: datos.requisitosCalculoProducto,
     }),
   })
   return aVersion(respuesta.data)
@@ -339,6 +365,8 @@ export async function actualizarVersion(
       fechaInicioVigencia: datos.fechaInicioVigencia,
       fechaFinVigencia: datos.fechaFinVigencia || null,
       active: datos.estado === 'activo',
+      referenciaDocumental: referenciaCuerpo(datos.referenciaDocumental),
+      requisitosCalculoProducto: datos.requisitosCalculoProducto,
     }),
   })
   return aVersion(respuesta.data)
