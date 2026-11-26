@@ -4,7 +4,7 @@ import Button from '../../../components/common/Button'
 import waterdrop from '../../../assets/images/waterdrop.png'
 import { PERIODOS, SEDES } from '../../../data/demo'
 import { calcularHuella } from '../../../utils/calculationEngine'
-import type { TipoHuella } from '../../../utils/calculationEngine'
+import type { TipoHuellaDemostracion } from '../../../utils/calculationEngine'
 import './AsistenteCalculo.css'
 
 type Paso = 1 | 2 | 3
@@ -20,8 +20,12 @@ interface GrupoConsumo {
   campos: CampoConsumo[]
 }
 
-/** Campos de consumo reales y distintos para cada tipo de huella. */
-const GRUPOS: Record<TipoHuella, GrupoConsumo[]> = {
+/**
+ * Campos de consumo del asistente de demostración.
+ * Solo existe la huella hídrica: la huella de carbono se calcula
+ * exclusivamente con el backend desde `CalculoCarbono`.
+ */
+const GRUPOS: Record<TipoHuellaDemostracion, GrupoConsumo[]> = {
   hidrica: [
     {
       titulo: 'Abastecimiento',
@@ -45,30 +49,6 @@ const GRUPOS: Record<TipoHuella, GrupoConsumo[]> = {
       ],
     },
   ],
-  carbono: [
-    {
-      titulo: 'Energía',
-      campos: [
-        { id: 'electricidad', etiqueta: 'Electricidad', unidad: 'kWh' },
-        { id: 'gas', etiqueta: 'Gas natural', unidad: 'm³' },
-      ],
-    },
-    {
-      titulo: 'Movilidad y transporte',
-      campos: [
-        { id: 'diesel', etiqueta: 'Combustible diésel', unidad: 'L' },
-        { id: 'gasolina', etiqueta: 'Combustible gasolina', unidad: 'L' },
-        { id: 'transporte', etiqueta: 'Transporte terrestre', unidad: 'km' },
-      ],
-    },
-    {
-      titulo: 'Residuos',
-      campos: [
-        { id: 'solidos', etiqueta: 'Residuos sólidos', unidad: 'kg' },
-        { id: 'organicos', etiqueta: 'Residuos orgánicos', unidad: 'kg' },
-      ],
-    },
-  ],
 }
 
 const ORGANIZACIONES = [
@@ -85,10 +65,10 @@ const PASOS: { n: Paso; titulo: string }[] = [
 ]
 
 interface AsistenteCalculoProps {
-  tipo: TipoHuella
+  tipo: TipoHuellaDemostracion
 }
 
-/** Asistente de tres pasos para registrar y calcular una huella. */
+/** Asistente de tres pasos (demostración) para registrar y calcular la huella hídrica. */
 export default function AsistenteCalculo({ tipo }: AsistenteCalculoProps) {
   const [paso, setPaso] = useState<Paso>(1)
   const [organizacion, setOrganizacion] = useState('')
@@ -98,7 +78,7 @@ export default function AsistenteCalculo({ tipo }: AsistenteCalculoProps) {
   const [errores, setErrores] = useState<Record<string, string>>({})
 
   const grupos = GRUPOS[tipo]
-  const titulo = tipo === 'hidrica' ? 'Huella Hídrica' : 'Huella de Carbono'
+  const titulo = 'Huella Hídrica'
 
   // Al cambiar de tipo de huella se reinicia por completo el asistente.
   useEffect(() => {

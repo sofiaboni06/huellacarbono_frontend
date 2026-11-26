@@ -4,9 +4,11 @@ import PlantillaVista from '../../components/layout/PlantillaVista'
 import AsistenteCalculo from './components/AsistenteCalculo'
 import CalculoCarbono from './components/CalculoCarbono'
 import HistorialCalculos from './components/HistorialCalculos'
+import { resolverVistaCalculos } from './vistaCalculos'
+import type { VistaCalculos } from './vistaCalculos'
 import './Calculos.css'
 
-export type VistaCalculos = 'carbono' | 'hidrica' | 'historial'
+export type { VistaCalculos }
 
 /** Encabezado propio de cada sección del módulo de cálculos. */
 const ENCABEZADOS: Record<VistaCalculos, { titulo: string; subtitulo: string }> = {
@@ -30,9 +32,7 @@ const ENCABEZADOS: Record<VistaCalculos, { titulo: string; subtitulo: string }> 
  */
 export default function Calculos() {
   const [parametros] = useSearchParams()
-  const tipo = parametros.get('tipo')
-  const vista: VistaCalculos =
-    tipo === 'hidrica' || tipo === 'carbono' || tipo === 'historial' ? tipo : 'carbono'
+  const vista = resolverVistaCalculos(parametros.get('tipo'))
 
   const encabezado = ENCABEZADOS[vista]
 

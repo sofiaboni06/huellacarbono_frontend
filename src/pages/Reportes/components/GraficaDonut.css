@@ -67,12 +67,12 @@
   align-items: center;
   gap: 11px;
   padding: 10px 13px;
-  border: 1px solid transparent;
+  border: 1px solid rgba(255, 255, 255, 0.85);
   border-radius: 12px;
-  background: rgba(25, 43, 66, 0.6);
+  background: rgba(255, 255, 255, 0.66);
   font-family: var(--hv-font);
   font-size: 13.5px;
-  color: var(--hv-text);
+  color: #1c3d4f;
   text-align: left;
   cursor: pointer;
   transition:
@@ -91,9 +91,9 @@
 }
 
 .gd-leyenda-item.activo {
-  background: #e7f1ff;
-  border-color: rgba(22, 119, 242, 0.35);
-  box-shadow: var(--hv-shadow-sm);
+  background: rgba(226, 247, 236, 0.92);
+  border-color: rgba(34, 181, 115, 0.4);
+  box-shadow: 0 6px 16px rgba(24, 68, 52, 0.08);
 }
 
 .gd-leyenda-muestra {
@@ -110,5 +110,5 @@
 
 .gd-leyenda-valor {
   font-weight: 700;
-  color: var(--hv-ink);
+  color: #0f7a48;
 }

@@ -432,38 +432,97 @@ html:has(.ld) {
   margin-top: -96px;
 }
 
+/* Contenedor de las tarjetas: solo distribuye, ya no dibuja una tarjeta común */
 .ld-stats__tarjeta {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  margin: 0;
-  padding: 22px 6px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0 0 18px;
+  padding: 0;
   list-style: none;
-  border: 1px solid rgba(255, 255, 255, 0.95);
-  border-radius: 24px;
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(18px) saturate(1.5);
-  -webkit-backdrop-filter: blur(18px) saturate(1.5);
-  box-shadow: var(--sombra), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  border: 0;
+  background: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
+
+/* --------------------- Panel de cristal (individual) ------------------- */
 
 .ld-indicador {
+  position: relative;
+  z-index: 0;
   display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 6px 22px;
+  flex-direction: column;
+  gap: 18px;
+  min-height: 208px;
+  padding: 24px 22px 22px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  border-radius: 26px;
+  background:
+    linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.82) 0%,
+      rgba(255, 255, 255, 0.44) 50%,
+      rgba(255, 255, 255, 0.66) 100%
+    );
+  backdrop-filter: blur(20px) saturate(1.6);
+  -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  box-shadow:
+    0 24px 48px -26px rgba(9, 40, 65, 0.42),
+    0 4px 14px rgba(9, 40, 65, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+  transition:
+    transform 0.45s var(--curva),
+    box-shadow 0.45s var(--curva),
+    background 0.45s var(--curva),
+    border-color 0.45s var(--curva);
 }
 
-.ld-indicador + .ld-indicador {
-  border-left: 1px solid rgba(138, 160, 180, 0.28);
+/* Brillo interior suave, propio del tono de cada indicador */
+.ld-indicador::before {
+  content: '';
+  position: absolute;
+  top: -54px;
+  right: -46px;
+  width: 174px;
+  height: 174px;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--ld-acento, rgba(17, 170, 96, 0.16)), transparent 72%);
+  pointer-events: none;
+  transition: transform 0.45s var(--curva);
+}
+
+.ld-indicador > div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1 1 auto;
+  gap: 5px;
+  min-width: 0;
+  width: 100%;
 }
 
 .ld-indicador__icono {
-  width: 54px;
-  height: 54px;
+  position: relative;
+  width: 56px;
+  height: 56px;
   display: grid;
   flex: none;
+  align-self: flex-start;
   place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.78);
   border-radius: 50%;
+  background: var(--ld-icono-fondo, linear-gradient(145deg, rgba(17, 170, 96, 0.3), rgba(17, 170, 96, 0.1)));
+  box-shadow:
+    0 12px 24px -14px rgba(9, 40, 65, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  transition:
+    transform 0.45s var(--curva),
+    box-shadow 0.45s var(--curva);
 }
 
 .ld-indicador strong,
@@ -473,51 +532,107 @@ html:has(.ld) {
 
 .ld-indicador strong {
   color: var(--noche);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 800;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
 }
 
 .ld-indicador__detalle {
-  margin-top: 2px;
+  margin-top: 4px;
+  margin-bottom: 12px;
   color: var(--texto-suave);
   font-size: 13.5px;
   font-weight: 600;
+  line-height: 1.45;
 }
 
 .ld-indicador__variacion {
   display: inline-flex !important;
   align-items: center;
-  gap: 5px;
-  margin-top: 5px;
+  gap: 6px;
+  margin-top: auto;
+  padding: 7px 13px;
+  border: 1px solid rgba(17, 170, 96, 0.2);
+  border-radius: 999px;
+  background: rgba(17, 170, 96, 0.1);
   color: var(--verde);
   font-size: 12.5px;
   font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+/* --------------------------------- Tonos ------------------------------- */
+
+.ld-indicador--verde {
+  --ld-acento: rgba(17, 170, 96, 0.18);
+  --ld-icono-fondo: linear-gradient(145deg, rgba(17, 170, 96, 0.3), rgba(17, 170, 96, 0.1));
 }
 
 .ld-indicador--verde .ld-indicador__icono {
   color: var(--verde);
-  background: rgba(17, 170, 96, 0.12);
+}
+
+.ld-indicador--agua {
+  --ld-acento: rgba(34, 169, 235, 0.18);
+  --ld-icono-fondo: linear-gradient(145deg, rgba(34, 169, 235, 0.3), rgba(34, 169, 235, 0.1));
 }
 
 .ld-indicador--agua .ld-indicador__icono {
   color: var(--agua);
-  background: rgba(34, 169, 235, 0.13);
+}
+
+.ld-indicador--naturaleza {
+  --ld-acento: rgba(164, 207, 64, 0.24);
+  --ld-icono-fondo: linear-gradient(145deg, rgba(164, 207, 64, 0.36), rgba(164, 207, 64, 0.12));
 }
 
 .ld-indicador--naturaleza .ld-indicador__icono {
   color: var(--naturaleza);
-  background: rgba(164, 207, 64, 0.22);
+}
+
+.ld-indicador--marino {
+  --ld-acento: rgba(34, 169, 235, 0.16);
+  --ld-icono-fondo: linear-gradient(145deg, rgba(173, 216, 234, 0.6), rgba(215, 235, 251, 0.32));
 }
 
 .ld-indicador--marino .ld-indicador__icono {
   color: var(--oscuro);
-  background: var(--fondo-tarjeta);
 }
 
 .ld-indicador--marino .ld-indicador__variacion {
   color: var(--verde-profundo);
+}
+
+/* ------------------------------ Interacción ---------------------------- */
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .ld-indicador:hover {
+    transform: translateY(-6px);
+    border-color: rgba(255, 255, 255, 0.95);
+    background: linear-gradient(
+      155deg,
+      rgba(255, 255, 255, 0.94) 0%,
+      rgba(255, 255, 255, 0.6) 50%,
+      rgba(255, 255, 255, 0.8) 100%
+    );
+    box-shadow:
+      0 36px 62px -30px rgba(9, 40, 65, 0.5),
+      0 10px 24px rgba(9, 40, 65, 0.07),
+      inset 0 1px 0 rgba(255, 255, 255, 1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+  }
+
+  .ld-indicador:hover::before {
+    transform: scale(1.18);
+  }
+
+  .ld-indicador:hover .ld-indicador__icono {
+    transform: translateY(-2px);
+    box-shadow:
+      0 18px 30px -14px rgba(9, 40, 65, 0.55),
+      inset 0 1px 0 rgba(255, 255, 255, 1);
+  }
 }
 
 .ld-stats__nota {
@@ -1267,12 +1382,24 @@ html:has(.ld) {
     gap: 24px;
   }
 
+  .ld-stats__tarjeta {
+    gap: 14px;
+  }
+
   .ld-indicador {
-    padding: 6px 14px;
+    gap: 16px;
+    min-height: 196px;
+    padding: 22px 18px 20px;
+    border-radius: 22px;
   }
 
   .ld-indicador strong {
-    font-size: 19px;
+    font-size: 21px;
+  }
+
+  .ld-indicador__icono {
+    width: 52px;
+    height: 52px;
   }
 
   .ld-producto__interno {
@@ -1382,13 +1509,23 @@ html:has(.ld) {
   }
 
   .ld-stats__tarjeta {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px 0;
-    padding: 16px 6px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
   }
 
-  .ld-indicador:nth-child(3) {
-    border-left: 0;
+  .ld-indicador {
+    min-height: 196px;
+    padding: 24px 24px 22px;
+    border-radius: 26px;
+  }
+
+  .ld-indicador strong {
+    font-size: 25px;
+  }
+
+  .ld-indicador__icono {
+    width: 56px;
+    height: 56px;
   }
 
   .ld-producto {
@@ -1492,17 +1629,18 @@ html:has(.ld) {
 
   .ld-stats__tarjeta {
     grid-template-columns: 1fr;
-    gap: 0;
-    padding: 8px 4px;
+    gap: 14px;
+    margin-bottom: 14px;
   }
 
   .ld-indicador {
-    padding: 14px 12px;
+    min-height: 0;
+    padding: 22px 20px 20px;
+    border-radius: 24px;
   }
 
-  .ld-indicador + .ld-indicador {
-    border-left: 0;
-    border-top: 1px solid rgba(138, 160, 180, 0.24);
+  .ld-indicador > div {
+    gap: 6px;
   }
 
   .ld-mock {

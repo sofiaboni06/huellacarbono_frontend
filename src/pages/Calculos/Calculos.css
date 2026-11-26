@@ -782,3 +782,277 @@ body:has(.hv-vista.cal) {
     gap: 6px;
   }
 }
+
+/* ===== Registro de datos de actividad: alcance, fuente y parámetros ===== */
+.cal-alcances {
+  margin: 0 0 18px;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+}
+
+.cal-alcances legend,
+.cal-parametros legend {
+  margin-bottom: 8px;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #12324a;
+}
+
+.cal-alcances-opciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.cal-alcance {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid rgba(22, 48, 68, 0.14);
+  border-radius: 14px;
+  background: #ffffff;
+  color: #163044;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cal-alcance strong {
+  font-size: 14px;
+}
+
+.cal-alcance span {
+  font-size: 12px;
+  color: #5c7384;
+}
+
+.cal-alcance:hover:not(:disabled) {
+  border-color: rgba(31, 163, 104, 0.5);
+}
+
+.cal-alcance:focus-visible {
+  outline: 2px solid #1fa368;
+  outline-offset: 2px;
+}
+
+.cal-alcance.activo {
+  border-color: #1fa368;
+  background: rgba(34, 181, 115, 0.1);
+  box-shadow: 0 0 0 1px #1fa368 inset;
+}
+
+.cal-alcance:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cal-ficha-fuente {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.cal-ficha-fuente > strong {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.cal-ficha-fuente dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px 18px;
+  margin: 0;
+}
+
+.cal-ficha-fuente dt {
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #5c7384;
+}
+
+.cal-ficha-fuente dd {
+  margin: 2px 0 0;
+  font-size: 13px;
+}
+
+.cal-papeles-form .cal-carbono-campos + .cal-aviso-caja,
+.cal-papeles-form .cal-aviso-caja + .cal-carbono-campos,
+.cal-papeles-form .cal-aviso-caja + .cal-ayuda + .cal-carbono-campos,
+.cal-papeles-form .cal-parametros {
+  margin-top: 16px;
+}
+
+.cal-parametros {
+  margin: 0;
+  padding: 14px 16px 16px;
+  border: 1px solid rgba(22, 48, 68, 0.12);
+  border-radius: 14px;
+  background: #f6faf8;
+  min-width: 0;
+}
+
+.cal-parametros .cal-ayuda {
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.cal-carbono-campos--cuatro {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.cal-celda-detalle {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  color: #5c7384;
+}
+
+.cal-celda-detalle--alerta {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.cal-omitidos .cal-estado {
+  margin-right: 2px;
+}
+
+/* ===== Desglose del resultado ===== */
+.cal-desgloses {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+
+.cal-desglose {
+  padding: 14px 16px;
+  border: 1px solid rgba(22, 48, 68, 0.1);
+  border-radius: 14px;
+  background: #ffffff;
+  min-width: 0;
+}
+
+.cal-desglose ul {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cal-desglose-fila {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: #163044;
+}
+
+.cal-desglose-fila span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.cal-desglose-fila strong {
+  flex-shrink: 0;
+  font-size: 12.5px;
+}
+
+.cal-desglose-barra {
+  display: block;
+  height: 6px;
+  margin-top: 5px;
+  border-radius: 999px;
+  background: rgba(22, 48, 68, 0.08);
+  overflow: hidden;
+}
+
+.cal-desglose-barra span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #1fa368;
+}
+
+.cal-enlace-historial {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #0f6b45;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cal-enlace-historial:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .cal-carbono-campos--cuatro {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .cal-carbono-campos--cuatro,
+  .cal-ficha-fuente dl {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== Periodos de medición (paso 1) ===== */
+.cal-periodos {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid rgba(22, 48, 68, 0.12);
+  border-radius: 14px;
+  background: #f6faf8;
+}
+
+.cal-periodos .cal-bloque-cabecera h3 {
+  font-size: 1rem;
+}
+
+.cal-periodos-form {
+  margin-top: 16px;
+}
+
+.cal-periodos-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+/* Consolidación de la huella (A1, A2, A3 y total) */
+.cal-consolidacion {
+  display: grid;
+  gap: 14px;
+  margin: 16px 0;
+}
+
+.cal-indicadores--alcances {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+}
+
+.cal-indicador--total {
+  border-width: 2px;
+}
+
+.hv-vista.cal .cal-indicador--total {
+  border-color: #15804b;
+  background: rgba(34, 181, 115, 0.08);
+}

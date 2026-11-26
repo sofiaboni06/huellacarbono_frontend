@@ -11,18 +11,6 @@ import { usePerfil } from '../../../context/PerfilContext'
 import { Camera, CheckCircle2, Building2, MapPin } from 'lucide-react'
 import '../WelcomeOverlay.css'
 
-const MOTES = [
-  { x: '6%', s: 5, d: '12s', delay: '0s' },
-  { x: '16%', s: 8, d: '15s', delay: '-4s' },
-  { x: '27%', s: 4, d: '11s', delay: '-8s' },
-  { x: '39%', s: 7, d: '14s', delay: '-2s' },
-  { x: '52%', s: 5, d: '13s', delay: '-9s' },
-  { x: '63%', s: 9, d: '16s', delay: '-5s' },
-  { x: '74%', s: 4, d: '12s', delay: '-11s' },
-  { x: '85%', s: 7, d: '15s', delay: '-1s' },
-  { x: '94%', s: 5, d: '11s', delay: '-7s' },
-]
-
 const delay = (ms: number) => ({ ['--wl-delay' as string]: `${ms}ms` }) as CSSProperties
 
 function AnimatedWords({ text, offset, className }: { text: string; offset: number; className?: string }) {
@@ -75,7 +63,6 @@ export default function WelcomeOverlay({ onClosing }: { onClosing?: () => void }
 
   const [closing, setClosing] = useState(false)
   const [busy] = useState(false)
-  const [error] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
   const [greeting] = useState(() => greetingFor(new Date()))
 

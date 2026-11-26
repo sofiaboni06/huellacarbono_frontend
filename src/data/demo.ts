@@ -147,46 +147,6 @@ export const GUIAS_USO = [
   },
 ]
 
-export interface HistorialItem {
-  id: string
-  tipo: string
-  periodo: string
-  sede: string
-  resultado: string
-  fecha: string
-  estado: string
-}
-
-export const HISTORIAL_DEMO: HistorialItem[] = [
-  { id: 'h1', tipo: 'Huella Hídrica', periodo: '2026-I', sede: 'Sede Principal', resultado: '1.245 m³', fecha: '06/11/2026', estado: 'Completado' },
-  { id: 'h2', tipo: 'Huella de Carbono', periodo: '2026-I', sede: 'Sede Principal', resultado: '892 tCO₂e', fecha: '05/11/2026', estado: 'Completado' },
-  { id: 'h3', tipo: 'Huella Hídrica', periodo: '2025-II', sede: 'Sede Bogotá', resultado: '1.108 m³', fecha: '18/10/2026', estado: 'Completado' },
-  { id: 'h4', tipo: 'Huella de Carbono', periodo: '2025-II', sede: 'Sede Regional Costa', resultado: '945 tCO₂e', fecha: '12/10/2026', estado: 'En revisión' },
-  { id: 'h5', tipo: 'Huella Hídrica', periodo: '2025-I', sede: 'Sede Principal', resultado: '1.032 m³', fecha: '27/09/2026', estado: 'Completado' },
-]
-
-/** Series mensuales de demostración para las gráficas (Ene - Dic). */
-export const EVOLUCION_12_MESES = [
-  { mes: 'Ene', hidrica: 720, carbono: 430 },
-  { mes: 'Feb', hidrica: 1080, carbono: 640 },
-  { mes: 'Mar', hidrica: 860, carbono: 520 },
-  { mes: 'Abr', hidrica: 1310, carbono: 760 },
-  { mes: 'May', hidrica: 1140, carbono: 810 },
-  { mes: 'Jun', hidrica: 1260, carbono: 700 },
-  { mes: 'Jul', hidrica: 980, carbono: 560 },
-  { mes: 'Ago', hidrica: 1180, carbono: 740 },
-  { mes: 'Sep', hidrica: 1090, carbono: 690 },
-  { mes: 'Oct', hidrica: 1400, carbono: 930 },
-  { mes: 'Nov', hidrica: 1150, carbono: 780 },
-  { mes: 'Dic', hidrica: 1330, carbono: 860 },
-]
-
-export const DISTRIBUCION_FUENTES = [
-  { nombre: 'Energía', valor: 68, color: '#3b82f6' },
-  { nombre: 'Transporte', valor: 20, color: '#22c55e' },
-  { nombre: 'Procesos', valor: 12, color: '#a3e635' },
-]
-
 export interface PerfilUsuario {
   nombre: string
   cargo: string
