@@ -1,5 +1,5 @@
 import { Leaf, Play } from 'lucide-react'
-import heroTierra from '../../../assets/images/hero-tierra-fondo-hd.jpg'
+import heroTierra from '../../../assets/images/hero-tierra-fondo-hd.jfif'
 import BotonLanding from './BotonLanding'
 
 export default function HeroLanding() {

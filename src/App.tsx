@@ -28,6 +28,7 @@ import Centros from './pages/Gestion/Centros/Centros'
 import Organizaciones from './pages/Gestion/Organizaciones/Organizaciones'
 import OrganizacionDetalle from './pages/Gestion/Organizaciones/OrganizacionDetalle'
 import ProcesosSede from './pages/Gestion/Organizaciones/ProcesosSede'
+import Equipo from './pages/Equipo/Equipo'
 import './pages/Inicio/DashboardVerde.css'
 
 /**
@@ -115,6 +116,7 @@ function App() {
                 </Route>
 
                 <Route path="/" element={<Landing />} />
+                <Route path="/equipo" element={<Equipo />} />
                 <Route path="*" element={<Navigate to="/login" replace />} />
               </Routes>
             </AvisoProvider>
