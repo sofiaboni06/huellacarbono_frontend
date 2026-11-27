@@ -491,6 +491,8 @@ export interface FactorDisponible {
   id: string
   unidadEntradaId: string
   unidadEntradaSimbolo: string
+  unidadSalidaSimbolo: string
+  valor: string
   gas: string
   aprobado: boolean
   /** Combustible, material o proceso que distingue factores de una misma fuente. */
@@ -520,6 +522,8 @@ export async function factoresDisponibles(
       id: number
       unidadEntradaId: number
       unidadEntradaSimbolo: string | null
+      unidadSalidaSimbolo?: string | null
+      valor?: string | null
       gas?: string | null
       estadoAprobacion?: string | null
       active: boolean
@@ -536,6 +540,8 @@ export async function factoresDisponibles(
       id: String(item.id),
       unidadEntradaId: String(item.unidadEntradaId),
       unidadEntradaSimbolo: item.unidadEntradaSimbolo ?? '',
+      unidadSalidaSimbolo: item.unidadSalidaSimbolo ?? '',
+      valor: item.valor ?? '',
       gas: item.gas ?? '',
       aprobado: item.estadoAprobacion === 'APROBADO',
       variante: item.variante ?? '',

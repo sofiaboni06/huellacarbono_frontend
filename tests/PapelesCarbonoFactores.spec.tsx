@@ -65,6 +65,8 @@ const UPME_2024: FactorDisponible = {
   id: '23',
   unidadEntradaId: '252',
   unidadEntradaSimbolo: 'kWh',
+  unidadSalidaSimbolo: 't',
+  valor: '0.000220000000',
   gas: 'CO2E',
   aprobado: true,
   variante: 'ELECTRICIDAD_SIN',
@@ -132,17 +134,14 @@ describe('Formulario de datos de actividad: factores por año de inventario', ()
     mocks.consultarCoberturaFactores.mockResolvedValue(cobertura({}))
     await elegirB101('2026-02-11', '2026-08-11')
 
-    const aviso = await screen.findByText(/pero ninguno vigente para el periodo completo 2026-02-11 a 2026-08-11/)
-    expect(aviso.textContent).toMatch(/Hay 1 factor\(es\) aprobado\(s\)/)
-    expect(aviso.textContent).toMatch(/2024-01-01–2024-12-31/)
-    expect(aviso.textContent).toMatch(/No se usa un factor de otro año/)
+    const aviso = await screen.findByText(/No hay factor para este periodo/)
+    expect(aviso.textContent).toMatch(/último oficial de 2024/)
     expect(aviso.closest('[data-caso-factores]')?.getAttribute('data-caso-factores')).toBe(
       'APROBADO_FUERA_DE_VIGENCIA',
     )
+    expect(screen.getByRole('radio', { name: /Usar este valor en este registro/ })).toBeTruthy()
     expect(screen.queryByText(/ninguno está aprobado/)).toBeNull()
-    expect(
-      await screen.findByText(/Hay factores aprobados registrados, pero sus vigencias no cubren/),
-    ).toBeTruthy()
+    expect(screen.queryByText(/Hay factores aprobados registrados, pero sus vigencias no cubren/)).toBeNull()
     // La cobertura se consulta con la organización (región y sector como el motor).
     expect(mocks.consultarCoberturaFactores).toHaveBeenCalledWith('21', '2026-02-11', '2026-08-11', '2')
 
@@ -176,7 +175,10 @@ describe('Formulario de datos de actividad: factores por año de inventario', ()
     mocks.factoresDisponibles.mockResolvedValue([UPME_2024])
     mocks.consultarCoberturaFactores.mockResolvedValue(cobertura({}))
     await elegirB101('2025-01-01', '2025-12-31')
-    expect(await screen.findByText(/pero ninguno vigente para el periodo completo 2025-01-01 a 2025-12-31/)).toBeTruthy()
+    expect(await screen.findByText(/último oficial de 2024/)).toBeTruthy()
+    expect(document.querySelector('[data-caso-factores]')?.getAttribute('data-caso-factores')).toBe(
+      'APROBADO_FUERA_DE_VIGENCIA',
+    )
   })
 
   it('pendiente, rechazado y sin factor se distinguen', async () => {

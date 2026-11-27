@@ -76,6 +76,30 @@ const PARAMETROS_VACIOS = {
 
 type Formulario = typeof VACIO
 type Parametros = typeof PARAMETROS_VACIOS
+type DecisionFactor = '' | 'USAR_ULTIMO' | 'VALOR_PROPIO'
+
+function textoValorFactor(valor: string) {
+  if (!valor.trim()) return ''
+  const [entero, fraccion = ''] = valor.trim().split('.')
+  const limpia = fraccion.replace(/0+$/, '')
+  return limpia ? `${entero}.${limpia}` : entero
+}
+
+function factorMasReciente(factores: FactorDisponible[]) {
+  if (!factores.length) return null
+  const ordenados = [...factores].sort((a, b) => {
+    const anio = (b.anioAplicacion ?? 0) - (a.anioAplicacion ?? 0)
+    if (anio !== 0) return anio
+    return b.fechaInicioVigencia.localeCompare(a.fechaInicioVigencia)
+  })
+  const cabeza = ordenados[0]
+  const delAnio = ordenados.filter(
+    (item) => item.anioAplicacion === cabeza.anioAplicacion && item.variante === cabeza.variante,
+  )
+  return delAnio.find((item) => item.gas === 'CO2E')
+    ?? delAnio.find((item) => item.gas === 'CO2')
+    ?? cabeza
+}
 
 /** Formatos exactos que valida el backend (dato_actividad_carbono validator). */
 const RE_CANTIDAD = /^(?:0|[1-9]\d{0,15})(?:\.\d{1,8})?$/
@@ -176,6 +200,8 @@ export default function PapelesCarbono({
   const [papeles, setPapeles] = useState<PapelCarbono[]>([])
   const [formulario, setFormulario] = useState<Formulario>(VACIO)
   const [parametros, setParametros] = useState<Parametros>(PARAMETROS_VACIOS)
+  const [decisionFactor, setDecisionFactor] = useState<DecisionFactor>('')
+  const [valorFactorPropio, setValorFactorPropio] = useState('')
   const [errorGuardar, setErrorGuardar] = useState('')
   const [guardando, setGuardando] = useState(false)
   const [cargandoLista, setCargandoLista] = useState(true)
@@ -358,6 +384,24 @@ export default function PapelesCarbono({
             (!opcionProceso || item.variante.startsWith(`${opcionProceso}_`)),
         )
       : null
+  const factorUltimo =
+    clasificacion?.caso === 'APROBADO_FUERA_DE_VIGENCIA'
+      ? factorMasReciente(clasificacion.aprobadosFueraDeVigencia)
+      : null
+  const gasesDelUltimoAnio = factorUltimo
+    ? [
+        ...new Set(
+          (clasificacion?.aprobadosFueraDeVigencia ?? [])
+            .filter(
+              (item) =>
+                item.anioAplicacion === factorUltimo.anioAplicacion &&
+                item.variante === factorUltimo.variante,
+            )
+            .map((item) => item.gas)
+            .filter(Boolean),
+        ),
+      ]
+    : []
   // Solo los aprobados Y vigentes orientan las unidades; guardar no depende de ellos.
   const factoresAprobados = clasificacion?.aprobadosVigentes ?? []
   // Unidades de factores con vigencia compatible con la fecha o periodo del dato.
@@ -419,6 +463,8 @@ export default function PapelesCarbono({
     })
     if (campo === 'fuenteId') {
       setFactores(valor && versionId ? { tipo: 'cargando' } : { tipo: 'sin-version' })
+      setDecisionFactor('')
+      setValorFactorPropio('')
     }
     if (['alcanceId', 'actividadEmisionId', 'subcategoriaId', 'fuenteId'].includes(campo)) {
       const sugerido =
@@ -542,6 +588,11 @@ export default function PapelesCarbono({
         return 'Indica la pureza del HNO₃ como fracción mayor que 0 y hasta 1.'
       }
     }
+    if (decisionFactor === 'VALOR_PROPIO') {
+      if (!RE_PARAMETRO.test(valorFactorPropio.trim()) || !/[1-9]/.test(valorFactorPropio)) {
+        return 'El valor propio del factor debe ser un decimal mayor que cero, con la misma unidad del factor mostrado.'
+      }
+    }
     return ''
   }
 
@@ -569,6 +620,11 @@ export default function PapelesCarbono({
       } else if (typeof valor === 'string' && valor.trim()) {
         salida[campo.campo] = valor.trim()
       }
+    }
+    if (factorUltimo && decisionFactor) {
+      salida.decisionFactor = decisionFactor
+      salida.factorReferenciaId = Number(factorUltimo.id)
+      if (decisionFactor === 'VALOR_PROPIO') salida.valorFactorPropio = valorFactorPropio.trim()
     }
     if (seleccion && parametros.combustible) {
       salida.combustible = parametros.combustible
@@ -675,6 +731,67 @@ export default function PapelesCarbono({
     }
   }
 
+  const codigosConDatosExtra = new Set(['A3-05', 'A3-11', 'A3-06', 'A3-14', 'A3-15', 'A5-04', 'A3-13'])
+  const pideDatosExtra = Boolean(
+    fuente &&
+      (campos.length ||
+        seleccion ||
+        porDistancia ||
+        (esCombustion && !porDistancia) ||
+        codigosConDatosExtra.has(fuente.codigo)),
+  )
+  const avisoFactores =
+    clasificacion && clasificacion.caso !== 'VIGENTE'
+      ? mensajeFactores(clasificacion, { versionNombre, referencia: referenciaTexto })
+      : ''
+  let estadoLinea: { alerta: boolean; texto: string } | null = null
+  if (fuente) {
+    if (estadoDeFuente && !estadoDeFuente.calcula) {
+      estadoLinea = {
+        alerta: true,
+        texto: `${estadoDeFuente.texto}. Puedes guardarlo como evidencia; no entra en la suma.`,
+      }
+    } else if (!versionId) {
+      estadoLinea = {
+        alerta: false,
+        texto: 'Elige la metodología en el paso 1 para ver el factor de esta fuente.',
+      }
+    } else if (factores.tipo === 'cargando' || cargandoCobertura) {
+      estadoLinea = { alerta: false, texto: 'Revisando el factor de esta fuente…' }
+    } else if (factores.tipo === 'no-disponible') {
+      estadoLinea = {
+        alerta: false,
+        texto: 'No se pudieron consultar los factores con tu perfil. El cálculo los verificará al sumar.',
+      }
+    } else if (factorUltimo) {
+      const anio = factorUltimo.anioAplicacion ? ` de ${factorUltimo.anioAplicacion}` : ''
+      estadoLinea = {
+        alerta: true,
+        texto: `No hay factor para este periodo. Abajo puedes usar el último oficial${anio}, solo en este registro.`,
+      }
+    } else if (avisoFactores) {
+      estadoLinea = { alerta: true, texto: avisoFactores }
+    } else if (clasificacion?.caso === 'VIGENTE') {
+      const simbolos = [...new Set(factoresAprobados.map((item) => item.unidadEntradaSimbolo))].filter(Boolean)
+      const faltaCombustible = Boolean(seleccion && !parametros.combustible)
+      const unidadIncompatible = Boolean(coberturaFuente && !coberturaFuente.unidadesCompatibles)
+      estadoLinea = {
+        alerta: unidadIncompatible,
+        texto: faltaCombustible
+          ? `Elige el combustible para ver su factor oficial (${factoresAprobados.length} factores aprobados en ${versionNombre}).`
+          : unidadIncompatible
+            ? 'Hay factor vigente, pero no se confirmó una unidad compatible.'
+            : `${factoresAprobados.length} factor(es) aprobado(s) en ${versionNombre}${simbolos.length ? ` · unidad ${simbolos.join(', ')}` : ''}${magnitudes ? '.' : ' (no se pudo filtrar unidades por magnitud con tu perfil).'}`,
+      }
+    } else if (errorCobertura) {
+      estadoLinea = {
+        alerta: true,
+        texto:
+          'No fue posible consultar la cobertura preliminar. El cálculo seguirá verificando factores, aprobación, vigencia y dimensiones.',
+      }
+    }
+  }
+
   const activos = papeles.filter((item) => item.estadoRegistro !== 'RECHAZADO')
   const sinCatalogo = Boolean(opciones) && (opciones?.actividadesEmision.length ?? 0) === 0
   const listoBasico =
@@ -699,11 +816,8 @@ export default function PapelesCarbono({
     <div className="cal-papeles">
       <header className="cal-bloque-cabecera cal-bloque-cabecera--fila">
         <div>
-          <h2>Paso 2 · Datos de actividad del periodo</h2>
-          <p>
-            Elige el alcance, la actividad y la fuente de emisión. El formulario pide solo los datos que esa fuente
-            necesita y te muestra las unidades compatibles con el factor de la metodología elegida.
-          </p>
+          <h2>Datos de actividad</h2>
+          <p>Elige la fuente y registra la cantidad. Lo demás aparece solo si esa fuente lo pide.</p>
         </div>
         <span className="cal-historial-contador" aria-live="polite">
           {activos.length} {activos.length === 1 ? 'registro activo' : 'registros activos'}
@@ -825,25 +939,28 @@ export default function PapelesCarbono({
             </div>
           </div>
 
-          {/* Ficha metodológica de la fuente */}
-          {fuente ? (
-            <div
-              className={`cal-aviso-caja ${estadoDeFuente && !estadoDeFuente.calcula ? 'cal-aviso-caja--alerta' : ''}`}
+          {fuente && estadoLinea ? (
+            <p
+              className={`cal-estado-linea${estadoLinea.alerta ? ' cal-estado-linea--alerta' : ''}`}
+              role="status"
+              data-caso-factores={clasificacion && clasificacion.caso !== 'VIGENTE' ? clasificacion.caso : undefined}
             >
-              {estadoDeFuente && !estadoDeFuente.calcula ? (
-                <AlertTriangle size={18} aria-hidden="true" />
+              {estadoLinea.alerta ? (
+                <AlertTriangle size={16} aria-hidden="true" />
               ) : (
-                <Info size={17} aria-hidden="true" />
+                <CheckCircle2 size={16} aria-hidden="true" />
               )}
+              <span>{estadoLinea.texto}</span>
+            </p>
+          ) : null}
+
+          {fuente ? (
+            <details className="cal-pliegue">
+              <summary>
+                Ficha de {fuente.codigo}
+                {fuente.requisitos ? ` · ${fuente.requisitos.datos}` : ''}
+              </summary>
               <div className="cal-ficha-fuente">
-                <strong>
-                  {fuente.codigo} · {fuente.nombre}
-                  {estadoDeFuente ? (
-                    <span className={`cal-estado ${estadoDeFuente.calcula ? 'ok' : 'revision'}`}>
-                      {estadoDeFuente.texto}
-                    </span>
-                  ) : null}
-                </strong>
                 {fuente.requisitos ? (
                   <dl>
                     <div>
@@ -874,99 +991,68 @@ export default function PapelesCarbono({
                     El backend no informó la ficha metodológica de esta fuente; su viabilidad se confirmará al calcular.
                   </span>
                 )}
-                {estadoDeFuente && !estadoDeFuente.calcula ? (
-                  <span>
-                    Puedes guardar el dato como evidencia, pero <strong>no entrará en la suma</strong>:{' '}
-                    {fuente.requisitos?.estado === 'EJECUTABLE'
-                      ? 'el método está implementado, pero no hay un factor oficial aprobado para esta fuente.'
-                      : fuente.requisitos?.estado === 'NO_APLICA'
-                        ? 'esta fuente no genera emisiones de GEI contabilizables.'
-                        : 'la causa se indica arriba en «Pendiente».'}
-                  </span>
-                ) : null}
               </div>
-            </div>
+            </details>
           ) : null}
 
-          {fuente && estadoDeFuente?.calcula !== false ? (
-            cargandoCobertura ? (
-              <p className="cal-ayuda">Comprobando cobertura de factores para las fechas del registro…</p>
-            ) : errorCobertura ? (
-              <div className="cal-aviso-caja cal-aviso-caja--alerta" role="status">
-                <AlertTriangle size={18} aria-hidden="true" />
-                <span>No fue posible consultar la cobertura preliminar. El cálculo seguirá verificando factores, aprobación, vigencia y dimensiones.</span>
+          {factorUltimo ? (
+            <fieldset className="cal-parametros">
+              <legend>Último factor oficial</legend>
+              <p className="cal-ayuda">
+                <strong>
+                  {textoValorFactor(factorUltimo.valor) || 'sin valor informado'}{' '}
+                  {factorUltimo.unidadSalidaSimbolo || 'masa'} CO2e por {factorUltimo.unidadEntradaSimbolo || 'la unidad del factor'}
+                </strong>
+                {factorUltimo.anioAplicacion ? `, año ${factorUltimo.anioAplicacion}` : ''}{' '}
+                ({factorUltimo.fechaInicioVigencia}–{factorUltimo.fechaFinVigencia ?? 'sin fecha final'}).
+                {gasesDelUltimoAnio.length > 1 ? ` Incluye ${gasesDelUltimoAnio.join(', ')}.` : ''}
+              </p>
+              <div className="cal-decision-opciones">
+                <label htmlFor="decision-usar-ultimo">
+                  <input
+                    id="decision-usar-ultimo"
+                    type="radio"
+                    name="decision-factor"
+                    checked={decisionFactor === 'USAR_ULTIMO'}
+                    onChange={() => setDecisionFactor('USAR_ULTIMO')}
+                  />
+                  Usar este valor en este registro
+                </label>
+                <label htmlFor="decision-valor-propio">
+                  <input
+                    id="decision-valor-propio"
+                    type="radio"
+                    name="decision-factor"
+                    checked={decisionFactor === 'VALOR_PROPIO'}
+                    onChange={() => setDecisionFactor('VALOR_PROPIO')}
+                  />
+                  Escribir otro valor, solo para este registro
+                </label>
               </div>
-            ) : coberturaFuente ? (
-              <div className={`cal-aviso-caja ${coberturaFuente.aprobadosVigentes > 0 && coberturaFuente.unidadesCompatibles ? '' : 'cal-aviso-caja--alerta'}`} role="status">
-                {coberturaFuente.aprobadosVigentes > 0 && coberturaFuente.unidadesCompatibles ? (
-                  <CheckCircle2 size={17} aria-hidden="true" />
-                ) : (
-                  <AlertTriangle size={18} aria-hidden="true" />
-                )}
-                <span>
-                  {coberturaFuente.aprobadosVigentes > 0
-                    ? coberturaFuente.unidadesCompatibles
-                      ? `Hay ${coberturaFuente.aprobadosVigentes} factor(es) aprobado(s) con vigencia y magnitud compatibles con las fechas consultadas.`
-                      : 'Hay factores aprobados en las fechas consultadas, pero no se confirmó una unidad compatible.'
-                    : coberturaFuente.aprobadosNoVigentes > 0
-                      ? 'Hay factores aprobados registrados, pero sus vigencias no cubren las fechas consultadas.'
-                      : coberturaFuente.pendientes > 0
-                        ? 'Hay factores pendientes de revisión o aprobación para esta fuente.'
-                        : (coberturaFuente.rechazados ?? 0) > 0
-                          ? 'Los factores de esta fuente fueron rechazados; hace falta registrar y aprobar uno nuevo.'
-                          : coberturaFuente.factorDisponible
-                            ? 'Hay registros de factores, pero ninguno aprobado y vigente para estas fechas.'
-                            : 'No hay factores registrados para esta fuente y versión.'}{' '}
-                  La revisión es preliminar; combustible, variante, región, sector, unidad exacta y metodología se validan al calcular.
-                </span>
-              </div>
-            ) : null
-          ) : null}
-
-          {/* Disponibilidad de factores en la metodología elegida */}
-          {fuente && estadoDeFuente?.calcula !== false ? (
-            !versionId ? (
-              <div className="cal-aviso-caja">
-                <Info size={17} aria-hidden="true" />
-                <span>
-                  Elige la metodología en el paso 1 para ver las unidades compatibles con sus factores. Sin ella se
-                  muestran todas las unidades y el backend validará la compatibilidad al calcular.
-                </span>
-              </div>
-            ) : factores.tipo === 'cargando' ? (
-              <p className="cal-ayuda">Consultando factores de {versionNombre}…</p>
-            ) : factores.tipo === 'no-disponible' ? (
-              <div className="cal-aviso-caja">
-                <Info size={17} aria-hidden="true" />
-                <span>
-                  No fue posible consultar los factores de emisión con tu perfil. Se muestran todas las unidades; el
-                  backend confirmará la compatibilidad al calcular.
-                </span>
-              </div>
-            ) : factores.tipo === 'listo' && clasificacion && clasificacion.caso !== 'VIGENTE' ? (
-              <div className="cal-aviso-caja cal-aviso-caja--alerta" data-caso-factores={clasificacion.caso}>
-                <AlertTriangle size={18} aria-hidden="true" />
-                <span>{mensajeFactores(clasificacion, { versionNombre, referencia: referenciaTexto })}</span>
-              </div>
-            ) : factores.tipo === 'listo' ? (
-              <div className="cal-aviso-caja">
-                <CheckCircle2 size={17} aria-hidden="true" />
-                <span>
-                  {seleccion && !parametros.combustible
-                    ? `Elige el combustible para ver su factor oficial (${factoresAprobados.length} factores aprobados en ${versionNombre}).`
-                    : `${factoresAprobados.length} factor(es) aprobado(s) en ${versionNombre}`}
-                  {factoresAprobados.length ? ' · vigencias: ' : ''}
-                  <strong>{[...new Set(factoresAprobados.map((item) => `${item.fechaInicioVigencia}–${item.fechaFinVigencia ?? 'sin fecha final'}`))].join(', ')}</strong>
-                  {' · unidad del factor: '}
-                  <strong>{[...new Set(factoresAprobados.map((item) => item.unidadEntradaSimbolo))].join(', ')}</strong>
-                  {!magnitudes ? ' (no se pudo filtrar unidades por magnitud con tu perfil).' : '.'}
-                </span>
-              </div>
-            ) : null
+              {decisionFactor === 'VALOR_PROPIO' ? (
+                <div className="vst-campo">
+                  <label htmlFor="valor-factor-propio">
+                    Valor CO2e por {factorUltimo.unidadEntradaSimbolo || 'unidad'} *
+                  </label>
+                  <input
+                    id="valor-factor-propio"
+                    className="vst-input"
+                    inputMode="decimal"
+                    value={valorFactorPropio}
+                    onChange={(evento) => setValorFactorPropio(evento.target.value.replace(',', '.'))}
+                    placeholder={textoValorFactor(factorUltimo.valor) || '0.00022'}
+                  />
+                </div>
+              ) : null}
+              <p className="cal-ayuda">
+                Si no eliges, el dato se guarda y queda fuera del cálculo. Para cambiar el factor de todos, un administrador lo actualiza en Factores de emisión.
+              </p>
+            </fieldset>
           ) : null}
 
           {/* 3. Dato de actividad */}
           {fuente ? (
+            <>
             <div className="cal-carbono-campos">
               <div className="vst-campo">
                 <label htmlFor="papel-actividad">Actividad o proceso de la organización *</label>
@@ -1069,33 +1155,39 @@ export default function PapelesCarbono({
                 />
               </div>
 
-              <div className="vst-campo">
-                <label htmlFor="papel-documento">Soporte / documento (opcional)</label>
-                <input
-                  id="papel-documento"
-                  className="vst-input"
-                  maxLength={255}
-                  value={formulario.documento}
-                  onChange={(evento) => cambiar('documento', evento.target.value)}
-                  placeholder="Ej. Factura energía ene 2026"
-                />
-              </div>
-
-              <div className="vst-campo">
-                <label htmlFor="papel-observacion">Observación (opcional)</label>
-                <input
-                  id="papel-observacion"
-                  className="vst-input"
-                  maxLength={2000}
-                  value={formulario.observacion}
-                  onChange={(evento) => cambiar('observacion', evento.target.value)}
-                  placeholder="Ej. Lectura del medidor principal"
-                />
-              </div>
             </div>
+
+            <details className="cal-pliegue">
+              <summary>Soporte y observación</summary>
+              <div className="cal-carbono-campos cal-carbono-campos--dos">
+                <div className="vst-campo">
+                  <label htmlFor="papel-documento">Documento (opcional)</label>
+                  <input
+                    id="papel-documento"
+                    className="vst-input"
+                    maxLength={255}
+                    value={formulario.documento}
+                    onChange={(evento) => cambiar('documento', evento.target.value)}
+                    placeholder="Ej. Factura energía ene 2026"
+                  />
+                </div>
+                <div className="vst-campo">
+                  <label htmlFor="papel-observacion">Observación (opcional)</label>
+                  <input
+                    id="papel-observacion"
+                    className="vst-input"
+                    maxLength={2000}
+                    value={formulario.observacion}
+                    onChange={(evento) => cambiar('observacion', evento.target.value)}
+                    placeholder="Ej. Lectura del medidor principal"
+                  />
+                </div>
+              </div>
+            </details>
+            </>
           ) : null}
 
-          {/* 4. Parámetros específicos de la fuente o metodología */}
+          {pideDatosExtra ? <h3 className="cal-subtitulo">Datos de esta fuente</h3> : null}
           {fuente && campos.length ? (
             <fieldset className="cal-parametros">
               <legend>Parámetros de la metodología de {fuente.codigo}</legend>
@@ -1404,10 +1496,8 @@ export default function PapelesCarbono({
           ) : null}
 
           {fuente && esCombustion && !porDistancia ? (
-            <fieldset className="cal-parametros">
-              <legend>
-                Parámetros de conversión {requiereConversion ? '*' : '(opcional)'}
-              </legend>
+            <details className="cal-pliegue" {...(requiereConversion ? { open: true } : {})}>
+              <summary>{requiereConversion ? 'Conversión de unidad *' : 'Densidad o poder calorífico (opcional)'}</summary>
               <p className="cal-ayuda">
                 {requiereConversion
                   ? 'La unidad elegida no coincide con la del factor. Registra la densidad o el poder calorífico documentado del combustible para que el backend pueda convertirla.'
@@ -1461,7 +1551,7 @@ export default function PapelesCarbono({
                   </select>
                 </div>
               </div>
-            </fieldset>
+            </details>
           ) : null}
 
           {fuente?.codigo === 'A3-15' ? (
@@ -1591,6 +1681,7 @@ export default function PapelesCarbono({
         <p className="cal-ayuda">Cargando registros del periodo…</p>
       ) : papeles.length ? (
         <>
+        <h3 className="cal-subtitulo">Registros del periodo</h3>
         {errorConsultaTraza ? (
           <div className="cal-aviso-caja cal-aviso-caja--alerta" role="status">
             <AlertTriangle size={17} aria-hidden="true" />

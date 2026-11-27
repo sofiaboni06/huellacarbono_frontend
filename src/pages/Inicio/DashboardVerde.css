@@ -376,7 +376,6 @@ body:has(.hv-inicio) {
   display: none;
 }
 
-.hv-inicio .ini-barra,
 .hv-inicio .ini-contenido,
 .hv-inicio .vst-contenido {
   position: relative;
@@ -385,6 +384,8 @@ body:has(.hv-inicio) {
 
 /* ------------------------------ Barra ----------------------------------- */
 .hv-inicio .ini-barra {
+  position: relative;
+  z-index: 40;
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -392,6 +393,7 @@ body:has(.hv-inicio) {
   min-height: 78px;
   margin-bottom: 8px;
   padding: 28px 36px 18px;
+  overflow: visible;
   background: transparent;
   border-bottom: 0;
   backdrop-filter: none;

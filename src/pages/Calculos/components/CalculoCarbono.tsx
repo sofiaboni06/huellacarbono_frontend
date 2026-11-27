@@ -119,7 +119,7 @@ const PASOS: { n: PasoCarbono; titulo: string; detalle: string; nota: string }[]
     n: 2,
     titulo: 'Datos de actividad',
     detalle: 'Alcance, fuente, cantidad y soporte',
-    nota: 'De acuerdo con la guía, cada fila es un dato de actividad: cantidad, unidad, fuente y alcance. El alcance 1 es directo, el 2 es energía adquirida y el 3 es la cadena de valor. La factura o el soporte queda como evidencia.',
+    nota: 'Registra la cantidad, la unidad y la fuente. El alcance 1 es directo, el 2 es energía comprada y el 3 es la cadena de valor.',
   },
   {
     n: 3,
