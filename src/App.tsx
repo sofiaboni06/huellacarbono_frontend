@@ -27,6 +27,7 @@ import Catalogos from './pages/Gestion/Catalogos/Catalogos'
 import Organizaciones from './pages/Gestion/Organizaciones/Organizaciones'
 import OrganizacionDetalle from './pages/Gestion/Organizaciones/OrganizacionDetalle'
 import ProcesosSede from './pages/Gestion/Organizaciones/ProcesosSede'
+import Equipo from './pages/Equipo/Equipo'
 
 /**
  * Rutas de la aplicación.
@@ -108,6 +109,7 @@ function App() {
                 <Route path="/gestion/unidades-medida" element={<RutaConPermiso><UnidadesMedida /></RutaConPermiso>} />
                 <Route path="/gestion/organizaciones/:id/sedes/:sedeId" element={<RutaConPermiso><ProcesosSede /></RutaConPermiso>} />
                 <Route path="/gestion/organizaciones/:id" element={<RutaConPermiso><OrganizacionDetalle /></RutaConPermiso>} />
+                <Route path="/equipo" element={<Equipo />} />
 
                 <Route path="/" element={<Landing />} />
                 <Route path="*" element={<Navigate to="/login" replace />} />

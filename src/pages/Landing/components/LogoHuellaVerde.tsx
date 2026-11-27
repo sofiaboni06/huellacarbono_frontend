@@ -17,7 +17,7 @@ export default function LogoHuellaVerde({ claro = false, onClick }: Props) {
         <Leaf size={19} strokeWidth={2.4} />
       </span>
       <span>
-        Huella<span className="ld-logo__verde">Verde</span>
+        GEO<span className="ld-logo__verde">VA</span>
       </span>
     </a>
   )

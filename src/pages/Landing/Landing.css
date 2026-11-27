@@ -72,7 +72,9 @@ html:has(.ld) {
   font-family: inherit;
 }
 
-.ld h1,
+.ld h1 {
+  color: white;
+}
 .ld h2,
 .ld h3 {
   color: var(--noche);
@@ -112,7 +114,7 @@ html:has(.ld) {
 }
 
 .ld-degradado {
-  background: linear-gradient(92deg, var(--verde-profundo) 0%, var(--verde) 48%, var(--naturaleza) 100%);
+  background: #1677f2;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -155,29 +157,26 @@ html:has(.ld) {
 
 .ld-btn--primario {
   color: #fff;
-  background: linear-gradient(135deg, #14a862 0%, var(--verde-profundo) 100%);
+  background: rgb(24, 118, 242);
   box-shadow:
     0 12px 26px -12px rgba(17, 170, 96, 0.75),
     inset 0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 .ld-btn--primario:hover {
-  background: linear-gradient(135deg, #1bb86d 0%, #1d7a68 100%);
-  box-shadow:
-    0 18px 32px -12px rgba(17, 170, 96, 0.7),
-    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  background: rgb(24, 118, 242);
   transform: translateY(-2px);
 }
 
 .ld-btn--secundario {
-  color: var(--noche);
+  color: white;
   background: transparent;
-  border-color: rgba(9, 40, 65, 0.4);
+  border-color: rgba(255, 255, 255, 0.274);
 }
 
 .ld-btn--secundario:hover {
-  border-color: var(--agua);
-  background: rgba(255, 255, 255, 0.55);
+  border-color: white;
+  background: rgba(170, 175, 182, 0.158);
   transform: translateY(-2px);
 }
 
@@ -209,25 +208,16 @@ html:has(.ld) {
   align-items: center;
   gap: 10px;
   color: var(--oscuro);
-  font-size: 21px;
+  font-size: 30px;
   font-weight: 800;
   letter-spacing: -0.03em;
   white-space: nowrap;
 }
 
-.ld-logo__marca {
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  border-radius: 50% 50% 50% 14%;
-  background: linear-gradient(140deg, var(--lima) -10%, var(--verde) 45%, var(--verde-profundo) 100%);
-  box-shadow: 0 8px 16px -6px rgba(17, 170, 96, 0.6);
-}
+
 
 .ld-logo__verde {
-  color: var(--verde);
+  color: #1677f2;
 }
 
 .ld-logo--claro {
@@ -237,8 +227,11 @@ html:has(.ld) {
 /* ------------------------------ Navegación ------------------------------ */
 
 .ld-nav {
-  position: sticky;
+  position: absolute;
   top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 50;
   height: 80px;
   transition:
@@ -248,10 +241,16 @@ html:has(.ld) {
 }
 
 .ld-nav--fija {
-  background: rgba(240, 247, 254, 0.84);
-  backdrop-filter: blur(16px) saturate(1.4);
-  -webkit-backdrop-filter: blur(16px) saturate(1.4);
-  box-shadow: 0 1px 0 rgba(9, 40, 65, 0.08), 0 10px 30px -20px rgba(9, 40, 65, 0.35);
+  /* Degradado de blanco sólido arriba a transparente abajo */
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(255, 255, 255, 0) 100%);
+  
+  /* Quitamos el desenfoque de cristal para que el degradado se vea limpio */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  
+  /* Quitamos la sombra y el borde para que se fusione perfectamente con la imagen */
+  box-shadow: none;
+  border-bottom: none;
 }
 
 .ld-nav__interno {
@@ -273,7 +272,7 @@ html:has(.ld) {
 .ld-nav__links a {
   position: relative;
   padding: 8px 0;
-  color: var(--oscuro);
+  color: white;
   font-size: 14.5px;
   font-weight: 600;
   opacity: 0.82;
@@ -290,18 +289,18 @@ html:has(.ld) {
   bottom: -2px;
   height: 2.5px;
   border-radius: 2px;
-  background: var(--verde);
+  background: #1677f2;
   transform: scaleX(0);
   transition: transform 0.35s var(--curva);
 }
 
 .ld-nav__links a:hover {
-  color: var(--verde);
+  color: #1677f2;
   opacity: 1;
 }
 
 .ld-nav__links a.es-activo {
-  color: var(--verde);
+  color: #1677f2;
   opacity: 1;
 }
 
@@ -329,7 +328,7 @@ html:has(.ld) {
 .ld-hero {
   position: relative;
   min-height: clamp(620px, 86vh, 780px);
-  margin-top: -80px;
+  margin-top: 0;
   padding: 150px 0 150px;
   isolation: isolate;
 }
@@ -365,16 +364,16 @@ html:has(.ld) {
   gap: 8px;
   margin-bottom: 22px !important;
   padding: 8px 15px;
-  border: 1px solid rgba(17, 170, 96, 0.22);
+  border: 1px solid rgb(255, 255, 255);
   border-radius: 999px;
-  color: var(--verde-profundo);
-  background: rgba(17, 170, 96, 0.1);
+  color: rgb(255, 255, 255);
+  background: rgba(22, 117, 242, 0.068);
   font-size: 13.5px;
   font-weight: 700;
 }
 
 .ld-etiqueta svg {
-  color: var(--verde);
+  color: #ffffff;
 }
 
 .ld-hero h1 {
@@ -391,7 +390,7 @@ html:has(.ld) {
 .ld-hero__hoja {
   display: inline-block;
   margin-left: 10px;
-  color: var(--verde);
+  color: #1677f2;
   vertical-align: -4px;
   transform: rotate(-12deg);
 }
@@ -399,13 +398,13 @@ html:has(.ld) {
 .ld-hero__texto {
   max-width: 46ch;
   margin-top: 22px !important;
-  color: var(--texto);
+  color: white;
   font-size: 17px;
   line-height: 1.65;
 }
 
 .ld-hero__texto strong {
-  color: var(--noche);
+  color: white;
   font-weight: 800;
 }
 

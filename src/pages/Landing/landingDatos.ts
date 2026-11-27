@@ -4,14 +4,15 @@ import pasoLaptop from '../../assets/images/ld-paso-laptop.jpg'
 import pasoGraficas from '../../assets/images/ld-paso-graficas.jpg'
 import pasoPlaneta from '../../assets/images/ld-paso-planeta.jpg'
 
-export type SeccionId = 'inicio' | 'calculadora' | 'reportes' | 'metodologia' | 'nosotros'
+export type SeccionId = 'inicio' | 'calculadora' | 'reportes' | 'metodologia' | 'nosotros' | 'equipo'
 
-export const NAV: { id: SeccionId; etiqueta: string }[] = [
+export const NAV: { id: SeccionId; etiqueta: string; ruta?: string }[] = [
   { id: 'inicio', etiqueta: 'Inicio' },
   { id: 'calculadora', etiqueta: 'Calculadora' },
   { id: 'reportes', etiqueta: 'Reportes' },
   { id: 'metodologia', etiqueta: 'Metodología' },
   { id: 'nosotros', etiqueta: 'Sobre Nosotros' },
+  { id: 'equipo', etiqueta: 'Equipo', ruta: '/equipo' }
 ]
 
 export type Tono = 'verde' | 'agua' | 'naturaleza' | 'marino'
@@ -62,5 +63,57 @@ export const PASOS: Paso[] = [
     texto: 'Aplica nuestras recomendaciones y haz la diferencia.',
     imagen: pasoPlaneta,
     alt: 'Planeta Tierra rodeado de hojas verdes',
+  },
+]
+
+export type Miembro = {
+  nombre: string
+  rol: string
+  github?: string
+  avatar?: string
+  etiquetas?: string[]
+}
+
+export const EQUIPO: Miembro[] = [
+  {
+    nombre: 'Henry Bastidas',
+    rol: 'Product Owner',
+    avatar: '/avatars/henry.png',
+    etiquetas: ['Product Owner'],
+  },
+  {
+    nombre: 'Alex Jhoan Chaguendo',
+    rol: 'Tech Lead & Scrum Master | Solution Architect',
+    github: 'ALexjh117',
+    avatar: '/avatars/alex_fotogit.jpeg',
+    etiquetas: ['Scrum Master', 'Lógica de negocio', 'Full Stack'],
+  },
+  {
+    nombre: 'Sofia Bonilla Gallego',
+    rol: 'Scrum Master & Team Coordinator · UI/UX',
+    github: 'sofiaboni06',
+    avatar: '/avatars/sofia-sg.jpeg',
+    etiquetas: ['Full Stack', 'UI/UX', 'Team Coordinator'],
+  },
+  {
+    nombre: 'María Paula Santacruz',
+    rol: 'Frontend Developer · Web y Móvil · UI/UX',
+    github: 'Paulasantacruz',
+    avatar: '/avatars/paula-sg.jpeg',
+    etiquetas: ['Web', 'Móvil', 'UI/UX'],
+  },
+  {
+    nombre: 'Yusti Mebel Campo',
+    rol: 'Full Stack Developer',
+    github: 'mebelcampo',
+    avatar: '/avatars/mebel-sg.jpeg',
+    etiquetas: ['Full Stack', 'Web', 'Api', 'UI/UX'],
+  },
+  {
+    nombre: 'Andres Mauricio Bustamante',
+    rol: 'Full Stack Developer',
+    github: 'MauricioG-Dev',
+    avatar: '/avatars/mauricio.jpeg',
+    etiquetas: ['Full Stack', 'Web', 'Quality Assurance'],
   },
 ]

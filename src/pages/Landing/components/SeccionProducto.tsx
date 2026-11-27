@@ -1,5 +1,6 @@
 import BotonLanding from './BotonLanding'
-import DashboardMockup from './DashboardMockup'
+// Importamos el componente de Lottie
+import { DotLottieReact } from '@lottiefiles/dotlottie-react' 
 
 export default function SeccionProducto() {
   return (
@@ -18,7 +19,18 @@ export default function SeccionProducto() {
           </p>
           <BotonLanding href="#metodologia">Conocer más</BotonLanding>
         </div>
-        <DashboardMockup />
+        
+        {/* Aquí reemplazamos el componente antiguo por la animación de Lottie */}
+        <div className="ld-producto__visual" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <DotLottieReact
+            /* Como el archivo está en la carpeta 'public', se accede directamente desde la raíz '/' */
+            src="/Windmills House With Solar Panel.json"
+            loop
+            autoplay
+            style={{ width: '100%', maxWidth: '550px', height: 'auto' }}
+          />
+        </div>
+        
       </div>
     </section>
   )

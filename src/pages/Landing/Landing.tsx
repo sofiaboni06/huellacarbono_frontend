@@ -6,12 +6,13 @@ import HeroLanding from './components/HeroLanding'
 import Estadisticas from './components/Estadisticas'
 import SeccionProducto from './components/SeccionProducto'
 import PasosFuncionamiento from './components/PasosFuncionamiento'
+import SeccionEquipo from './components/SeccionEquipo'
 import BannerCta from './components/BannerCta'
 import LandingFooter from './components/LandingFooter'
 import '../../styles/variables.css'
 import './Landing.css'
 
-const SECCIONES = NAV.map((item) => item.id)
+const SECCIONES = NAV.filter((item) => !item.ruta).map((item) => item.id)
 
 export default function Landing() {
   const raiz = useRef<HTMLDivElement>(null)

@@ -1,0 +1,496 @@
+/* =========================================================
+   PÁGINA EQUIPO · Estilo Minimalista Naturaleza
+========================================================= */
+
+.eq-page {
+  --eq-green: #10b981;
+  --eq-green-light: #34d399;
+  --eq-deep: #0f172a;
+  --eq-ink: #1e293b;
+  --eq-muted: #64748b;
+  --eq-line: rgba(15, 23, 42, 0.08);
+
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  padding: 92px clamp(20px, 4.5vw, 76px) 120px;
+  overflow: clip;
+  isolation: isolate;
+  color: var(--eq-ink);
+  background-color: #f8fafc;
+}
+
+.eq-page > *:not(.eq-nature-bg) {
+  position: relative;
+  z-index: 1;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* =========================================================
+   FONDO DE NATURALEZA MINIMALISTA
+========================================================= */
+
+.eq-nature-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.eq-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+}
+
+.eq-blob--1 { top: -10%; left: -5%; width: 50vw; height: 50vw; background: rgba(167, 243, 208, 0.6); }
+.eq-blob--2 { bottom: -10%; right: -5%; width: 45vw; height: 45vw; background: rgba(191, 219, 254, 0.5); }
+.eq-blob--3 { top: 40%; left: 30%; width: 30vw; height: 30vw; background: rgba(253, 230, 138, 0.3); }
+
+.eq-leaf-bg {
+  position: absolute;
+  color: #10b981;
+  opacity: 0.15;
+  animation: float-leaf 12s ease-in-out infinite alternate;
+}
+
+.eq-leaf-bg--1 { top: 15%; right: 8%; width: 120px; height: 120px; transform: rotate(30deg); }
+.eq-leaf-bg--2 { bottom: 20%; left: 5%; width: 80px; height: 80px; transform: rotate(-45deg); animation-delay: -6s; }
+
+@keyframes float-leaf {
+  0% { transform: translateY(0) rotate(30deg); }
+  100% { transform: translateY(-30px) rotate(40deg); }
+}
+
+/* =========================================================
+   INTRODUCCIÓN Y TEXTO
+========================================================= */
+
+.eq-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: clamp(50px, 8vw, 120px);
+  align-items: end;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto 86px;
+  text-align: left;
+}
+
+.eq-system-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  color: var(--eq-green);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.eq-system-state > span {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--eq-green);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5);
+}
+
+.eq-intro h1 {
+  max-width: 780px;
+  margin: 0 0 22px;
+  color: var(--eq-deep) !important;
+  font-size: clamp(44px, 6.2vw, 88px);
+  font-weight: 800;
+  line-height: 0.96;
+  letter-spacing: -0.04em;
+  text-wrap: balance;
+}
+
+.eq-intro h1 span {
+  background: linear-gradient(90deg, #10b981 0%, #3b82f6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.eq-intro > .eq-intro-copy > p {
+  max-width: 650px;
+  margin: 0;
+  color: var(--eq-muted);
+  font-size: clamp(16px, 1.4vw, 19px);
+  line-height: 1.65;
+}
+
+/* Consola de datos */
+.eq-team-console {
+  position: relative;
+  overflow: hidden;
+  padding: 24px;
+  border: 1px solid rgba(255, 255, 255, 1);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 12px 30px -10px rgba(0, 0, 0, 0.05);
+}
+
+.eq-console-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--eq-line);
+}
+
+.eq-console-head span:first-child { color: var(--eq-deep); font-size: 13px; font-weight: 700; }
+.eq-console-head span:last-child { color: var(--eq-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; }
+
+.eq-team-console dl { display: grid; grid-template-columns: repeat(3, 1fr); margin: 20px 0 18px; }
+.eq-team-console dl > div { padding-inline: 14px; border-right: 1px solid var(--eq-line); }
+.eq-team-console dl > div:first-child { padding-left: 0; }
+.eq-team-console dl > div:last-child { padding-right: 0; border-right: 0; }
+
+.eq-team-console dt { margin-bottom: 4px; color: var(--eq-muted); font-size: 10px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
+.eq-team-console dd { margin: 0; color: var(--eq-deep); font-size: 28px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.03em; }
+
+.eq-team-console > p { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--eq-muted); font-size: 12px; font-weight: 500; }
+.eq-team-console > p i { width: 6px; height: 6px; border-radius: 50%; background: var(--eq-green); box-shadow: 0 0 9px rgba(16, 185, 129, 0.5); }
+
+/* =========================================================
+   BLOQUES Y TARJETAS
+========================================================= */
+
+.eq-roster-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 28px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--eq-line);
+}
+
+.eq-roster-head span { display: block; margin-bottom: 6px; color: var(--eq-green); font-size: 11px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+.eq-roster-head h2 { margin: 0; color: var(--eq-deep) !important; font-size: clamp(25px, 3vw, 38px); font-weight: 800; letter-spacing: -0.03em; }
+.eq-roster-head > p { margin: 0 0 4px; color: var(--eq-muted); font-size: 13px; }
+
+.eq-block {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* --- AQUÍ ESTÁ EL CAMBIO DEL GRID A FLEXBOX --- */
+.eq-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  padding-bottom: 36px;
+}
+
+/* Eliminamos los margin-top escalonados */
+.eq-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 340px; /* Ancho fijo para que quepan 3 y luego 2 centradas */
+  min-height: 398px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 1);
+  border-radius: 24px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 1);
+  animation: eq-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
+  transition: transform 400ms ease, box-shadow 400ms ease, border-color 400ms ease;
+}
+
+.eq-card:hover,
+.eq-card:focus-within {
+  z-index: 2;
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: translateY(-8px);
+  box-shadow: 0 24px 50px -15px rgba(16, 185, 129, 0.15);
+}
+
+.eq-card-sheen {
+  position: absolute;
+  inset: 0;
+  z-index: 7;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.eq-card-sheen::after {
+  content: "";
+  position: absolute;
+  top: -30%;
+  left: -60%;
+  width: 40%;
+  height: 160%;
+  background: linear-gradient(105deg, transparent 30%, rgba(255, 255, 255, 0.8) 50%, transparent 70%);
+  transform: translateX(0) rotate(14deg);
+  opacity: 0;
+}
+
+.eq-card:hover .eq-card-sheen::after {
+  animation: eq-sheen 1s ease forwards;
+}
+
+.eq-card-index {
+  position: absolute;
+  z-index: 8;
+  top: 14px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 8px;
+  color: #fff;
+  background: rgba(15, 23, 42, 0.4);
+  backdrop-filter: blur(8px);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.eq-card-index i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--eq-green-light);
+  box-shadow: 0 0 8px var(--eq-green-light);
+}
+
+.eq-person-photo-button {
+  position: relative;
+  width: 100%;
+  height: 260px; /* Altura fija para todas las fotos */
+  padding: 0;
+  border: 0;
+  background: #e2e8f0;
+  cursor: zoom-in;
+  flex: none;
+}
+
+/* --- AQUÍ QUITAMOS EL DEGRADADO BLANCO --- */
+/* Se eliminó la regla .eq-person-photo-button::after */
+
+.eq-person-photo {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Hace que la foto llene todo el espacio sin deformarse */
+  object-position: center 25%; /* Centra un poco hacia arriba para enfocar los rostros */
+  transition: transform 0.7s ease;
+}
+
+.eq-card:hover .eq-person-photo {
+  transform: scale(1.05);
+}
+
+.eq-card-content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-grow: 1;
+  padding: 20px;
+  color: var(--eq-ink);
+}
+
+.eq-copy {
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.eq-copy strong {
+  margin-bottom: 4px;
+  color: var(--eq-deep) !important;
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.eq-copy p {
+  min-height: 34px;
+  margin-bottom: 14px;
+  color: var(--eq-muted);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
+.eq-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.eq-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 99px;
+  background: rgba(16, 185, 129, 0.1);
+  color: #047857;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.eq-tag svg { width: 10px; height: 10px; }
+
+.eq-github {
+  display: flex;
+  width: 100%;
+  min-height: 32px;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding: 10px 0 0;
+  border: 0;
+  border-top: 1px solid var(--eq-line);
+  color: var(--eq-muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.eq-github svg { width: 16px; height: 16px; }
+.eq-github:hover { color: var(--eq-green); }
+
+/* =========================================================
+   MODAL Y ANIMACIONES
+========================================================= */
+
+.foto-equipo-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.foto-equipo-photo {
+  width: 100%;
+  max-width: 500px;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+
+.foto-equipo-close {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.foto-equipo-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.1);
+}
+
+@keyframes eq-rise { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes eq-sheen { 0% { transform: translateX(0) rotate(14deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translateX(480%) rotate(14deg); opacity: 0; } }
+
+/* Ajustes responsive */
+@media (max-width: 980px) {
+  .eq-intro { grid-template-columns: 1fr; gap: 42px; }
+  .eq-team-console { width: min(100%, 520px); }
+}
+
+@media (max-width: 768px) {
+  .eq-card {
+    max-width: 100%; /* En móvil ocupan todo el ancho */
+  }
+}
+
+@media (max-width: 640px) {
+  .eq-page { padding: 62px 16px 78px; }
+  .eq-intro { gap: 34px; margin-bottom: 60px; }
+  .eq-intro h1 { font-size: clamp(42px, 14vw, 62px); }
+  .eq-roster-head { align-items: flex-start; flex-direction: column; gap: 8px; }
+  
+  .eq-card { flex-direction: row; min-height: 254px; }
+  .eq-person-photo-button { width: 40%; height: 100%; min-height: 254px; }
+  .eq-card-content { width: 60%; padding: 17px 14px; }
+  .eq-copy strong { font-size: 16px; }
+  .eq-copy p { min-height: 0; font-size: 11px; }
+  .eq-tags { gap: 4px; margin-bottom: 12px; }
+  .eq-tag { padding: 4px 6px; font-size: 9px; }
+  .eq-tag svg { display: none; }
+  .eq-github { overflow: hidden; padding-inline: 8px; font-size: 11px; }
+  .eq-card-index { top: 10px; right: auto; left: 10px; }
+  .eq-leaf-bg { display: none; }
+}
+
+/* =========================================================
+   AJUSTES ESPECÍFICOS PARA ENFOCAR BIEN LAS FOTOS
+========================================================= */
+
+/* 1. Obligamos al contenedor a recortar cualquier imagen que se salga (evita que tape el texto) */
+.eq-person-photo-button {
+  overflow: hidden;
+}
+
+/* Foto 1: Henry (Traje) */
+.eq-person-photo-1 { 
+  object-position: center 20%; 
+}
+
+/* Foto 2: Alex (Selfie) */
+.eq-person-photo-2 { 
+  object-position: center 30%; 
+}
+
+/* Foto 3: Sofía (Rotada y ajustable) */
+.eq-person-photo-3 { 
+  object-position: center 60%;
+}
+
+/* Foto 4: Yusti */
+.eq-person-photo-4 { 
+  object-position: center 25%; 
+}
+
+/* Foto 5: Andrés */
+.eq-person-photo-5 { 
+  object-position: center 20%; 
+}
