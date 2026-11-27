@@ -161,6 +161,26 @@ describe('Formulario de datos de actividad: factores por año de inventario', ()
     })
   })
 
+  it('coloca la unidad del factor y permite cambiarla', async () => {
+    mocks.factoresDisponibles.mockResolvedValue([UPME_2024])
+    mocks.consultarCoberturaFactores.mockResolvedValue(cobertura({}))
+    await elegirB101('2026-02-11', '2026-08-11')
+
+    await waitFor(() => {
+      expect((screen.getByLabelText(/^Unidad/i) as HTMLSelectElement).value).toBe('252')
+    })
+    expect(screen.getByText('kWh', { selector: '.cal-unidad' }).textContent).toBe('kWh')
+    expect(screen.getByText(/La coloca el factor: 0\.00022 t CO2e por kWh/)).toBeTruthy()
+
+    fireEvent.change(screen.getByLabelText(/Actividad o proceso de la organización/i), {
+      target: { value: '5' },
+    })
+    fireEvent.change(screen.getByLabelText(/Cantidad del dato de actividad/i), { target: { value: '2500' } })
+    fireEvent.click(screen.getByRole('button', { name: /Registrar dato/ }))
+    await waitFor(() => expect(mocks.crearPapel).toHaveBeenCalledTimes(1))
+    expect(mocks.crearPapel.mock.calls[0][0]).toMatchObject({ cantidad: '2500', unidadId: '252' })
+  })
+
   it('2024: el mismo factor aparece como aprobado y vigente', async () => {
     mocks.factoresDisponibles.mockResolvedValue([UPME_2024])
     mocks.consultarCoberturaFactores.mockResolvedValue(

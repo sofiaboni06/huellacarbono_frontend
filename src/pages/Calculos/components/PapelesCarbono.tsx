@@ -201,6 +201,8 @@ export default function PapelesCarbono({
   const [formulario, setFormulario] = useState<Formulario>(VACIO)
   const [parametros, setParametros] = useState<Parametros>(PARAMETROS_VACIOS)
   const [decisionFactor, setDecisionFactor] = useState<DecisionFactor>('')
+  /** True solo cuando la persona eligió una unidad distinta a la del factor. */
+  const [unidadManual, setUnidadManual] = useState(false)
   const [valorFactorPropio, setValorFactorPropio] = useState('')
   const [errorGuardar, setErrorGuardar] = useState('')
   const [guardando, setGuardando] = useState(false)
@@ -404,6 +406,24 @@ export default function PapelesCarbono({
     : []
   // Solo los aprobados Y vigentes orientan las unidades; guardar no depende de ellos.
   const factoresAprobados = clasificacion?.aprobadosVigentes ?? []
+  const factorDeUnidad =
+    factorUltimo ??
+    (() => {
+      const ids = [...new Set(factoresAprobados.map((item) => item.unidadEntradaId).filter(Boolean))]
+      if (ids.length !== 1) return null
+      return factoresAprobados.find((item) => item.unidadEntradaId === ids[0]) ?? null
+    })()
+  const unidadDelFactorId = factorDeUnidad?.unidadEntradaId ?? ''
+  const unidadParaGuardar = formulario.unidadId || unidadDelFactorId
+  const simboloUnidad =
+    unidades.find((item) => item.id === unidadParaGuardar)?.nombre || factorDeUnidad?.unidadEntradaSimbolo || ''
+
+  useEffect(() => {
+    if (unidadManual || !unidadDelFactorId) return
+    setFormulario((actual) =>
+      actual.unidadId === unidadDelFactorId ? actual : { ...actual, unidadId: unidadDelFactorId },
+    )
+  }, [unidadDelFactorId, unidadManual])
   // Unidades de factores con vigencia compatible con la fecha o periodo del dato.
   const unidadesFactor = [
     ...new Map(
@@ -461,6 +481,9 @@ export default function PapelesCarbono({
       if (campo === 'fuenteId') siguiente.unidadId = ''
       return siguiente
     })
+    if (campo === 'alcanceId' || campo === 'actividadEmisionId' || campo === 'subcategoriaId' || campo === 'fuenteId') {
+      setUnidadManual(false)
+    }
     if (campo === 'fuenteId') {
       setFactores(valor && versionId ? { tipo: 'cargando' } : { tipo: 'sin-version' })
       setDecisionFactor('')
@@ -480,15 +503,29 @@ export default function PapelesCarbono({
     setErrorGuardar('')
     setExtras((actual) => ({ ...actual, [campo]: valor }))
     if (campo === 'opcionFactor' || campo === 'opcionProceso') {
+      setUnidadManual(false)
       setFormulario((actual) => ({ ...actual, unidadId: '' }))
     }
+  }
+
+  function cambiarUnidad(valor: string) {
+    if (!valor || valor === unidadDelFactorId) {
+      setUnidadManual(false)
+      cambiar('unidadId', unidadDelFactorId)
+      return
+    }
+    setUnidadManual(true)
+    cambiar('unidadId', valor)
   }
 
   function cambiarParametro(campo: keyof Parametros, valor: string) {
     setErrorGuardar('')
     setParametros((actual) => ({ ...actual, [campo]: valor }))
     // Cambiar de combustible puede cambiar la unidad del factor.
-    if (campo === 'combustible') setFormulario((actual) => ({ ...actual, unidadId: '' }))
+    if (campo === 'combustible') {
+      setUnidadManual(false)
+      setFormulario((actual) => ({ ...actual, unidadId: '' }))
+    }
   }
 
   /* ---------- Validación ---------- */
@@ -504,7 +541,7 @@ export default function PapelesCarbono({
       return 'La cantidad debe ser un número con punto decimal y máximo 8 decimales (ej. 2500.5).'
     }
     if (!/[1-9]/.test(formulario.cantidad)) return 'La cantidad debe ser mayor que cero.'
-    if (!formulario.unidadId) return 'Selecciona la unidad del dato.'
+    if (!unidadParaGuardar) return 'Selecciona la unidad del dato.'
     if (formulario.fechaDato && (formulario.fechaDato < fechaInicio || formulario.fechaDato > fechaFin)) {
       return `La fecha del dato debe estar entre ${fechaInicio} y ${fechaFin}.`
     }
@@ -683,7 +720,7 @@ export default function PapelesCarbono({
         alcanceId: formulario.alcanceId,
         actividadEmisionId: formulario.actividadEmisionId,
         subcategoriaEmisionId: formulario.subcategoriaId,
-        unidadId: formulario.unidadId,
+        unidadId: unidadParaGuardar,
         cantidad: formulario.cantidad,
         fechaDato: formulario.fechaDato,
         fuenteDato: formulario.documento,
@@ -691,6 +728,7 @@ export default function PapelesCarbono({
         parametrosCalculo: armarParametros(),
       })
       // Se conservan alcance y actividad para cargar varias facturas seguidas.
+      setUnidadManual(false)
       setFormulario((actual) => ({
         ...VACIO,
         alcanceId: actual.alcanceId,
@@ -801,7 +839,7 @@ export default function PapelesCarbono({
         formulario.actividadEmisionId &&
         formulario.fuenteId &&
         formulario.actividadId &&
-        formulario.unidadId &&
+        unidadParaGuardar &&
         formulario.cantidad,
     )
 
@@ -1078,26 +1116,34 @@ export default function PapelesCarbono({
                 <label htmlFor="papel-cantidad">
                   {porDistancia ? 'Distancia recorrida *' : 'Cantidad del dato de actividad *'}
                 </label>
-                <input
-                  id="papel-cantidad"
-                  className="vst-input"
-                  inputMode="decimal"
-                  value={formulario.cantidad}
-                  onChange={(evento) => cambiar('cantidad', evento.target.value.replace(',', '.'))}
-                  placeholder="Ej. 2500"
-                />
+                <span className={simboloUnidad ? 'cal-unidad-envoltura' : undefined}>
+                  <input
+                    id="papel-cantidad"
+                    className="vst-input"
+                    inputMode="decimal"
+                    value={formulario.cantidad}
+                    onChange={(evento) => cambiar('cantidad', evento.target.value.replace(',', '.'))}
+                    placeholder="Ej. 2500"
+                    aria-describedby={unidadDelFactorId ? 'papel-unidad-ayuda' : undefined}
+                  />
+                  {simboloUnidad ? <span className="cal-unidad">{simboloUnidad}</span> : null}
+                </span>
               </div>
 
               <div className="vst-campo">
-                <label htmlFor="papel-unidad">Unidad *</label>
+                <label htmlFor="papel-unidad">{unidadDelFactorId ? 'Unidad' : 'Unidad *'}</label>
                 <select
                   id="papel-unidad"
                   className="vst-select"
                   value={formulario.unidadId}
-                  onChange={(evento) => cambiar('unidadId', evento.target.value)}
+                  onChange={(evento) => cambiarUnidad(evento.target.value)}
                 >
                   <option value="">
-                    {unidadesDirectas.length ? 'Selecciona la unidad' : 'Sin unidades compatibles'}
+                    {unidadDelFactorId
+                      ? `Usar la del factor${factorDeUnidad?.unidadEntradaSimbolo ? ` (${factorDeUnidad.unidadEntradaSimbolo})` : ''}`
+                      : unidadesDirectas.length
+                        ? 'Selecciona la unidad'
+                        : 'Sin unidades compatibles'}
                   </option>
                   {filtrarUnidades ? (
                     <>
@@ -1117,6 +1163,13 @@ export default function PapelesCarbono({
                     unidades.map(opcionUnidad)
                   )}
                 </select>
+                {unidadDelFactorId ? (
+                  <p className="cal-ayuda" id="papel-unidad-ayuda">
+                    {unidadManual
+                      ? `La cambiaste a mano. El factor está en ${factorDeUnidad?.unidadEntradaSimbolo || 'otra unidad'} y el cálculo convierte si son compatibles.`
+                      : `La coloca el factor: ${textoValorFactor(factorDeUnidad?.valor ?? '') || 'su valor'} ${factorDeUnidad?.unidadSalidaSimbolo || 't'} CO2e por ${factorDeUnidad?.unidadEntradaSimbolo || 'su unidad'}. Cámbiala solo si el dato está en otra unidad.`}
+                  </p>
+                ) : null}
               </div>
 
               {!porDistancia && !porUnidadVendida ? (
@@ -1124,10 +1177,10 @@ export default function PapelesCarbono({
                   <EquivalenciaUnidad
                     cantidad={formulario.cantidad}
                     unidadOrigen={
-                      formulario.unidadId
+                      unidadParaGuardar
                         ? {
-                            id: formulario.unidadId,
-                            simbolo: unidades.find((item) => item.id === formulario.unidadId)?.nombre ?? '',
+                            id: unidadParaGuardar,
+                            simbolo: simboloUnidad,
                           }
                         : null
                     }
